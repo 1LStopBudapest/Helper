@@ -33,6 +33,34 @@ def CT2(met, ISRpt):
     return min(met, ISRpt-25)
 
     
+def GenFlagString(flag):
+    s = '{0:15b}'.format(flag)
+    return s
+
+"""
+Comments on gen status flags:
+According to the CMSSW GEN structure(), following bits are used for different status. 
+So we need to check the correspoding element in the bit string returned by GenFlagString function
+string index = 14-bit
+
+"0 : isPrompt," : s[14] or s[-1] 
+"1 : isDecayedLeptonHadron, "
+"2 : isTauDecayProduct, "
+"3 : isPromptTauDecayProduct, "
+"4 : isDirectTauDecayProduct, "
+"5 : isDirectPromptTauDecayProduct, "
+"6 : isDirectHadronDecayProduct, "
+"7 : isHardProcess, " 
+"8 : fromHardProcess, " : s[6]
+"9 : isHardProcessTauDecayProduct, "
+"10 : isDirectHardProcessTauDecayProduct, "
+"11 : fromHardProcessBeforeFSR, " : s[3]
+"12 : isFirstCopy, " : s[2]
+"13 : isLastCopy, "  : s[1]
+"14 : isLastCopyBeforeFSR : s[0]
+
+"""
+
 def Fill1D(h, a, w=1):
     nbin = h.GetNbinsX()
     low = h.GetBinLowEdge(nbin)
