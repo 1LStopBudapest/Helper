@@ -35,8 +35,8 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
         else:
             os.makedirs(outputdirpath)
     if 'unit' in scaleOption:
-        h1.Scale(1/h1.Integral())
-        h2.Scale(1/h2.Integral())
+        if h1.Integral(): h1.Scale(1/h1.Integral())
+        if h2.Integral(): h2.Scale(1/h2.Integral())
     style1D(h1, islogy)
     styleh2(h1, h2, islogy)
     hRatio = getHistratio(h1, h2, comparetype, htitle)

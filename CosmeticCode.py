@@ -27,6 +27,9 @@ XlabelDict = {
     'GenBpt' : 'Gen b p_{T}[GeV]',
     'GenStoppt' : 'Gen #tilde{t} p_{T}[GeV]',
     'GenLSPpt' : 'Gen #tilde{#chi_{1}^{0}} p_{T}[GeV]',
+    'GenBjetpt' : 'Gen b-jet p_{T}[GeV]',
+    'NGenBjets' : 'N_{gen b-jet}',
+
 }
 
 colDict = {
