@@ -1,3 +1,4 @@
+
 import ROOT
 
 XlabelDict = {
@@ -24,9 +25,11 @@ XlabelDict = {
     'CT2' : 'CT2 [GeV]',
     'GenMuonpt' : 'Gen #mu p_{T}[GeV]',
     'GenElept' : 'Gen e p_{T}[GeV]',
-    'GenBpt' : 'Gen b p_{T}[GeV]',
+    'GenBpt_fstop' : 'Gen b p_{T}[GeV]',
+    'GenBpt_istop' : 'Gen b p_{T}[GeV]',
     'GenStoppt' : 'Gen #tilde{t} p_{T}[GeV]',
     'GenLSPpt' : 'Gen #tilde{#chi_{1}^{0}} p_{T}[GeV]',
+    'GenBpt' : 'Gen b p_{T}[GeV]',
     'GenBjetpt' : 'Gen b-jet p_{T}[GeV]',
     'NGenBjets' : 'N_{gen b-jet}',
 
@@ -35,11 +38,21 @@ XlabelDict = {
 colDict = {
     'Signal' : ROOT.kBlack,
     'TTSingleLep_pow'  : ROOT.kAzure+2,
+    'TTLep_pow' : ROOT.kAzure+1,
+    'SingleTop' : 7,
+    'WJetsToLNu' : 8,
+    'ZJetsToNuNu' : ROOT.kOrange-3,
+    'DYJetsToLL' : ROOT.kMagenta-6,
+    'QCD' : ROOT.kMagenta+3,
+    'TTX' : ROOT.kAzure-7,
+    'Diboson' : ROOT.kOrange,
+    'Data': ROOT.kBlack,
 
 }
 
 RatioTitleDict = {
-'fastfull' : 'fast / full'
+    'fastfull' : 'fast / full',
+    'DataMC' : 'Data/MC',
 
 }
 
@@ -47,6 +60,19 @@ RatioLegendDict = {
 'fastfull' : ['FastSim', 'FullSim']
 
 }
+
+LegendTitleDict = {
+    'TTSingleLep_pow' : 't#bar{t}_1l',
+    'TTLep_pow' : 't#bar{t}_2l',
+    'SingleTop' : 'Single Top',
+    'WJetsToLNu' : 'W + Jets',
+    'ZJetsToNuNu' : 'Z(#nu#nu) + Jets',
+    'DYJetsToLL' : 'DY + Jets',
+    'QCD' : 'QCD', 
+    'TTX' : 't#bar{t}X',
+    'Diboson' : 'Diboson',
+    'Data': 'Data',
+    }
 
 def getXTitle(title):
     return XlabelDict[title]
@@ -65,3 +91,6 @@ def getRatioLegendTitle(h1, h2, comp):
         return RatioLegendDict['fastfull']
     else:
         return [h1.GetName().strip(h1.GetTitle()+"_"), h2.GetName().strip(h2.GetTitle()+"_")]
+
+def getLegendTitle(sample):
+    return LegendTitleDict[sample]

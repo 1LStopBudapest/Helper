@@ -23,6 +23,20 @@ def style1D(h, islogy, Ytitle="Number of Events"):
     h.SetLineWidth(2)
     h.SetStats(0)
 
+def styleData(h, islogy, Ytitle="Events"):
+    h.SetTitle("")
+    h.GetYaxis().SetTitle(Ytitle)
+    h.GetYaxis().SetTitleSize(0.035)
+    h.GetYaxis().SetTitleOffset(1.2)
+    h.GetYaxis().SetLabelSize(0.03)
+    h.SetLineColor(ROOT.kBlack)
+    h.SetLineWidth(2)
+    h.SetMarkerStyle(20);
+    h.SetMarkerColor(ROOT.kBlack);
+    h.SetMarkerSize(0.5);
+    h.SetStats(0)
+
+    
 def styleh2(h1, h2, islogy):
     hname = h2.GetName()
     htitle = h2.GetTitle()
