@@ -25,8 +25,6 @@ XlabelDict = {
     'CT2' : 'CT2 [GeV]',
     'GenMuonpt' : 'Gen #mu p_{T}[GeV]',
     'GenElept' : 'Gen e p_{T}[GeV]',
-    'GenBpt_fstop' : 'Gen b p_{T}[GeV]',
-    'GenBpt_istop' : 'Gen b p_{T}[GeV]',
     'GenStoppt' : 'Gen #tilde{t} p_{T}[GeV]',
     'GenLSPpt' : 'Gen #tilde{#chi_{1}^{0}} p_{T}[GeV]',
     'GenBpt' : 'Gen b p_{T}[GeV]',
@@ -75,13 +73,13 @@ LegendTitleDict = {
     }
 
 def getXTitle(title):
-    return XlabelDict[title]
+    return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
 
 def getColor(sample):
     if "Stop" in sample:
-        return colDict['Signal']
+        return colDict['Signal'] if 'Signal' in colDict.keys() else ROOT.kBlack
     else:
-        return colDict[sample]
+        return colDict[sample] if sample in colDict.keys() else ROOT.kBlack
 
 def getRatioTitle(comp):
     return RatioTitleDict[comp]
@@ -93,4 +91,4 @@ def getRatioLegendTitle(h1, h2, comp):
         return [h1.GetName().strip(h1.GetTitle()+"_"), h2.GetName().strip(h2.GetTitle()+"_")]
 
 def getLegendTitle(sample):
-    return LegendTitleDict[sample]
+    return LegendTitleDict[sample] if sample in LegendTitleDict.keys() else 'other'
