@@ -19,6 +19,16 @@ def DeltaRMatched(eta, phi, L, thr):
         if dri < dr: dr = dri
     return True if dr < thr else False
 
+def DeltaRPtMatched(pt, eta, phi, L, thr, ptthr):
+    dr = 99
+    pT = 999
+    for l in L:
+        dri = DeltaR(l['eta'], l['phi'], eta, phi)
+        if dri < dr:
+            dr = dri
+            pT = l['pt']
+    return True if dr < thr and abs(1- pt/pT) < ptthr else False
+
 def sortedlist(l, k='pt'):
     sl = sorted(l, key = lambda d: d[k], reverse=True)
     return sl

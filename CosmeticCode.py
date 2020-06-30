@@ -25,12 +25,21 @@ XlabelDict = {
     'CT2' : 'CT2 [GeV]',
     'GenMuonpt' : 'Gen #mu p_{T}[GeV]',
     'GenElept' : 'Gen e p_{T}[GeV]',
+    'GenBpt_fstop' : 'Gen b p_{T}[GeV]',
+    'GenBpt_istop' : 'Gen b p_{T}[GeV]',
     'GenStoppt' : 'Gen #tilde{t} p_{T}[GeV]',
     'GenLSPpt' : 'Gen #tilde{#chi_{1}^{0}} p_{T}[GeV]',
     'GenBpt' : 'Gen b p_{T}[GeV]',
     'GenBjetpt' : 'Gen b-jet p_{T}[GeV]',
     'NGenBjets' : 'N_{gen b-jet}',
-
+    'MuondxyErr' : '#mu d_{xy}Error[cm]',
+    'MuondzErr' : '#mu d_{z}Error[cm]',
+    'MuondxySig' : '#mu d_{xy}Sig',
+    'MuondzSig' : '#mu d_{z}Sig',
+    'EledxyErr' : 'e d_{xy}[cm]Error',
+    'EledzErr' : 'e d_{z}[cm]Error',
+    'EledxySig' : 'e d_{xy}Sig',
+    'EledzSig' : 'e d_{z}Sig',
 }
 
 colDict = {
@@ -48,6 +57,15 @@ colDict = {
 
 }
 
+TrigcolDict = {
+    'HLT_PFMET90_PFMHT90_IDTight' : ROOT.kYellow,
+    'HLT_PFMET100_PFMHT100_IDTight' : ROOT.kViolet,
+    'HLT_PFMET110_PFMHT110_IDTight' : ROOT.kGreen,
+    'HLT_PFMET120_PFMHT120_IDTight' : ROOT.kRed,
+    'HLT_MET_Inclusive' : ROOT.kBlue,
+
+}
+
 RatioTitleDict = {
     'fastfull' : 'fast / full',
     'DataMC' : 'Data/MC',
@@ -62,13 +80,13 @@ RatioLegendDict = {
 LegendTitleDict = {
     'TTSingleLep_pow' : 't#bar{t}_1l',
     'TTLep_pow' : 't#bar{t}_2l',
-    'SingleTop' : 'Single Top',
+    'ST' : 'Single Top',
     'WJetsToLNu' : 'W + Jets',
     'ZJetsToNuNu' : 'Z(#nu#nu) + Jets',
     'DYJetsToLL' : 'DY + Jets',
     'QCD' : 'QCD', 
-    'TTX' : 't#bar{t}X',
-    'Diboson' : 'Diboson',
+    'TTV' : 't#bar{t}X',
+    'VV' : 'Diboson',
     'Data': 'Data',
     }
 
@@ -92,3 +110,6 @@ def getRatioLegendTitle(h1, h2, comp):
 
 def getLegendTitle(sample):
     return LegendTitleDict[sample] if sample in LegendTitleDict.keys() else 'other'
+
+def getTrigColor(trig):
+        return TrigcolDict[trig] if trig in TrigcolDict.keys() else ROOT.kBlack
