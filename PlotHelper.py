@@ -11,7 +11,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800):
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
-    leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
+    leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
     leg.AddEntry(h, sname ,"l")
 
     style1D(h, islogy)
@@ -37,7 +37,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     if 'unit' in scaleOption:
         if h1.Integral(): h1.Scale(1/h1.Integral())
         if h2.Integral(): h2.Scale(1/h2.Integral())
-    style1D(h1, islogy)
+    style1D(h1, islogy, "a.u.")
     styleh2(h1, h2, islogy)
     hRatio = getHistratio(h1, h2, comparetype, htitle)
     hRatioFrame = getHistratioframe(hRatio)
