@@ -69,7 +69,7 @@ TrigcolDict = {
 RatioTitleDict = {
     'fastfull' : 'fast / full',
     'DataMC' : 'Data/MC',
-
+    'FakeRate' : '#epsilon_{TL}'
 }
 
 RatioLegendDict = {
@@ -100,7 +100,7 @@ def getColor(sample):
         return colDict[sample] if sample in colDict.keys() else ROOT.kBlack
 
 def getRatioTitle(comp):
-    return RatioTitleDict[comp]
+    return RatioTitleDict[comp] if comp in RatioTitleDict.keys() else 'Ratio'
 
 def getRatioLegendTitle(h1, h2, comp):
     if 'fastfull' in comp:
