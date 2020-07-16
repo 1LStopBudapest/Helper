@@ -40,6 +40,10 @@ XlabelDict = {
     'EledzErr' : 'e d_{z}[cm]Error',
     'EledxySig' : 'e d_{xy}Sig',
     'EledzSig' : 'e d_{z}Sig',
+    'leppt'   : 'p_{T}(l)',
+    'Mupt'    : 'p_{T}(#mu)',
+    'Elept'   : 'p_{T}(e)',
+
 }
 
 colDict = {
