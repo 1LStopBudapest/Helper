@@ -3,8 +3,8 @@ import ROOT
 
 XlabelDict = {
 
-    'MET' : 'MET (GeV)',
-    'HT'  : 'HT (GeV)',
+    'MET' : 'p^{miss}_{T} [GeV]',
+    'HT'  : 'H_{T} [GeV]',
     'ISRJetPt' : 'ISR Jet p_{T} [GeV]',
     'Njet20' : 'N_{jets}(>20 GeV)',
     'Njet30' : 'N_{jets}(>30 GeV)',
@@ -20,9 +20,9 @@ XlabelDict = {
     'Eledz' : 'e d_{z}[cm]',
     'Nmu'   : 'N_{#mu}',
     'Ne'  :  'N_{e}',
-    'LepMT' : 'M_{T}(l, met)[GeV]',
-    'CT1' : 'CT1 [GeV]',
-    'CT2' : 'CT2 [GeV]',
+    'LepMT' : 'M_{T}(l, p^{miss}_{T})[GeV]',
+    'CT1' : 'C_{T1} [GeV]',
+    'CT2' : 'C_{T2} [GeV]',
     'GenMuonpt' : 'Gen #mu p_{T}[GeV]',
     'GenElept' : 'Gen e p_{T}[GeV]',
     'GenBpt_fstop' : 'Gen b p_{T}[GeV]',
@@ -40,6 +40,10 @@ XlabelDict = {
     'EledzErr' : 'e d_{z}[cm]Error',
     'EledxySig' : 'e d_{xy}Sig',
     'EledzSig' : 'e d_{z}Sig',
+    'Leppt'   : 'p_{T}(l) [GeV]',
+    'Mupt'    : 'p_{T}(#mu)',
+    'Elept'   : 'p_{T}(e)',
+
 }
 
 colDict = {
