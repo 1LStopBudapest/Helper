@@ -109,9 +109,79 @@ LepPtBinLabelDict = {
     4 : 'H',
     }
 
+SRBinLabelList = [
+    'SR1VLaX',
+    'SR1LaX',
+    'SR1MaX',
+    'SR1HaX',
+    'SR1VLbX',
+    'SR1LbX',
+    'SR1MbX',
+    'SR1HbX',
+    'SR1LcX',
+    'SR1McX',
+    'SR1HcX',
+    'SR1VLaY',
+    'SR1LaY',
+    'SR1MaY',
+    'SR1HaY',
+    'SR1VLbY',
+    'SR1LbY',
+    'SR1MbY',
+    'SR1HbY',
+    'SR1LcY',
+    'SR1McY',
+    'SR1HcY',
+    'SR2VLaX',
+    'SR2LaX',
+    'SR2MaX',
+    'SR2HaX',
+    'SR2VLbX',
+    'SR2LbX',
+    'SR2MbX',
+    'SR2HbX',
+    'SR2LcX',
+    'SR2McX',
+    'SR2HcX',
+    'SR2VLaY',
+    'SR2LaY',
+    'SR2MaY',
+    'SR2HaY',
+    'SR2VLbY',
+    'SR2LbY',
+    'SR2MbY',
+    'SR2HbY',
+    'SR2LcY',
+    'SR2McY',
+    'SR2HcY'
+    ]
+
+CRBinLabelList = [
+    'CR1aX',
+    'CR1bX',
+    'CR1cX',
+    'CR1aY',
+    'CR1bY',
+    'CR1cY',
+    'CR2aX',
+    'CR2bX',
+    'CR2cX',
+    'CR2aY',
+    'CR2bY',
+    'CR2cY'
+    ]
+
+
 def getBinlabel(CT, MT, LepPt, reg='SR'):
     ct = CTBinLabelDict[findCTBin(CT)] if findCTBin(CT)>0 else ''
     mt = MTBinLabelDict[findMTBin(MT)] if findMTBin(MT)>0 else ''
     leppt = (LepPtBinLabelDict[findLepPtBin(LepPt, MT)+1] if MT>95 else LepPtBinLabelDict[findLepPtBin(LepPt, MT)]) if findLepPtBin(LepPt, MT)>0 else ''
     return reg+leppt+mt+ct if reg=='SR' else reg+mt+ct
 
+def getHistBinlabel(idx, nbins):
+    if nbins==44:
+        return SRBinLabelList[idx]
+    elif nbins==12:
+        return CRBinLabelList[idx]
+    else:
+        return (SRBinLabelList+CRBinLabelList)[idx]
