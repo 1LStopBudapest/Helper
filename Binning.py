@@ -11,7 +11,7 @@ ElePt_bin = [5, 12, 20, 30]
 EachMT_div = len(LepPt_bin)-1
 EachCT_div = (len(LepPt_bin)-1) * (len(MT_bin)-1) - 1 #for last MT bin, leppT start from 5 GeV
 
-def findBinIndex(CT, MT, LepPt):
+def findSRBinIndex(CT, MT, LepPt):
     idx = -1
     pickIdx = -1
     for i in range(len(CT_bin)-1):
@@ -73,7 +73,24 @@ def findBin(CT, MT, LepPt):
     if findCTBin(CT)>0 and findMTBin(MT)>0 and findLepPtBin(LepPt, MT)>0:
         b = (EachCT_div * (findCTBin(CT)-1)) + (EachMT_div * (findMTBin(MT)-1)) + findLepPtBin(LepPt, MT)
     return b
-        
+
+def findCRBinIndex(CT, MT):
+    idx = -1
+    pickIdx = -1
+    for i in range(len(CT_bin)-1):
+        cut1 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+        for j in range(len(MT_bin)-1):
+            cut2 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+            idx += 1
+            if (cut1 and cut2):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+            
+    return pickIdx
+
 CTBinLabelDict = {
     1 : 'X',
     2 : 'Y',
@@ -97,3 +114,4 @@ def getBinlabel(CT, MT, LepPt, reg='SR'):
     mt = MTBinLabelDict[findMTBin(MT)] if findMTBin(MT)>0 else ''
     leppt = (LepPtBinLabelDict[findLepPtBin(LepPt, MT)+1] if MT>95 else LepPtBinLabelDict[findLepPtBin(LepPt, MT)]) if findLepPtBin(LepPt, MT)>0 else ''
     return reg+leppt+mt+ct if reg=='SR' else reg+mt+ct
+

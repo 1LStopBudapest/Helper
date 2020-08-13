@@ -197,6 +197,10 @@ class TreeVarSel():
             Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id]})
         return Llist
 
+    def getSortedLepVar(self):
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        return lepvar
+
     def isBtagDeepCSV(self, jetb, year):
         if year == 2016:
             return jetb > 0.6321
