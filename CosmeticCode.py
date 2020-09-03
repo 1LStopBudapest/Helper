@@ -43,6 +43,12 @@ XlabelDict = {
     'Leppt'   : 'p_{T}(l) [GeV]',
     'Mupt'    : 'p_{T}(#mu)',
     'Elept'   : 'p_{T}(e)',
+    'LepPt_loose'   : 'p_{T}(loose l) [GeV]',
+    'LepPt_tight'   : 'p_{T}(tight l) [GeV]',
+    'MuPt_loose'    : 'Loose #mu p_{T}',
+    'MuPt_tight'    : 'Tight #mu p_{T}',
+    'ElePt_loose'   : 'Loose e p_{T}',
+    'ElePt_tight'   : 'Tight e p_{T}',
 
 }
 
@@ -50,13 +56,13 @@ colDict = {
     'Signal' : ROOT.kBlack,
     'TTSingleLep_pow'  : ROOT.kAzure+2,
     'TTLep_pow' : ROOT.kAzure+1,
-    'SingleTop' : 7,
+    'ST' : 7,
     'WJetsToLNu' : 8,
     'ZJetsToNuNu' : ROOT.kOrange-3,
     'DYJetsToLL' : ROOT.kMagenta-6,
     'QCD' : ROOT.kMagenta+3,
     'TTX' : ROOT.kAzure-7,
-    'Diboson' : ROOT.kOrange,
+    'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
 
 }
