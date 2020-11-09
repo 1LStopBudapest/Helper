@@ -142,10 +142,18 @@ class TreeVarSel():
     	return len(self.selectEleIdx())
     
     def selectjetIdx(self, thrsld):
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
         idx = []
-        for i in range(len(self.tr.JetGood_pt)):
-            if self.tr.JetGood_pt[i]>thrsld and abs(self.tr.JetGood_eta[i])<2.4:
-                idx.append(i)
+        for j in range(len(self.tr.Jet_pt)):
+            clean = True
+            for l in range(len(lepvar)):
+                dR = DeltaR(lepvar[l]['eta'], self.tr.Jet_eta[j], lepvar[l]['phi'], self.tr.Jet_phi[j])
+                ptRatio = float(self.tr.Jet_pt[j])/float(lepvar[l]['pt'])
+                if dR < 0.4 and ptRatio < 2 and self.tr.Jet_pt[i]>thrsld and abs(self.tr.Jet_eta[i]) < 2.4:
+                    clean = True
+                    break
+            if clean:
+                idx.append(j)
         return idx
 
     def selectISRjetIdx(self, thrsld=100):
