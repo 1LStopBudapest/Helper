@@ -80,8 +80,8 @@ class TreeVarSel():
 
     def dphicut(self):
         cut = False
-        if len(self.selectjetIdx(30)) >=2 and self.tr.JetGood_pt[self.selectjetIdx(30)[1]]> 60:
-            if DeltaPhi(self.tr.JetGood_phi[self.selectjetIdx(30)[0]], self.tr.JetGood_phi[self.selectjetIdx(30)[1]])<2.5:
+        if len(self.selectjetIdx(30)) >=2 and self.tr.Jet_pt[self.selectjetIdx(30)[1]]> 60:
+            if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(30)[0]], self.tr.Jet_phi[self.selectjetIdx(30)[1]])<2.5:
                 cut = True
         return cut
 
@@ -103,7 +103,7 @@ class TreeVarSel():
 
     def XtraJetVeto(self):
         cut = True
-        if len(self.selectjetIdx(30)) >=3 and self.tr.JetGood_pt[self.selectjetIdx(30)[2]]> 60:
+        if len(self.selectjetIdx(30)) >=3 and self.tr.Jet_pt[self.selectjetIdx(30)[2]]> 60:
             cut = False
         return cut
 
@@ -123,7 +123,7 @@ class TreeVarSel():
     def calHT(self):
         HT = 0
         for i in self.selectjetIdx(30):
-            HT = HT + self.tr.JetGood_pt[i]
+            HT = HT + self.tr.Jet_pt[i]
         return HT
 
     def calNj(self, thrsld):
