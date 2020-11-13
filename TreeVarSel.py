@@ -153,8 +153,8 @@ class TreeVarSel():
                     if dR < 0.4 and ptRatio < 2:
                         clean = False
                         break
-            if clean:
-                idx.append(j)
+                if clean:
+                    idx.append(j)
         return idx
 
     def selectISRjetIdx(self, thrsld=100):
