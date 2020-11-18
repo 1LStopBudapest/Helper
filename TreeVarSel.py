@@ -21,7 +21,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']<=30:
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=30:
                 return True
             else:
                 return False
@@ -29,13 +29,13 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(30)==0 and self.cntBtagjet(60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(30)>=1 and self.cntBtagjet(60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
 
     
     def ControlRegion(self):
@@ -52,13 +52,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(30)==0 and self.cntBtagjet(60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(30)>=1 and self.cntBtagjet(60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -132,8 +132,8 @@ class TreeVarSel():
     def getISRPt(self):
         return self.tr.JetGood_pt[self.selectISRjetIdx()[0]] if len(self.selectISRjetIdx()) else 0
     
-    def cntBtagjet(self, discOpt='CSVV2', ptthrsld=30):
-        return len(self.selectBjetIdx(discOpt, ptthrsld))
+    def cntBtagjet(self, discOpt='CSVV2', pt=30):
+        return len(self.selectBjetIdx(discOpt, pt))
 
     def cntMuon(self):
         return len(self.selectMuIdx())
