@@ -145,13 +145,13 @@ class TreeVarSel():
         lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
         idx = []
         for j in range(len(self.tr.Jet_pt)):
+            clean = False
             if self.tr.Jet_pt[j]>thrsld and abs(self.tr.Jet_eta[j]) < 2.4:
-                clean = True
                 for l in range(len(lepvar)):
                     dR = DeltaR(lepvar[l]['eta'], self.tr.Jet_eta[j], lepvar[l]['phi'], self.tr.Jet_phi[j])
                     ptRatio = float(self.tr.Jet_pt[j])/float(lepvar[l]['pt'])
                     if dR < 0.4 and ptRatio < 2:
-                        clean = False
+                        clean = True
                         break
                 if clean:
                     idx.append(j)
