@@ -288,46 +288,46 @@ class TreeVarSel():
                 if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \ #from Priya requirement on e["eta"] + e["deltaEtaSC"]
                         and (iso* pt) < 5.0 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and self.eleID(Id, 1) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
+                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \ #from Priya requirement on e["eta"] + e["deltaEtaSC"]
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.2 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and self.eleID(Id,1)
+                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
 
         elif lepton_selection == 'looseHybridIso':
             def func():
                 if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso*pt) < 20.0 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and self.eleID(Id,1)
+                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.8 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and self.eleID(Id,1)
+                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
 
         else:
             def func():
                 return \
                     pt >5 \
                     and abs(eta)       < 2.5 \
-                    #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                     and self.eleID(Id,1)
+                    #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
         return func()
 
 
