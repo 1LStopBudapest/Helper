@@ -211,6 +211,14 @@ class TreeVarSel():
         lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
         return lepvar
 
+    def getLepZero(self):
+        L = self.getLepVar(self.selectMuIdx(), self.selectEleIdx())
+        L2 = []
+        for l in range(len(L)):
+            L2.append(L[l]['pt'])
+        L2.sort(reverse = True)
+        return L2[0]
+
     def isBtagDeepCSV(self, jetb, year):
         if year == 2016:
             return jetb > 0.6321
