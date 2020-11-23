@@ -67,6 +67,24 @@ def getHistratio(h1, h2, comparetype, title):
     hRatio.GetXaxis().SetLabelSize(0.07)
     return hRatio
 
+def getRatioHist(hnum, hden, comparetype, title, ymax):
+    hRatio = hnum.Clone("Ratio")
+    hRatio.Divide(hden)
+    hRatio.GetYaxis().SetTitle(getRatioTitle(comparetype))
+    hRatio.GetYaxis().SetRangeUser(0, ymax)
+    hRatio.SetTitle("")
+    hRatio.SetStats(0)
+    hRatio.SetLineColor(ROOT.kBlack)
+    hRatio.GetYaxis().SetTitleSize(0.06)
+    hRatio.GetYaxis().SetTitleOffset(0.6)
+    hRatio.GetYaxis().SetLabelSize(0.04)
+    xtitle = getXTitle(title)
+    hRatio.GetXaxis().SetTitle(xtitle)
+    hRatio.GetXaxis().SetTitleSize(0.06)
+    hRatio.GetXaxis().SetTitleOffset(0.7)
+    hRatio.GetXaxis().SetLabelSize(0.04)
+    return hRatio
+
 def getHistratioframe(hRatio):
     hRatioFrame = hRatio.Clone("RatioFrame")
     for b in range(1, hRatioFrame.GetNbinsX() + 1):

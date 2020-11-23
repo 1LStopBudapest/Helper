@@ -11,7 +11,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800):
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
-    leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
+    leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
     leg.AddEntry(h, sname ,"l")
 
     style1D(h, islogy)
@@ -37,7 +37,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     if 'unit' in scaleOption:
         if h1.Integral(): h1.Scale(1/h1.Integral())
         if h2.Integral(): h2.Scale(1/h2.Integral())
-    style1D(h1, islogy)
+    style1D(h1, islogy, "a.u.")
     styleh2(h1, h2, islogy)
     hRatio = getHistratio(h1, h2, comparetype, htitle)
     hRatioFrame = getHistratioframe(hRatio)
@@ -81,7 +81,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
 
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs[0].Clone("TotalMC")
-    leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
+    leg = ROOT.TLegend(0.6, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs, 0):
         if i!=len(hs)-1:
@@ -94,7 +94,8 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
                 
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
     styleData(hs[-1], islogy)
-    maxRange = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
+    mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
+    maxRange = mVal * 100 if islogy else mVal * 1.5
     minRange = 0.0001 if islogy else 0.0
     hs[-1].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     
