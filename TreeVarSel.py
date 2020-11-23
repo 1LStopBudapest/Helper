@@ -110,8 +110,8 @@ class TreeVarSel():
 
     def tauVeto(self):
         cut = True
-        if self.tr.nGoodTaus >= 1: 
-            cut = False #only applicable to postprocessed sample where lepton(e,mu)-cleaned (dR<0.4) tau collection is stored, https://github.com/HephyAnalysisSW/StopsCompressed/blob/master/Tools/python/objectSelection.py#L303-L316
+        if self.tr.nGoodTaus >= 1: #only applicable to postprocessed sample where lepton(e,mu)-cleaned (dR<0.4) tau collection is stored, https://github.com/HephyAnalysisSW/StopsCompressed/blob/master/Tools/python/objectSelection.py#L303-L316
+            cut = False 
         return cut
             
     def getLepMT(self):
@@ -165,9 +165,9 @@ class TreeVarSel():
 
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=30):
         idx = []
-        for i in range(len(self.tr.JetGood_pt)):
-            if self.tr.JetGood_pt[i]>ptthrsld and abs(self.tr.JetGood_eta[i])<2.4:
-                if (self.isBtagCSVv2(self.tr.JetGood_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.JetGood_btagDeepB[i], self.yr)):
+        for i in range(len(self.tr.Jet_pt)):
+            if self.tr.Jet_pt[i] > ptthrsld and abs(self.tr.Jet_eta[i])<2.4:
+                if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                     idx.append(i)
         return idx
 
