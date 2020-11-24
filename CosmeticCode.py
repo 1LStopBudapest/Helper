@@ -61,7 +61,7 @@ colDict = {
     'ZJetsToNuNu' : ROOT.kOrange-3,
     'DYJetsToLL' : ROOT.kMagenta-6,
     'QCD' : ROOT.kMagenta+3,
-    'TTX' : ROOT.kAzure-7,
+    'TTV' : ROOT.kAzure-7,
     'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
 

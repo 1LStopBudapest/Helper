@@ -7,7 +7,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800):
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"1DPlots",sname)
+    outputdirpath = os.path.join(dir,"1DPlots/final",sname)
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
@@ -96,7 +96,8 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     styleData(hs[-1], islogy)
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
-    minRange = 0.0001 if islogy else 0.0
+    #minRange = 0.0001 if islogy else 0.0
+    minRange = 0.1 if islogy else 0.0
     hs[-1].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     
     hRatio = getHistratio(hs[-1], hMC, "DataMC", var)
