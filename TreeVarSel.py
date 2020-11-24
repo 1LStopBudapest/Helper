@@ -174,8 +174,7 @@ class TreeVarSel():
     def	selectEleIdx(self):
         idx = []
         for i in range(len(self.tr.Electron_pt)):
-            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
-            #if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
+            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
                 idx.append(i)              
 	return idx
 
@@ -195,8 +194,7 @@ class TreeVarSel():
     def getEleVar(self, eId):
         Llist = []
         for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
-            #Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id],})
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
         return Llist
     
     def getLepVar(self, muId, eId):
@@ -204,7 +202,7 @@ class TreeVarSel():
         for id in muId:
             Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id]})
         for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
         return Llist
 
     def getSortedLepVar(self):
@@ -281,53 +279,53 @@ class TreeVarSel():
         return func()
 
 
-    def eleSelector(self, pt, eta, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016):
-    #def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016):
+    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016):
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
+                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso* pt) < 5.0 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and self.eleID(Id, 1) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \ #from Priya requirement on e["eta"] + e["deltaEtaSC"]
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
+                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.2 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and self.eleID(Id,1)
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
 
         elif lepton_selection == 'looseHybridIso':
             def func():
                 if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
+                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso*pt) < 20.0 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and self.eleID(Id,1)
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
+                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.8 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and self.eleID(Id,1)
-                        #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
+
 
         else:
             def func():
                 return \
                     pt >5 \
                     and abs(eta)       < 2.5 \
+                    and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                     and self.eleID(Id,1)
-                    #and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
         return func()
 
 
