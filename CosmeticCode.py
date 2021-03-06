@@ -54,15 +54,15 @@ XlabelDict = {
 
 colDict = {
     'Signal' : ROOT.kBlack,
-    'TTSingleLep_pow'  : ROOT.kAzure+2,
-    'TTLep_pow' : ROOT.kAzure+1,
-    'ST' : 7,
-    'WJetsToLNu' : 8,
+    'TTSingleLep_pow'  :  ROOT.kBlue+3,
+    'TTLep_pow' : ROOT.kYellow,
+    'ST' : 29,
+    'WJetsToLNu' : ROOT.kSpring,
     'ZJetsToNuNu' : ROOT.kOrange-3,
-    'DYJetsToLL' : ROOT.kMagenta-6,
+    'DYJetsToLL' : ROOT.kViolet-4,
     'QCD' : ROOT.kMagenta+3,
-    'TTV' : ROOT.kAzure-7,
-    'VV' : ROOT.kOrange,
+    'TTV' : ROOT.kCyan-9,
+    'VV' : ROOT.kGreen+3,
     'Data': ROOT.kBlack,
 
 }

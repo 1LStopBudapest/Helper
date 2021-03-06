@@ -8,7 +8,7 @@ def style1D(h, islogy, Ytitle="Number of Events"):
     samplename = hname.replace(htitle+"_", "")
     Xtitle = getXTitle(htitle)
     maxRange = h.GetBinContent(h.GetMaximumBin())
-    minRange = 0.0001 if islogy else 0.0
+    minRange = 0.1 if islogy else 0.0
     h.SetTitle("")
     h.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     h.GetYaxis().SetTitle(Ytitle)
