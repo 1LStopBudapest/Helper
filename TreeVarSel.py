@@ -11,9 +11,8 @@ class TreeVarSel():
         self.tr = tr
         self.yr = yr
         self.isData = isData
+        self.JetThreshold = 30
 
-    JetThreshold = 30
-        
     #selection
     def PreSelection(self):
         ps = self.METcut() and self.HTcut() and self.ISRcut() and self.lepcut() and self.dphicut() and self.XtralepVeto() and self.XtraJetVeto() and self.tauVeto()
@@ -81,7 +80,7 @@ class TreeVarSel():
             cut = True
         return cut
 
-    def dphicut(self, thr=JetThreshold):
+    def dphicut(self, thr=self.JetThreshold):
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
@@ -104,7 +103,7 @@ class TreeVarSel():
             cut = False
         return cut
 
-    def XtraJetVeto(self, thrJet=JetThreshold, thrExtra=60):
+    def XtraJetVeto(self, thrJet=self.JetThreshold, thrExtra=60):
         cut = True
         if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] > thrExtra:
             cut = False
@@ -125,7 +124,7 @@ class TreeVarSel():
         
     def calHT(self):
         HT = 0
-        for i in self.selectjetIdx(JetThreshold):
+        for i in self.selectjetIdx(self.JetThreshold):
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
