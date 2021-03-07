@@ -49,6 +49,11 @@ XlabelDict = {
     'MuPt_tight'    : 'Tight #mu p_{T}',
     'ElePt_loose'   : 'Loose e p_{T}',
     'ElePt_tight'   : 'Tight e p_{T}',
+    'ISRJetEta' : 'ISR Jet #eta',
+    'JetEta' : 'Jet #eta',
+    'BjetPt' : 'b jet p_{T} [GeV]',
+    '2ndJetPt_100' : '2nd jet p_{T} (>100 GeV)',
+    '2ndJetPt' : '2nd jet p_{T} (NOT >100 GeV)',
 
 }
 

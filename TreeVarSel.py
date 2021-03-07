@@ -33,13 +33,13 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
 
     def ControlRegion(self):
         if not self.PreSelection():
@@ -55,13 +55,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -135,13 +135,19 @@ class TreeVarSel():
     def getISRPt(self):
         return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
 
-    def getSSRPt(self): #jet with 2nd highest pT
-        return self.tr.Jet_pt[self.selectjetIdx(100)[1]] if len(self.selectjetIdx(100)) > 1 else 0
+    def get2ndJetPt(self, thr = JetThreshold):
+        return self.tr.Jet_pt[self.selectjetIdx(thr)[1]] if len(self.selectjetIdx(thr)) > 1 else 0
 
-    def getISREta(self):
+    def getISRJetEta(self):
         return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
 
-    def cntBtagjet(self, discOpt='CSVV2', pt=30):
+    def getJetEta(self):
+        eta = []
+        for i in range(len(self.selectjetIdx(JetThreshold))):
+            eta.append(self.tr.Jet_eta[self.selectjetIdx(JetThreshold)[i]])
+        return eta
+
+    def cntBtagjet(self, discOpt='CSVV2', pt=JetThreshold):
         return len(self.selectBjetIdx(discOpt, pt))
 
     def cntMuon(self):
@@ -171,7 +177,7 @@ class TreeVarSel():
             idx.append(od[jetpt])
         return idx
 
-    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=30):
+    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetThreshold):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
