@@ -103,6 +103,8 @@ LegendTitleDict = {
     'TTV' : 't#bar{t}X',
     'VV' : 'Diboson',
     'Data': 'Data',
+    'T2tt_500_420' : '#tilde{t}_{1} #rightarrow bff\'#tilde{#chi}_{0}^{1}(500,420)',
+    'T2tt_500_490' : '#tilde{t}_{1} #rightarrow bff\'#tilde{#chi}_{0}^{1}(500,490)',
     }
 
 vidNestedWPBitMapNamingList = [
