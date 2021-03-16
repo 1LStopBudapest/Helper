@@ -173,7 +173,8 @@ class TreeVarSel():
     def	selectEleIdx(self):
         idx = []
         for i in range(len(self.tr.Electron_pt)):
-            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
+            #if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
+            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
                 idx.append(i)              
 	return idx
 
@@ -288,7 +289,7 @@ class TreeVarSel():
                         and (iso* pt) < 5.0 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
-                        and self.eleID(Id, 1) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
+                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
@@ -296,7 +297,7 @@ class TreeVarSel():
                         and iso < 0.2 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
-                        and self.eleID(Id,1)
+                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
 
         elif lepton_selection == 'looseHybridIso':
             def func():
@@ -307,7 +308,7 @@ class TreeVarSel():
                         and (iso*pt) < 20.0 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
-                        and self.eleID(Id,1)
+                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
                 elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
@@ -315,7 +316,7 @@ class TreeVarSel():
                         and iso < 0.8 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
-                        and self.eleID(Id,1)
+                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
 
 
         else:
@@ -324,7 +325,7 @@ class TreeVarSel():
                     pt >5 \
                     and abs(eta)       < 2.5 \
                     and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                    and self.eleID(Id,1)
+                    and eleVID(Id,1)
         return func()
 
 
