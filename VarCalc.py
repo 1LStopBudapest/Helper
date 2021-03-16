@@ -1,5 +1,8 @@
 import ROOT
 from math import pi, sqrt, cos, sin, sinh, log, cosh
+import textwrap
+
+from CosmeticCode import vidNestedWPBitMapNamingList
 
 def DeltaPhi(phi1, phi2):
     dphi = phi2-phi1
@@ -70,6 +73,47 @@ string index = 14-bit
 "14 : isLastCopyBeforeFSR : s[0]
 
 """
+
+# convert int of vidNestedWPBitMap ( e.g. val = 611099940 ) to bitmap ( e.g. "100100011011001010010100100100")
+# split vidBitmap string (containing 3 bits per cut) in parts of 3 bits ( e.g. ["100","100","011","011","001","010","010","100","100","100"] )
+# convert 3 bits to int ( e.g. [4, 4, 3, 3, 1, 2, 2, 4, 4, 4])
+
+def vidNestedWPBitMapToDict( vid ):
+    idList = [ int( x, 2 ) for x in textwrap.wrap( "{0:030b}".format( vid ) , 3) ]
+    return dict( zip( vidNestedWPBitMapNamingList, idList ) )
+
+def removekey(d, key):
+    r = dict(d)
+    del r[key]
+    return r
+
+def eleVID( vid, idVal, removedCuts=[] ):
+    vidDict    = vidNestedWPBitMapToDict( vid )
+    if not removedCuts:
+        return all( [ cut >= idVal for cut in vidDict.values() ] )
+    
+    if ("pt"             in removedCuts):
+        vidDict = removekey( vidDict, "MinPtCut" )
+    if ("sieie"          in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleFull5x5SigmaIEtaIEtaCut" )
+    if ("hoe"            in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleHadronicOverEMEnergyScaledCut" )
+    if ("pfRelIso03_all" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleRelPFIsoScaledCut" )
+    if ("SCEta" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleSCEtaMultiRangeCut" )
+    if ("dEtaSeed" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleDEtaInSeedCut" )
+    if ("dPhiInCut" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleDPhiInCut" )
+    if ("EinvMinusPinv" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleEInverseMinusPInverseCut" )
+    if ("convVeto" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleConversionVetoCut" )
+    if ("lostHits" in removedCuts):
+        vidDict = removekey( vidDict, "GsfEleMissingHitsCut" )
+        
+    return all( [ cut >= idVal for cut in vidDict.values() ] )
 
 def Fill1D(h, a, w=1):
     nbin = h.GetNbinsX()

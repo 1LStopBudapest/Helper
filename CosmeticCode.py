@@ -100,6 +100,19 @@ LegendTitleDict = {
     'Data': 'Data',
     }
 
+vidNestedWPBitMapNamingList = [
+    'GsfEleMissingHitsCut',
+    'GsfEleConversionVetoCut',
+    'GsfEleRelPFIsoScaledCut',
+    'GsfEleEInverseMinusPInverseCut',
+    'GsfEleHadronicOverEMEnergyScaledCut',
+    'GsfEleFull5x5SigmaIEtaIEtaCut',
+    'GsfEleDPhiInCut',
+    'GsfEleDEtaInSeedCut',
+    'GsfEleSCEtaMultiRangeCut',
+    'MinPtCut'
+]
+
 def getXTitle(title):
     return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
 
