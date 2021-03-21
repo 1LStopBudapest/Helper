@@ -50,10 +50,17 @@ XlabelDict = {
     'ElePt_loose'   : 'Loose e p_{T}',
     'ElePt_tight'   : 'Tight e p_{T}',
     'ISRJetEta' : 'ISR Jet #eta',
-    'JetEta' : 'Jet #eta',
     'BjetPt' : 'b jet p_{T} [GeV]',
-    '2ndJetPt_100' : '2nd jet p_{T} (>100 GeV)',
-    '2ndJetPt' : '2nd jet p_{T} (NOT >100 GeV)',
+    '2ndJetPt' : '2nd jet p_{T} [GeV]',
+    '2ndJetEta' : '2nd jet #eta',
+    '3rdJetPt' : '3rd jet p_{T} [GeV]',
+    '3rdJetEta' : '3rd jet #eta',
+    'JetPt' : 'Jet p_{T} [GeV]',
+    'JetEta' : 'Jet #eta',
+    'DeltaPhi_Jets' : '#Delta#phi(1st jet, 2nd jet)',
+    'DeltaPhi_Jets60' : '#Delta#phi(1st jet, 2nd jet > 60 GeV)',
+    '1stBjetPt' : '1st b jet p_{T} [GeV]',
+    '1stBjetEta' : '1st b jet #eta',
 
 }
 

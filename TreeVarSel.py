@@ -5,7 +5,7 @@ import collections as coll
 
 from Helper.VarCalc import *
 
-JetThreshold = 30
+JetPtThreshold = 30
 
 class TreeVarSel():
     
@@ -33,13 +33,13 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
 
     def ControlRegion(self):
         if not self.PreSelection():
@@ -55,13 +55,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -81,7 +81,7 @@ class TreeVarSel():
             cut = True
         return cut
 
-    def dphicut(self, thr=JetThreshold):
+    def dphicut(self, thr=JetPtThreshold):
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
@@ -104,7 +104,7 @@ class TreeVarSel():
             cut = False
         return cut
 
-    def XtraJetVeto(self, thrJet=JetThreshold, thrExtra=60):
+    def XtraJetVeto(self, thrJet=JetPtThreshold, thrExtra=60):
         cut = True
         if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] > thrExtra:
             cut = False
@@ -125,7 +125,7 @@ class TreeVarSel():
         
     def calHT(self):
         HT = 0
-        for i in self.selectjetIdx(JetThreshold):
+        for i in self.selectjetIdx(JetPtThreshold):
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
@@ -133,21 +133,30 @@ class TreeVarSel():
         return len(self.selectjetIdx(thrsld))
         
     def getISRPt(self):
-        return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
-
-    def get2ndJetPt(self, thr = JetThreshold):
-        return self.tr.Jet_pt[self.selectjetIdx(thr)[1]] if len(self.selectjetIdx(thr)) > 1 else 0
+        return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -1
 
     def getISRJetEta(self):
-        return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
+        return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -1
+
+    def getNthJetPt(self, thr=JetPtThreshold, N=2):
+        return self.tr.Jet_pt[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -1
+
+    def getNthJetEta(self, thr=JetPtThreshold, N=2):
+        return self.tr.Jet_eta[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -1
+
+    def getJetPt(self):
+        pT = []
+        for i in range(len(self.selectjetIdx(JetPtThreshold))):
+            pT.append(self.tr.Jet_pt[self.selectjetIdx(JetPtThreshold)[i]])
+        return pT
 
     def getJetEta(self):
         eta = []
-        for i in range(len(self.selectjetIdx(JetThreshold))):
-            eta.append(self.tr.Jet_eta[self.selectjetIdx(JetThreshold)[i]])
+        for i in range(len(self.selectjetIdx(JetPtThreshold))):
+            eta.append(self.tr.Jet_eta[self.selectjetIdx(JetPtThreshold)[i]])
         return eta
 
-    def cntBtagjet(self, discOpt='CSVV2', pt=JetThreshold):
+    def cntBtagjet(self, discOpt='CSVV2', pt=JetPtThreshold):
         return len(self.selectBjetIdx(discOpt, pt))
 
     def cntMuon(self):
@@ -177,7 +186,7 @@ class TreeVarSel():
             idx.append(od[jetpt])
         return idx
 
-    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetThreshold):
+    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetPtThreshold):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
