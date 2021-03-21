@@ -119,13 +119,13 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         
         hRatio = getHistratio(hData[0], hMC, "DataMC", var)
         hRatioFrame = getHistratioframe(hRatio)
-        ROOT.gStyle.SetErrorX(0);
+        ROOT.gStyle.SetErrorX(0)
         ROOT.gStyle.SetOptStat(0)
         p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
         p1.SetBottomMargin(0)
         p1.Draw()            
         p1.cd()
-        hData[0].SetTitle('Distribution after preselection (p_T(jet) > 20 GeV)')
+        hData[0].SetTitle('Distribution after preselection (p_T(jet) > 30 GeV)')
         hData[0].Draw("PE")
         hStack_MC.Draw("histsame")
         hData[0].DrawCopy("PEsame")
