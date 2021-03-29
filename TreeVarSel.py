@@ -136,19 +136,31 @@ class TreeVarSel():
         return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -1
 
     def getISRJetEta(self):
-        return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -1
+        return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -99
 
     def getNthJetPt(self, thr=JetPtThreshold, N=2):
         return self.tr.Jet_pt[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -1
 
     def getNthJetEta(self, thr=JetPtThreshold, N=2):
-        return self.tr.Jet_eta[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -1
+        return self.tr.Jet_eta[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -99
 
     def getJetPt(self):
         pT = []
         for i in range(len(self.selectjetIdx(JetPtThreshold))):
             pT.append(self.tr.Jet_pt[self.selectjetIdx(JetPtThreshold)[i]])
         return pT
+
+    def getDeltaPhiJets(self, thr=JetPtThreshold):
+        if len(self.selectjetIdx(100)) and len(self.selectjetIdx(thr)) >= 2:
+            return DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(100)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]])
+        else:
+            return -1
+
+    def getJetPhi(self):
+        phi = []
+        for i in range(len(self.selectjetIdx(JetPtThreshold))):
+            phi.append(self.tr.Jet_phi[self.selectjetIdx(JetPtThreshold)[i]])
+        return phi
 
     def getJetEta(self):
         eta = []

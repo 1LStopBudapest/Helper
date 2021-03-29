@@ -61,6 +61,7 @@ XlabelDict = {
     'DeltaPhi_Jets60' : '#Delta#phi(1st jet, 2nd jet > 60 GeV)',
     '1stBjetPt' : '1st b jet p_{T} [GeV]',
     '1stBjetEta' : '1st b jet #eta',
+    'JetPhi' : 'Jet #phi',
 
 }
 
