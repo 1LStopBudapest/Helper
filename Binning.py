@@ -11,17 +11,18 @@ ElePt_bin = [5, 12, 20, 30]
 EachMT_div = len(LepPt_bin)-1
 EachCT_div = (len(LepPt_bin)-1) * (len(MT_bin)-1) - 1 #for last MT bin, leppT start from 5 GeV
 
+
 def findSR1BinIndex(CT, MT, LepPt, LepChrg):
     idx = -1
     pickIdx = -1
-    for i in range(len(CT_bin)-1):
-        cut1 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-        for j in range(len(MT_bin)-1):
-            cut2 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-            cutchrg = LepChrg==-1 if j != len(MT_bin)-2 else True
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j != len(MT_bin)-2 else True
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             lep = ElePt_bin if j == len(MT_bin)-2 else LepPt_bin #for last MT bin, leppT start from 5 GeV
             for k in range(len(lep)-1):
-                cut3 = LepPt>lep[k] if k == len(lep)-2 else LepPt>lep[k] and LepPt<=lep[k+1]
+                cut3 = LepPt>lep[k] and LepPt<=lep[k+1]
                 idx += 1
                 if (cut1 and cut2 and cut3 and cutchrg):
                     pickIdx = idx
@@ -38,13 +39,13 @@ def findSR1BinIndex(CT, MT, LepPt, LepChrg):
 def findSR2BinIndex(CT, MT, LepPt):
     idx = -1
     pickIdx = -1
-    for i in range(len(CT_bin)-1):
-        cut1 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-        for j in range(len(MT_bin)-1):
-            cut2 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             lep = ElePt_bin if j == len(MT_bin)-2 else LepPt_bin #for last MT bin, leppT start from 5 GeV
             for k in range(len(lep)-1):
-                cut3 = LepPt>lep[k] if k == len(lep)-2 else LepPt>lep[k] and LepPt<=lep[k+1]
+                cut3 = LepPt>lep[k] and LepPt<=lep[k+1]
                 idx += 1
                 if (cut1 and cut2 and cut3):
                     pickIdx = idx
@@ -101,11 +102,11 @@ def findBin(CT, MT, LepPt):
 def findCR1BinIndex(CT, MT, LepChrg):
     idx = -1
     pickIdx = -1
-    for i in range(len(CT_bin)-1):
-        cut1 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-        for j in range(len(MT_bin)-1):
-            cut2 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-            cutchrg = LepChrg==-1 if j != len(MT_bin)-2 else True
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j != len(MT_bin)-2 else True
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             idx += 1
             if (cut1 and cut2 and LepChrg):
                 pickIdx = idx
@@ -119,10 +120,10 @@ def findCR1BinIndex(CT, MT, LepChrg):
 def findCR2BinIndex(CT, MT):
     idx = -1
     pickIdx = -1
-    for i in range(len(CT_bin)-1):
-        cut1 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-        for j in range(len(MT_bin)-1):
-            cut2 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             idx += 1
             if (cut1 and cut2):
                 pickIdx = idx
@@ -156,21 +157,21 @@ SRBinLabelList = [
     'SR1LaX',
     'SR1MaX',
     'SR1HaX',
-    'SR1VLbX',
-    'SR1LbX',
-    'SR1MbX',
-    'SR1HbX',
-    'SR1LcX',
-    'SR1McX',
-    'SR1HcX',
     'SR1VLaY',
     'SR1LaY',
     'SR1MaY',
     'SR1HaY',
+    'SR1VLbX',
+    'SR1LbX',
+    'SR1MbX',
+    'SR1HbX',
     'SR1VLbY',
     'SR1LbY',
     'SR1MbY',
     'SR1HbY',
+    'SR1LcX',
+    'SR1McX',
+    'SR1HcX',
     'SR1LcY',
     'SR1McY',
     'SR1HcY',
@@ -178,21 +179,21 @@ SRBinLabelList = [
     'SR2LaX',
     'SR2MaX',
     'SR2HaX',
-    'SR2VLbX',
-    'SR2LbX',
-    'SR2MbX',
-    'SR2HbX',
-    'SR2LcX',
-    'SR2McX',
-    'SR2HcX',
     'SR2VLaY',
     'SR2LaY',
     'SR2MaY',
     'SR2HaY',
+    'SR2VLbX',
+    'SR2LbX',
+    'SR2MbX',
+    'SR2HbX',
     'SR2VLbY',
     'SR2LbY',
     'SR2MbY',
     'SR2HbY',
+    'SR2LcX',
+    'SR2McX',
+    'SR2HcX',
     'SR2LcY',
     'SR2McY',
     'SR2HcY'
@@ -200,16 +201,16 @@ SRBinLabelList = [
 
 CRBinLabelList = [
     'CR1aX',
-    'CR1bX',
-    'CR1cX',
     'CR1aY',
+    'CR1bX',
     'CR1bY',
+    'CR1cX',
     'CR1cY',
     'CR2aX',
-    'CR2bX',
-    'CR2cX',
     'CR2aY',
+    'CR2bX',
     'CR2bY',
+    'CR2cX',
     'CR2cY'
     ]
 
