@@ -68,11 +68,16 @@ colDict = {
 }
 
 TrigcolDict = {
-    'HLT_PFMET90_PFMHT90_IDTight' : ROOT.kYellow,
+    'HLT_PFMET90_PFMHT90_IDTight' : ROOT.kOrange,
     'HLT_PFMET100_PFMHT100_IDTight' : ROOT.kViolet,
     'HLT_PFMET110_PFMHT110_IDTight' : ROOT.kGreen,
     'HLT_PFMET120_PFMHT120_IDTight' : ROOT.kRed,
     'HLT_MET_Inclusive' : ROOT.kBlue,
+    'HLT_PFMETNoMu90_PFMHTNoMu90_IDTight' : ROOT.kOrange,
+    'HLT_PFMETNoMu100_PFMHTNoMu100_IDTight' : ROOT.kViolet,
+    'HLT_PFMETNoMu110_PFMHTNoMu110_IDTight' : ROOT.kGreen,
+    'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight' : ROOT.kRed,
+    'HLT_METNoMu_Inclusive' : ROOT.kBlue,
 
 }
 

@@ -11,7 +11,7 @@ class HistInfo( ):
         self.binning = binning
         self.histclass = histclass
         self.binopt = binopt
-        self.binArr = np.array(binning)
+        self.binArr = np.array(binning, dtype='float64')
         
     def make_hist1D(self):
         if self.binopt == 'norm':

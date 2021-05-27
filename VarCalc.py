@@ -1,5 +1,6 @@
 import ROOT
 from math import pi, sqrt, cos, sin, sinh, log, cosh
+from ROOT import TLorentzVector
 import textwrap
 
 from CosmeticCode import vidNestedWPBitMapNamingList
@@ -45,6 +46,12 @@ def CT1(met, HT):
 def CT2(met, ISRpt):
     return min(met, ISRpt-25)
 
+def AltMETCalc(MuonPt, MuonEta, MuonPhi, MuonMass, METPt, METPhi):
+    Muon = TLorentzVector()
+    MET= TLorentzVector()
+    Muon.SetPtEtaPhiM(MuonPt, MuonEta, MuonPhi, MuonMass)
+    MET.SetPtEtaPhiM(METPt, 0, METPhi, 0)
+    return MET+Muon
     
 def GenFlagString(flag):
     s = '{0:15b}'.format(flag)
