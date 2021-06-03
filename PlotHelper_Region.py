@@ -87,7 +87,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         for b in range(hMC_dby.GetNbinsX()):
             hMC_dby.SetBinContent(b+1, 0)
             hMC_dby.SetBinError(b+1, 0)
-        hMC_dby.SetTitle('Signal region (base cuts, incl. p_T(jet) > 20 GeV)')
+        hMC_dby.SetTitle('Signal region (base cuts, incl. p_T(jet) > 30 GeV)')
         mVal = hMC.GetBinContent(hMC.GetMaximumBin())
         maxRange = mVal * 100 if islogy else mVal * 1.5
         minRange = 0.01 if islogy else 0.0
