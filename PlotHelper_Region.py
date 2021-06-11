@@ -51,7 +51,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         styleData(hData[0], islogy)
         mVal = hData[0].GetBinContent(hData[0].GetMaximumBin()) if hData[0].GetBinContent(hData[0].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
         maxRange = mVal * 100 if islogy else mVal * 1.5
-        minRange = 0.1 if islogy else 0.0
+        minRange = 0.01 if islogy else 0.0
         hData[0].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
         
         hRatio = getHistratio(hData[0], hMC, "DataMC", var)
