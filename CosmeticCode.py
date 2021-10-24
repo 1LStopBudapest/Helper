@@ -49,35 +49,22 @@ XlabelDict = {
     'MuPt_tight'    : 'Tight #mu p_{T}',
     'ElePt_loose'   : 'Loose e p_{T}',
     'ElePt_tight'   : 'Tight e p_{T}',
-    'ISRJetEta' : 'ISR Jet #eta',
-    'BjetPt' : 'b jet p_{T} [GeV]',
-    '2ndJetPt' : '2nd jet p_{T} [GeV]',
-    '2ndJetEta' : '2nd jet #eta',
-    '3rdJetPt' : '3rd jet p_{T} [GeV]',
-    '3rdJetEta' : '3rd jet #eta',
-    'JetPt' : 'Jet p_{T} [GeV]',
-    'JetEta' : 'Jet #eta',
-    'DeltaPhi_Jets' : '#Delta#phi(1st jet, 2nd jet)',
-    'DeltaPhi_Jets60' : '#Delta#phi(1st jet, 2nd jet > 60 GeV)',
-    '1stBjetPt' : '1st b jet p_{T} [GeV]',
-    '1stBjetEta' : '1st b jet #eta',
-    'JetPhi' : 'Jet #phi',
 
 }
 
 colDict = {
     'Signal' : ROOT.kBlack,
-    'TTSingleLep_pow'  :  ROOT.kBlue+3,
-    'TTLep_pow' : ROOT.kYellow,
-    'ST' : 29,
-    'WJetsToLNu' : ROOT.kSpring,
+    'TTSingleLep_pow'  : ROOT.kAzure+2,
+    'TTLep_pow' : ROOT.kAzure+1,
+    'ST' : 7,
+    'WJetsToLNu' : 8,
     'ZJetsToNuNu' : ROOT.kOrange-3,
-    'DYJetsToLL' : ROOT.kViolet-4,
+    'DYJetsToLL' : ROOT.kMagenta-6,
     'QCD' : ROOT.kMagenta+3,
-    'TTV' : ROOT.kCyan-9,
-    'VV' : ROOT.kGreen+3,
+    'TTV' : ROOT.kAzure-7,
+    'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
-
+    'TTbar' : ROOT.kCyan-5,
 }
 
 TrigcolDict = {
@@ -111,8 +98,7 @@ LegendTitleDict = {
     'TTV' : 't#bar{t}X',
     'VV' : 'Diboson',
     'Data': 'Data',
-    'T2tt_500_420' : '#tilde{t}_{1} #rightarrow bff\'#tilde{#chi}_{0}^{1}(500,420)',
-    'T2tt_500_490' : '#tilde{t}_{1} #rightarrow bff\'#tilde{#chi}_{0}^{1}(500,490)',
+    'TTbar' : 't#bar{t}',
     }
 
 vidNestedWPBitMapNamingList = [

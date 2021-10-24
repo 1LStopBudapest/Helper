@@ -61,7 +61,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         p1.SetBottomMargin(0)
         p1.Draw()            
         p1.cd()
-        hData[0].SetTitle('Control region (base cuts, incl. p_T(jet) > 30 GeV)')
+        hData[0].SetTitle('Control region (base cuts, incl. p_T(jet) > 20 GeV)')
         hData[0].Draw("PE")
         hStack_MC.Draw("histsame")
         hData[0].DrawCopy("PEsame")
@@ -87,7 +87,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         for b in range(hMC_dby.GetNbinsX()):
             hMC_dby.SetBinContent(b+1, 0)
             hMC_dby.SetBinError(b+1, 0)
-        hMC_dby.SetTitle('Signal region (base cuts, incl. p_T(jet) > 30 GeV)')
+        hMC_dby.SetTitle('Signal region (base cuts, incl. p_T(jet) > 20 GeV)')
         mVal = hMC.GetBinContent(hMC.GetMaximumBin())
         maxRange = mVal * 100 if islogy else mVal * 1.5
         minRange = 0.01 if islogy else 0.0
