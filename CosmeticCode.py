@@ -49,7 +49,16 @@ XlabelDict = {
     'MuPt_tight'    : 'Tight #mu p_{T}',
     'ElePt_loose'   : 'Loose e p_{T}',
     'ElePt_tight'   : 'Tight e p_{T}',
-
+    'Ntracks' : 'N_{tracks}',
+    'nSV' : 'N_{SV}',
+    'Ntracks' : 'N_{tracks}',
+    'SVdxy' : 'SV_{dxy} [cm]',
+    'SVdxySig' : 'S_{2D}',
+    'SVmass' : 'SV_{mass} [GeV]',
+    'SVdlenSig' : 'S_{3D}',
+    'SVpAngle' : 'cos(PV-SV, SVp)',
+    'SVpT' : 'p_{T}(SV) [Gev]',
+    'SVdR' : '#Delta R(SV, jet)'
 }
 
 colDict = {
