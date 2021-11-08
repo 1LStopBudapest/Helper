@@ -10,27 +10,30 @@ class IVFhelper():
         self.yr = yr
         self.isData = isData
 
+        self.ivfList = self.IVFSelection()
+        self.hadronicList = self.HadronicSelection()
+        self.cut_indices = list(set(self.ivfList).intersection(self.hadronicList))
+        #self.cut_indices = list(range(self.tr.nSV))
+
     #IVF selection
     def IVFSelection(self):
-        sel = False
+        indexlist = []
         for i in range(self.tr.nSV):
-            sel = self.NtracksCut(i) and self.SVdxyCut(i) and self.S2Dcut(i) and self.SVmassCut(i)
-            if sel:
-                break
-        return sel
+            if self.NtracksCut(i) and self.SVdxyCut(i) and self.S2Dcut(i) and self.SVmassCut(i):
+                indexlist.append(i)
+        return indexlist
 
     #Selection in Hadronic Stop AN (On top of IVF selection)
     def HadronicSelection(self):
-        sel = False
+        indexlist = []
         for i in range(self.tr.nSV):
-            sel = self.S3Dcut(i) and self. angleCut(i) and self.ptCut(i) and self.deltaRcut(i)
-            if sel:
-                break
-        return sel
+            if self.S3Dcut(i) and self. angleCut(i) and self.ptCut(i) and self.deltaRcut(i):
+                indexlist.append(i)
+        return indexlist
 
     #cuts
     def NtracksCut(self, i): 
-        return self.tr.SV_ntracks[i] >= 3
+        return bytearray(self.tr.SV_ntracks[i])[0] >= 3
 
     def SVdxyCut(self, i):
         return self.tr.SV_dxy[i] < 2.5
@@ -60,59 +63,52 @@ class IVFhelper():
     #plotting
     def getNtracks(self):
         Nt = []
-        for i in range(self.tr.nSV):        
-            if self.NtracksCut(i):
-                ntracks = bytearray(self.tr.SV_ntracks[i])[0]
-                Nt.append(ntracks)
+        for i in self.cut_indices:
+            ntracks = bytearray(self.tr.SV_ntracks[i])[0]
+            Nt.append(ntracks)
         return Nt
 
     def getSVdxy(self):
         dxy = []
-        for i in range(self.tr.nSV):        
-            if self.SVdxyCut(i):
-                dxy.append(self.tr.SV_dxy[i])
+        for i in self.cut_indices:
+            dxy.append(self.tr.SV_dxy[i])
         return dxy
 
     def getS2D(self):
         dxySig = []
-        for i in range(self.tr.nSV):        
-            if self.S2Dcut(i):
-                dxySig.append(self.tr.SV_dxySig[i])
+        for i in self.cut_indices:
+            dxySig.append(self.tr.SV_dxySig[i])
         return dxySig
 
     def getSVmass(self):
         mass = []
-        for i in range(self.tr.nSV):        
-            if self.SVmassCut(i):
-                mass.append(self.tr.SV_mass[i])
+        for i in self.cut_indices:
+            mass.append(self.tr.SV_mass[i])
         return mass
 
     def getS3D(self):
         dlenSig = []
-        for i in range(self.tr.nSV):        
-            if self.S3Dcut(i):
-                dlenSig.append(self.tr.SV_dlenSig[i])
+        for i in self.cut_indices:
+            dlenSig.append(self.tr.SV_dlenSig[i])
         return dlenSig
 
 
     def getSVangle(self):
         angle = []
-        for i in range(self.tr.nSV):        
-            if self.angleCut(i):
-                angle.append(self.tr.SV_pAngle[i])
+        for i in self.cut_indices:
+            angle.append(self.tr.SV_pAngle[i])
         return angle
 
 
     def getSVpT(self):
         pT = []
-        for i in range(self.tr.nSV):        
-            if self.ptCut(i):
-                pT.append(self.tr.SV_pt[i])
+        for i in self.cut_indices:
+            pT.append(self.tr.SV_pt[i])
         return pT
 
     def getSVdR(self):
         dR = []
-        for i in range(self.tr.nSV):        
-            if self.SVdxyCut(i) and self.tr.nJet > 0:
+        for i in self.cut_indices:        
+            if self.tr.nJet > 0:
                 dR.append(DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[0], self.tr.Jet_phi[0]))
         return dR
