@@ -92,8 +92,8 @@ RatioTitleDict = {
 }
 
 RatioLegendDict = {
-'fastfull' : ['FastSim', 'FullSim']
-
+    'fastfull' : ['FastSim', 'FullSim'],
+    'IVF' : ['Before IVF cut', 'After IVF cut']
 }
 
 LegendTitleDict = {
@@ -137,6 +137,8 @@ def getRatioTitle(comp):
 def getRatioLegendTitle(h1, h2, comp):
     if 'fastfull' in comp:
         return RatioLegendDict['fastfull']
+    elif 'IVF' in comp:
+        return RatioLegendDict['IVF']
     else:
         return [h1.GetName().strip(h1.GetTitle()+"_"), h2.GetName().strip(h2.GetTitle()+"_")]
 
