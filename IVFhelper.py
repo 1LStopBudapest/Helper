@@ -2,6 +2,7 @@ import ROOT
 import math
 import os, sys
 from Helper.VarCalc import *
+from Helper.TreeVarSel import TreeVarSel
 
 class IVFhelper():
     
@@ -9,6 +10,7 @@ class IVFhelper():
         self.tr = tr
         self.yr = yr
         self.isData = isData
+        self.getsel = TreeVarSel(tr, isData, yr)
 
         self.ivfList = self.IVFSelection()
         self.hadronicList = self.HadronicSelection()
@@ -54,10 +56,11 @@ class IVFhelper():
         return self.tr.SV_pt[i] < 20.0 #GeV      
 
     def deltaRcut(self, i):
-        if self.tr.nJet > 0:
-            dR = DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[0], self.tr.Jet_phi[0])
-            #is comparison with jet[0] ok?
-        return dR > 0.4
+        ret = True
+        for j in self.getsel.selectjetIdx(20):
+            if DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[j], self.tr.Jet_phi[j]) <= 0.4:
+                ret = False
+        return ret
 
 
     #plotting
