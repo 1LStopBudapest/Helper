@@ -2,11 +2,22 @@ import ROOT
 
 from CosmeticCode import *
 
-def style1D(h, islogy, Ytitle="Number of Events"):
+def style1D(h, islogy, Ytitle="auto-format", Xtitle = "auto-format"):
     hname = h.GetName()
     htitle = h.GetTitle()
     samplename = hname.replace(htitle+"_", "")
-    Xtitle = getXTitle(htitle)
+    if(Xtitle == "auto-format"):
+        auto_xt = h.GetXaxis().GetTitle()
+        if(auto_xt == ""):
+            Xtitle = getXTitle(htitle)
+        else:
+            Xtitle = auto_xt
+    if(Ytitle == "auto-format"):
+        auto_yt = h.GetYaxis().GetTitle()
+        if(auto_yt == ""):
+            Ytitle = "Number of Events"
+        else:
+            Ytitle = auto_yt
     maxRange = h.GetBinContent(h.GetMaximumBin())
     minRange = 0.0001 if islogy else 0.0
     h.SetTitle("")
@@ -22,6 +33,7 @@ def style1D(h, islogy, Ytitle="Number of Events"):
     h.SetLineColor(getColor(samplename))
     h.SetLineWidth(2)
     h.SetStats(0)
+
 
 def styleData(h, islogy, Ytitle="Events"):
     h.SetTitle("")
