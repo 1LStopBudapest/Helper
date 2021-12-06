@@ -5,7 +5,7 @@ import math
 
 from Style import *
 
-def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800):
+def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
@@ -16,7 +16,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800):
     leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
     leg.AddEntry(h, sname ,"l")
 
-    style1D(h, islogy)
+    style1D(h, islogy, Ytitle, Xtitle)
     
     c = ROOT.TCanvas('c', '', canvasX, canvasY)
     c.cd()
