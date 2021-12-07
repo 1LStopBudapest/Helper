@@ -160,7 +160,7 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         for j in range (Nbins):
             num = signal_pass[i].GetBinContent(j+1)
             den = signal_total[i].GetBinContent(j+1) 
-            if(den == 0):
+            if(den == 0 or num == 0):
                 continue
             eff = num / den 
             if(eff > 1):
