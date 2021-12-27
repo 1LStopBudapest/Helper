@@ -114,7 +114,8 @@ vidNestedWPBitMapNamingList = [
 ]
 
 def getXTitle(title):
-    return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
+    #return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
+    return XlabelDict[title] if title in XlabelDict.keys() else title
 
 def getColor(sample):
     if "Stop" in sample:
