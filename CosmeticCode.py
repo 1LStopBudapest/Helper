@@ -73,7 +73,9 @@ colDict = {
     'TTV' : ROOT.kAzure-7,
     'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
-
+    'UL17V9_Full99mm' : ROOT.kAzure+2, 
+    'TTToSemiLeptonic' : 8, 
+    'TTTo2L2Nu' : ROOT.kOrange,
 }
 
 TrigcolDict = {
@@ -107,6 +109,9 @@ LegendTitleDict = {
     'TTV' : 't#bar{t}X',
     'VV' : 'Diboson',
     'Data': 'Data',
+    'UL17V9_Full99mm' : 'UL17V9_Full99mm', 
+    'TTToSemiLeptonic' : 'TTToSemiLeptonic', 
+    'TTTo2L2Nu' : 'TTTo2L2Nu',
     }
 
 vidNestedWPBitMapNamingList = [

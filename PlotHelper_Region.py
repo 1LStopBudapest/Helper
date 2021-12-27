@@ -4,7 +4,7 @@ import os, sys
 from Style import *
 
             
-def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=1400, canvasY=800):
+def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
     outputdirpath = os.path.join(dir, "RegionPlots", cut)
     if not os.path.exists(outputdirpath):
         if os.path.exists(os.path.join(dir,"RegionPlots")):
@@ -21,7 +21,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hsig=[]
     sigleg=[]
     hData=[]
-    leg = ROOT.TLegend(0.5, 0.7, 0.9, 0.9)
+    leg = ROOT.TLegend(0.3, 0.8, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs, 0):
         if 'T2tt' in samplelist[i]:
@@ -49,7 +49,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         styleData(hData[0], islogy)
         mVal = hData[0].GetBinContent(hData[0].GetMaximumBin()) if hData[0].GetBinContent(hData[0].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
         maxRange = mVal * 100 if islogy else mVal * 1.5
-        minRange = 0.01 if islogy else 0.0
+        minRange = 0.1 if islogy else 0.0
         hData[0].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
         
         hRatio = getHistratio(hData[0], hMC, "DataMC", var)
@@ -84,8 +84,9 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
             hMC_dby.SetBinError(b+1, 0)
         hMC_dby.SetTitle('')
         mVal = hMC.GetBinContent(hMC.GetMaximumBin())
+        styleData(hMC_dby, islogy, var)
         maxRange = mVal * 100 if islogy else mVal * 1.5
-        minRange = 0.01 if islogy else 0.0
+        minRange = 0.1 if islogy else 0.0
         hMC_dby.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
         hMC_dby.Draw()
         hStack_MC.Draw("histsame")

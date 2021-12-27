@@ -112,7 +112,8 @@ class TreeVarSel():
 
     def tauVeto(self):
         cut = True
-        if self.tr.nGoodTaus >= 1: #only applicable to postprocessed sample where lepton(e,mu)-cleaned (dR<0.4) tau collection is stored, https://github.com/HephyAnalysisSW/StopsCompressed/blob/master/Tools/python/objectSelection.py#L303-L316
+        #if self.tr.nGoodTaus >= 1: #only applicable to postprocessed sample where lepton(e,mu)-cleaned (dR<0.4) tau collection is stored, https://github.com/HephyAnalysisSW/StopsCompressed/blob/master/Tools/python/objectSelection.py#L303-L316
+        if len(self.getGoodTaus()) >= 1:
             cut = False 
         return cut
             
@@ -402,3 +403,33 @@ class TreeVarSel():
 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)
+
+
+    # good taus in IVF
+    def getGoodTaus(self):
+        taus = sortedlist(self.getTauVar(self.selectTauIdx()))
+        leptons = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        res  =  []
+        for tau in taus:
+            clean = True
+            for lepton in leptons:
+                if DeltaPhi(lepton['phi'], tau['phi'])**2 + (lepton['eta'] - tau['eta'])**2 < 0.4:
+                    clean = False
+                    break
+            if clean:
+                res.append(tau)
+        return res
+
+    def getTauVar(self, tauId):
+        Llist = []
+        for id in tauId:
+            Llist.append({'pt':self.tr.Tau_pt[id], 'eta':self.tr.Tau_eta[id], 'phi':self.tr.Tau_phi[id], 'dxy':self.tr.Tau_dxy[id], 'dz': self.tr.Tau_dz[id], 'charg':self.tr.Tau_charge[id]})
+        return Llist
+
+    def selectTauIdx(self):
+        idx = []
+        for i in range(self.tr.nTau):
+            if (self.tr.Tau_pt[i] >= 20 and abs(self.tr.Tau_eta[i]) < 2.3): # and ord(self.tr.Tau_idMVAnewDM2017v2) >=2 ???
+                idx.append(i) 
+        return idx
+

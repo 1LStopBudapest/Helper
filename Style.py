@@ -24,7 +24,7 @@ def style1D(h, islogy, Ytitle="Number of Events"):
     h.SetStats(0)
 
 def styleData(h, islogy, Ytitle="Events"):
-    h.SetTitle("")
+    h.SetTitle("After IVF cut")
     h.GetYaxis().SetTitle(Ytitle)
     h.GetYaxis().SetTitleSize(0.035)
     h.GetYaxis().SetTitleOffset(1.2)

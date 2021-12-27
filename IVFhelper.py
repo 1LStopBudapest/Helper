@@ -56,10 +56,12 @@ class IVFhelper():
         return self.tr.SV_pt[i] < 20.0 #GeV      
 
     def deltaRcut(self, i):
-        ret = True
+        ret = False
+        closest = 3.14
         for j in self.getsel.selectjetIdx(20):
-            if DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[j], self.tr.Jet_phi[j]) <= 0.4:
-                ret = False
+            closest = min(DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[j], self.tr.Jet_phi[j]), closest)
+        if closest > 0.4:
+            ret = True
         return ret
 
 
@@ -110,8 +112,8 @@ class IVFhelper():
         return pT
 
     def getSVdR(self):
-        dR = []
-        for i in self.cut_indices:        
-            if self.tr.nJet > 0:
-                dR.append(DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[0], self.tr.Jet_phi[0]))
+        dR = 3.14   
+        for i in self.cut_indices:    
+            for j in self.getsel.selectjetIdx(20):
+                dR = min(DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[j], self.tr.Jet_phi[j]), dR)
         return dR
