@@ -80,22 +80,34 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hs=[]
     for i, f in enumerate(files,0):
         hs.append(f.Get(var+'_'+samplelist[i]))
-
+        
+    hs_MC = hs[:-1]#assuming last one is from data
+    if 'Area' in scaleOption or 'Unit' in scaleOption:
+        MCtot = 0.0
+        for h in hs_MC:
+            MCtot = MCtot + h.Integral()
+        scale = hs[-1].Integral()/MCtot
+        for h in hs_MC:
+            h.Scale(scale)
+                
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
-    hMC = hs[0].Clone("TotalMC")
+    hMC = hs_MC[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.6, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
-    for i, h in enumerate(hs, 0):
-        if i!=len(hs)-1:
-            hStack_MC.Add(h)
-            h.SetFillColor(getColor(samplelist[i]))
-            h.SetLineColor(getColor(samplelist[i]))
-            leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
-            if i!=0:
-                hMC.Add(h)
+    for i, h in enumerate(hs_MC, 0):
+        hStack_MC.Add(h)
+        h.SetFillColor(getColor(samplelist[i]))
+        h.SetLineColor(getColor(samplelist[i]))
+        leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+        if i!=0:
+            hMC.Add(h)
                 
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
     styleData(hs[-1], islogy)
+    
+    print 'total MC: ', hMC.Integral(), '  data: ', hs[-1].Integral()
+        
+
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
     #minRange = 0.0001 if islogy else 0.0
