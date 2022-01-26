@@ -45,10 +45,10 @@ XlabelDict = {
     'Elept'   : 'p_{T}(e)',
     'LepPt_loose'   : 'p_{T}(loose l) [GeV]',
     'LepPt_tight'   : 'p_{T}(tight l) [GeV]',
-    'MuPt_loose'    : 'Loose #mu p_{T}',
-    'MuPt_tight'    : 'Tight #mu p_{T}',
-    'ElePt_loose'   : 'Loose e p_{T}',
-    'ElePt_tight'   : 'Tight e p_{T}',
+    'MuPt_loose'    : 'Loose #mu p_{T} [GeV]',
+    'MuPt_tight'    : 'Tight #mu p_{T} [GeV]',
+    'ElePt_loose'   : 'Loose e p_{T} [GeV]',
+    'ElePt_tight'   : 'Tight e p_{T} [GeV]',
 
 }
 
@@ -92,12 +92,15 @@ LegendTitleDict = {
     'TTLep_pow' : 't#bar{t}_2l',
     'ST' : 'Single Top',
     'WJetsToLNu' : 'W + Jets',
+    'WJetsToLNu_comb' : 'W + Jets',
     'ZJetsToNuNu' : 'Z(#nu#nu) + Jets',
     'DYJetsToLL' : 'DY + Jets',
     'QCD' : 'QCD', 
     'TTV' : 't#bar{t}X',
     'VV' : 'Diboson',
     'Data': 'Data',
+    'DoubleMuon_Data': 'Data(Double#mu)',
+    'SingleMuon_Data': 'Data(Single#mu)',
     }
 
 vidNestedWPBitMapNamingList = [
