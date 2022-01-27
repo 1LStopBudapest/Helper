@@ -104,7 +104,9 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
                 
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
     styleData(hs[-1], islogy)
-    
+
+    for h in hs_MC:
+        print h.GetTitle(),' : ',h.Integral()
     print 'total MC: ', hMC.Integral(), '  data: ', hs[-1].Integral()
         
 
