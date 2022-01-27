@@ -105,11 +105,6 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
     styleData(hs[-1], islogy)
 
-    for h in hs_MC:
-        print h.GetTitle(),' : ',h.Integral()
-    print 'total MC: ', hMC.Integral(), '  data: ', hs[-1].Integral()
-        
-
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
     #minRange = 0.0001 if islogy else 0.0
