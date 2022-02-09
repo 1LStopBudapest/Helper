@@ -279,7 +279,13 @@ class TreeVarSel():
         return func()
 
 
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016):
+    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016, isolationType='standard'):
+        if(isolationType == 'mini'):
+            # below 50 GeV, 0.2 cone size
+            # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
+            if(pt < 50):
+                iso *= 0.42942652
+
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >5:
