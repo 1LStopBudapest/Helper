@@ -280,11 +280,12 @@ class TreeVarSel():
 
 
     def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016, isolationType='standard'):
+        isolationWeight = 1.0
         if(isolationType == 'mini'):
             # below 50 GeV, 0.2 cone size
             # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
             if(pt < 50):
-                iso *= 0.42942652
+                isolationWeight = 0.42942652
 
         if lepton_selection == 'HybridIso':
             def func():
@@ -292,7 +293,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso* pt) < 5.0 \
+                        and (iso* pt) < 5.0 * isolationWeight \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
@@ -300,7 +301,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.2 \
+                        and iso < 0.2 * isolationWeight \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
@@ -311,7 +312,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso*pt) < 20.0 \
+                        and (iso*pt) < 20.0 * isolationWeight \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
@@ -319,7 +320,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.8 \
+                        and iso < 0.8 * isolationWeight \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
