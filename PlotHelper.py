@@ -140,7 +140,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
 
 
 # ROC plotting
-def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path, name, samplename, BKsamplename, xmin = 0, ymin = 0, xmax = 1, ymax = 1, title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True):
+def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
     # signal_pass, signal_total: nominator and denominator TH1F's, from which signal eff is calculated
     # bk_pass, bk_total: same for BK rejection
     # colors: array of colors for each point on ROC
@@ -187,8 +187,11 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         devi = 0
         for j in range(len(bineffs)):
             devi += (bineffs[j] - aveff)**2
-        devi /= len(bineffs)*(len(bineffs)-1)
-        devi = math.sqrt(devi)
+        if(len(bineffs) > 1):
+            devi /= len(bineffs)*(len(bineffs)-1)
+            devi = math.sqrt(devi)
+        else:
+            devi = 0
 
         effs.append(aveff)
         Deffs.append(devi)
@@ -222,8 +225,11 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         devi = 0
         for j in range(len(bineffs)):
             devi += (bineffs[j] - aveff)**2
-        devi /= len(bineffs)*(len(bineffs)-1)
-        devi = math.sqrt(devi)
+        if(len(bineffs) > 1):
+            devi /= len(bineffs)*(len(bineffs)-1)
+            devi = math.sqrt(devi)
+        else:
+            devi = 0
 
         rejs.append(aveff)
         Drejs.append(devi)
@@ -236,12 +242,39 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
             title = "#splitline{ROC for signal: "+samplename+"}{BK: "+BKsamplename+"}"
 
     roc = {}
+    absolute_min_x = 1
+    absolute_max_x = 0
+    absolute_min_y = 1
+    absolute_max_y = 0
     for i in range(len(effs)):
         x = [effs[i]]
         y = [rejs[i]]
-        Dx = [Deffs[i]]
-        Dy = [Drejs[i]]
-        roc[i] = ROOT.TGraphAsymmErrors(1,np.array(x),np.array(y),np.array(Dx),np.array(Dx),np.array(Dy),np.array(Dy))
+        Dx_high = [Deffs[i]]
+        Dx_low = [Deffs[i]]
+        Dy_high = [Drejs[i]]
+        Dy_low = [Drejs[i]]
+
+        for j in range(len(x)):
+            if(x[j] + Dx_high[j] > 1):
+                Dx_high[j] = 1 - x[j]
+            if(x[j] - Dx_low[j] < 0):
+                Dx_low[j] = x[j]
+            if(y[j] + Dy_high[j] > 1):
+                Dy_high[j] = 1 - y[j]
+            if(y[j] - Dy_low[j] < 0):
+                Dy_low[j] = y[j]
+
+            if x[j] - Dx_low[j] < absolute_min_x:
+                absolute_min_x = x[j] - Dx_low[j]
+            if x[j] + Dx_high[j] > absolute_max_x:
+                absolute_max_x = x[j] + Dx_high[j]
+            if y[j] - Dy_low[j] < absolute_min_y:
+                absolute_min_y = y[j] - Dy_low[j]
+            if y[j] + Dy_high[j] > absolute_max_y:
+                absolute_max_y = y[j] + Dy_high[j]
+            
+
+        roc[i] = ROOT.TGraphAsymmErrors(1,np.array(x),np.array(y),np.array(Dx_low),np.array(Dx_high),np.array(Dy_low),np.array(Dy_high))
     
         roc[i].SetLineColor(colors[i])
         roc[i].SetLineWidth(2)
@@ -250,9 +283,32 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         roc[i].SetMarkerColor(colors[i])
         roc[i].SetTitle(title)
 
-    leg = ROOT.TLegend(0.5, 0.1, 0.9, 0.3)
+
+    legxl = 0.5
+    legxu = 0.9
+    legyl = 0.1
+    legyu = 0.3 * legendscale
+    if(legendpos == "bl"):
+        legxl = 0.1
+        legxu = 0.5
+
+
+
+    leg = ROOT.TLegend(legxl, legyl, legxu, legyu)
     for i in range(len(roc)):    
         leg.AddEntry(roc[i], legTitle[i] ,"p")
+
+
+    valuerange_x = absolute_max_x - absolute_min_x
+    valuerange_y = absolute_max_y - absolute_min_y
+    if(xmin == "auto"):
+        xmin = absolute_min_x - valuerange_x * 0.05
+    if(xmax == "auto"):
+        xmax = absolute_max_x + valuerange_x * 0.05
+    if(ymin == "auto"):
+        ymin = absolute_min_y - valuerange_y * 0.05
+    if(ymax == "auto"):
+        ymax = absolute_max_y + valuerange_y * 0.05
 
     c = ROOT.TCanvas('c', 'Title', 600, 800)
 
@@ -283,7 +339,9 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
 
     for i in range(len(roc)):
         roc[i].Draw("P,SAME")
-    leg.Draw("SAME")
+
+    if(legendpos != "no"):
+        leg.Draw("SAME")
 
 
     if(name == ""):
