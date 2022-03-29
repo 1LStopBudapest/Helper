@@ -132,7 +132,6 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
 
 # ROC plotting
 def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
-    print 'PlotHelper.plotROC is deprecated. Use PlotHelper.plotROCLines instead with line_info = [].'
     plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], colors, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale)
 
 
@@ -141,11 +140,12 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
 
     # todo check if enough colors
     if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total)):
-        print 'Error in plotROC: arrays are incompatible'
+        print 'Error in plotROCLines: arrays are incompatible'
         return -1
     
-
-
+    if(len(colors) < len(line_info) + (len(signal_pass) - sum(line_info))):
+        print 'Error in plotROCLines: not enough colors specified'
+    
 
     effs = []
     Deffs_low = []
@@ -342,4 +342,3 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
     return 0
 
 
-    
