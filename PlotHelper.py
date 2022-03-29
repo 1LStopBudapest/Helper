@@ -152,6 +152,7 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
     
     if(len(colors) < len(line_info) + (len(signal_pass) - sum(line_info))):
         print 'Error in plotROCLines: not enough colors specified'
+        return -1
     
 
     effs = []
