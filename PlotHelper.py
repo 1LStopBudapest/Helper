@@ -146,8 +146,6 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
 
     
 def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
-
-    # todo check if enough colors
     if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total)):
         print 'Error in plotROCLines: arrays are incompatible'
         return -1
@@ -349,4 +347,5 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
     c.SaveAs(path+"/"+name+".png")
     c.Close()
     return 0
+
 
