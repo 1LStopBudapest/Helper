@@ -2,13 +2,16 @@ import ROOT
 import math
 import os, sys
 
+sys.path.append('../')
+from Sample.Dir import Xfiles
+
 class MCWeight():
 
     def __init__(self, tr, yr, sample):
         self.tr = tr
         self.yr = yr
         self.sample = sample
-        
+        self.EWKnorfile = os.path.join(Xfiles, 'EWKNormFactor.txt')       
         self.isSignal = True if ('Stop' in self.sample or 'T2tt' in self.sample) else False
 
     def getPUWeight(self):
@@ -29,11 +32,17 @@ class MCWeight():
     def getWpTWeight(self):
         return self.tr.reweightwPt if hasattr(self.tr, 'reweightwPt') else 1.0
 
-    def getGenFilterEff(self):
-        if self.isSignal:
-            return 0.3 #a constant value, will be modified very soon
-        else:
-            return 1.0
+    def getL1PrefireWeight(self):
+        return self.tr.reweightL1Prefire if hasattr(self.tr, 'reweightL1Prefire') else 1.0
+
+
     
     def getTotalWeight(self):
-        return self.getPUWeight() * self.getLeptonSF() * self.getBTagSF() * self.getISRWeight() * self.getWpTWeight() * self.getGenFilterEff()
+        return self.getPUWeight() * self.getLeptonSF() * self.getBTagSF() * self.getISRWeight() * self.getWpTWeight() * self.getL1PrefireWeight()
+        #return self.getLeptonSF() * self.getBTagSF() * self.getISRWeight() * self.getWpTWeight() * self.getL1PrefireWeight()
+
+
+    def getEWKNorm(self):
+        f = open(self.EWKnorfile, 'r')
+        s = f.read()#just one value
+        return s

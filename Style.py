@@ -6,6 +6,7 @@ def style1D(h, islogy, Ytitle="auto-format", Xtitle = "auto-format"):
     hname = h.GetName()
     htitle = h.GetTitle()
     samplename = hname.replace(htitle+"_", "")
+
     if(Xtitle == "auto-format"):
         auto_xt = h.GetXaxis().GetTitle()
         if(auto_xt == ""):
@@ -79,18 +80,21 @@ def getHistratio(h1, h2, comparetype, title):
     hRatio.GetXaxis().SetLabelSize(0.07)
     return hRatio
 
-def getRatioHist(hnum, hden, comparetype, title, ymax):
-    hRatio = hnum.Clone("Ratio")
+def getRatioHist(hnum, hden, name, comparetype, Xtitle, ymax, title=''):
+    hRatio = hnum.Clone(name)
     hRatio.Divide(hden)
     hRatio.GetYaxis().SetTitle(getRatioTitle(comparetype))
     hRatio.GetYaxis().SetRangeUser(0, ymax)
-    hRatio.SetTitle("")
     hRatio.SetStats(0)
     hRatio.SetLineColor(ROOT.kBlack)
+    if not title:
+        hRatio.SetTitle(comparetype)
+    else:
+        hRatio.SetTitle(title)
     hRatio.GetYaxis().SetTitleSize(0.06)
     hRatio.GetYaxis().SetTitleOffset(0.6)
     hRatio.GetYaxis().SetLabelSize(0.04)
-    xtitle = getXTitle(title)
+    xtitle = getXTitle(Xtitle)
     hRatio.GetXaxis().SetTitle(xtitle)
     hRatio.GetXaxis().SetTitleSize(0.06)
     hRatio.GetXaxis().SetTitleOffset(0.7)
