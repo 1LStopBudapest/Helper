@@ -340,5 +340,3 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
     c.SaveAs(path+"/"+name+".png")
     c.Close()
     return 0
-
-
