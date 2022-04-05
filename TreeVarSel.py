@@ -22,7 +22,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-            if len(lepvar) >= 1 and lepvar[0]['pt']<=30:
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=30 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -31,13 +31,13 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
 
     def ControlRegion(self):
         if not self.PreSelection():
@@ -53,13 +53,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=30)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -79,7 +79,7 @@ class TreeVarSel():
             cut = True
         return cut
 
-    def dphicut(self, thr=30):
+    def dphicut(self, thr=20):
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
@@ -102,7 +102,7 @@ class TreeVarSel():
             cut = False
         return cut
 
-    def XtraJetVeto(self, thrJet=30, thrExtra=60):
+    def XtraJetVeto(self, thrJet=20, thrExtra=60):
         cut = True
         if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] > thrExtra:
             cut = False
@@ -123,7 +123,7 @@ class TreeVarSel():
         
     def calHT(self):
         HT = 0
-        for i in self.selectjetIdx(30):
+        for i in self.selectjetIdx(20):
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
@@ -133,7 +133,7 @@ class TreeVarSel():
     def getISRPt(self):
         return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
     
-    def cntBtagjet(self, discOpt='CSVV2', pt=30):
+    def cntBtagjet(self, discOpt='DeepCSV', pt=20):
         return len(self.selectBjetIdx(discOpt, pt))
 
     def cntMuon(self):
@@ -163,7 +163,7 @@ class TreeVarSel():
             idx.append(od[jetpt])
         return idx
 
-    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=30):
+    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
