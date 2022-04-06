@@ -9,7 +9,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"1DPlots/final",sname)
+    outputdirpath = os.path.join(dir,"1DPlots/truce",sname)
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
