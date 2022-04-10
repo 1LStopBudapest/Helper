@@ -17,11 +17,18 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     leg.AddEntry(h, sname ,"l")
 
     style1D(h, islogy, Ytitle, Xtitle)
-    
+
+    ROOT.gStyle.SetOptStat("mM")
+    ROOT.gStyle.SetStatX(0.8)
+    ROOT.gStyle.SetStatY(0.8)
+    ROOT.gStyle.SetStatW(0.4)
+    ROOT.gStyle.SetStatH(0.1)
     c = ROOT.TCanvas('c', '', canvasX, canvasY)
     c.cd()
     h.Draw(drawOption)
-    leg.Draw("SAME")
+    ROOT.gPad.Update()
+    #ROOT.TPaveStats st = h.FindObject("stats");
+    leg.Draw("SAMES")
     if islogy:ROOT.gPad.SetLogy()
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()

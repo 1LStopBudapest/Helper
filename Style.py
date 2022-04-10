@@ -19,7 +19,7 @@ def style1D(h, islogy, Ytitle="auto-format", Xtitle = "auto-format"):
         else:
             Ytitle = auto_yt
     maxRange = h.GetBinContent(h.GetMaximumBin())
-    minRange = 0.0001 if islogy else 0.0
+    minRange = 0.1 if islogy else 0.0
     h.SetTitle("")
     h.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     h.GetYaxis().SetTitle(Ytitle)
@@ -32,7 +32,7 @@ def style1D(h, islogy, Ytitle="auto-format", Xtitle = "auto-format"):
     h.GetXaxis().SetLabelSize(0.04)
     h.SetLineColor(getColor(samplename))
     h.SetLineWidth(2)
-    h.SetStats(0)
+    h.SetStats(1)
 
 
 def styleData(h, islogy, Ytitle="Events"):

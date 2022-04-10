@@ -80,6 +80,12 @@ XlabelDict = {
     'gLSP_gStop_3D' : 'd_{xyz}(genLSP,genStop) [cm]', 
     'PV_gVtx_3D' : 'd_{xyz}(PV,genVtx) [cm]', 
     'PV_gLSP_3D' : 'd_{xyz}(PV,genLSP) [cm]',
+    'gVtx_gLSP_dx' : 'd_{x}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_dy' : 'd_{y}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_dz' : 'd_{z}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_2D' : 'd_{xy}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_3D' : 'd_{xyz}(genVtx,genLSP) [cm]',
+
 }
 
 colDict = {
