@@ -136,6 +136,9 @@ class TreeVarSel():
     def cntBtagjet(self, discOpt='DeepCSV', pt=20):
         return len(self.selectBjetIdx(discOpt, pt))
 
+    def cntSoftB(self):
+        return len(self.selectSoftBIdx())
+    
     def cntMuon(self):
         return len(self.selectMuIdx())
 
@@ -169,6 +172,15 @@ class TreeVarSel():
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
+
+    def selectSoftBIdx(self):
+        indx = []
+        for idx in self.IVFIdx():
+            if self.tr.SV_pt[idx] < 20.0 \
+               and self.jetcleanedB(idx) :
+                indx.append(idx)
+        return indx
+
 
     def	selectEleIdx(self):
         idx = []
@@ -218,25 +230,25 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == 2016:
+        if year == '2016':
             return jetb > 0.6321
-        elif year == 2017:
+        elif year == '2017':
             return jetb > 0.4941
-        elif year == 2018:
+        elif year == '2018':
             return jetb > 0.4184
         else:
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == 2016:
+        if year == '2016':
             return jetb > 0.8484
-        elif year == 2017 or year == 2018:
+        elif year == '2017' or year == '2018':
             return jetb > 0.8838
         else:
             return True
         
 
-    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year=2016):
+    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2016'):
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >3.5:
@@ -279,7 +291,7 @@ class TreeVarSel():
         return func()
 
 
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016, isolationType='standard'):
+    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year='2016', isolationType='standard'):
         isolationWeight = 1.0
         if(isolationType == 'mini'):
             # below 50 GeV, 0.2 cone size
@@ -341,7 +353,28 @@ class TreeVarSel():
     def eleID(self, idval, idtype):
         return idval >= idtype
 
-    
+
+    def IVFIdx(self):
+        idx = []
+        for i in range(self.tr.nSV):
+            if bytearray(self.tr.SV_ntracks[i])[0] >= 3 \
+               and self.tr.SV_dxy[i] < 2.5 \
+               and self.tr.SV_dxySig[i] > 3.0 \
+               and self.tr.SV_mass[i] < 6.5 \
+               and self.tr.SV_dlenSig[i] > 4.0 \
+               and self.tr.SV_pAngle[i] > 0.98 :
+                idx.append(i)
+        return idx
+               
+
+    def jetcleanedB(self, idx):
+        ret = True
+        for j in self.selectjetIdx(20):
+            if DeltaR(self.tr.SV_eta[idx], self.tr.SV_phi[idx], self.tr.Jet_eta[j], self.tr.Jet_phi[j]) < 0.4 :
+                ret = False
+                break
+        return ret
+            
     def genEle(self):
         L = []
         for i in range(self.tr.nGenPart):
