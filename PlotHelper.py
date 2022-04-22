@@ -144,16 +144,26 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
     plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], colors, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale)
 
 
-    
 def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
     if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total)):
         print 'Error in plotROCLines: arrays are incompatible'
         return -1
     
-    if(len(colors) < len(line_info) + (len(signal_pass) - sum(line_info))):
-        print 'Error in plotROCLines: not enough colors specified'
+    required_length = len(line_info) + (len(signal_pass) - sum(line_info))
+    if(len(legTitle) < required_length):
+        print 'Error in plotROCLines: not enough labels: '+str(len(legTitle))+', required: '+str(required_length)
         return -1
-    
+
+
+    colors_processed = colors
+    if(len(colors_processed) < required_length):
+        print 'Warning in plotROCLines: not enough colors specified, cycling'
+        while(len(colors_processed) < required_length):
+            for i in range(len(colors)):
+                colors_processed.append(colors[i])
+
+
+
 
     effs = []
     Deffs_low = []
@@ -259,13 +269,13 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
             
         roc[next_roc] = ROOT.TGraphAsymmErrors(len(x),np.array(x),np.array(y),np.array(Dx_low),np.array(Dx_high),np.array(Dy_low),np.array(Dy_high))
     
-        roc[next_roc].SetLineColor(colors[next_roc])
+        roc[next_roc].SetLineColor(colors_processed[next_roc])
         roc[next_roc].SetLineWidth(2)
         if(isline):
             roc[next_roc].SetLineStyle(2)
         roc[next_roc].SetMarkerSize(0.8)
         roc[next_roc].SetMarkerStyle(20)
-        roc[next_roc].SetMarkerColor(colors[next_roc])
+        roc[next_roc].SetMarkerColor(colors_processed[next_roc])
         roc[next_roc].SetTitle(title)
         next_roc += 1
 
