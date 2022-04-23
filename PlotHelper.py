@@ -140,11 +140,11 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
 
 
 # ROC plotting
-def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
-    plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], colors, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale)
+def plotROC(signal_pass, signal_total, bk_pass, bk_total, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
+    plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], markdown, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale, fileformat)
 
 
-def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0):
+def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1 - BKeff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
     if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total)):
         print 'Error in plotROCLines: arrays are incompatible'
         return -1
@@ -155,14 +155,48 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
         return -1
 
 
-    colors_processed = colors
+    if(not isinstance(markdown, list)):
+        print 'Error in plotROCLines: markdown must be a list of colors, or a joint list of markdown options, refer to manual'
+        return -1
+    
+
+    colors_processed = markdown
+    complex_markdown = isinstance(markdown[0], list)
+
+    markers_specified = False
+    linestyle_specified = False
+    if(complex_markdown):
+        if(len(markdown[0]) > 0):
+            colors_processed = markdown[0]
+        else:
+            colors_processed = [ROOT.kBlack] * len(required_length)
+        
+        if(len(markdown) > 1 and len(markdown[1]) > 0):
+            markers_processed = markdown[1]
+            markers_specified = True
+        
+        if(len(markdown) > 2 and len(markdown[2]) > 0):
+            linestyle_processed = markdown[2]
+            linestyle_specified = True
+
+
     if(len(colors_processed) < required_length):
-        print 'Warning in plotROCLines: not enough colors specified, cycling'
+        print 'Warning in plotROCLines: not enough colors specified, cycling. Make sure this is what you intended!'
         while(len(colors_processed) < required_length):
-            for i in range(len(colors)):
-                colors_processed.append(colors[i])
+            for i in range(len(markdown[0] if markers_specified else markdown)):
+                colors_processed.append(markdown[0][i] if markers_specified else markdown[i])
 
+    if(markers_specified and len(markers_processed) < required_length):
+        print 'Warning in plotROCLines: not enough marker styles specified, cycling. Make sure this is what you intended!'
+        while(len(markers_processed) < required_length):
+            for i in range(len(markdown[1])):
+                markers_processed.append(markdown[1][i])
 
+    if(linestyle_specified and len(linestyle_processed) < required_length):
+        print 'Warning in plotROCLines: not enough linestyles specified, cycling. Make sure this is what you intended!'
+        while(len(linestyle_processed) < required_length):
+            for i in range(len(markdown[2])):
+                linestyle_processed.append(markdown[2][i])
 
 
     effs = []
@@ -203,7 +237,7 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
         Drejs_low.append(teff.GetEfficiencyErrorLow(teff.GetGlobalBin(1)))
         Drejs_high.append(teff.GetEfficiencyErrorUp(teff.GetGlobalBin(1)))
 
-    if(title == ""):
+    if(title == "auto"):
         if(-1 != ptcut):
             title = "#splitline{ROC for signal: "+samplename+"}{BK: "+BKsamplename+", pt > "+str(ptcut)+" GeV}"
         else:
@@ -272,9 +306,9 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
         roc[next_roc].SetLineColor(colors_processed[next_roc])
         roc[next_roc].SetLineWidth(2)
         if(isline):
-            roc[next_roc].SetLineStyle(2)
-        roc[next_roc].SetMarkerSize(0.8)
-        roc[next_roc].SetMarkerStyle(20)
+            roc[next_roc].SetLineStyle(linestyle_processed[next_roc] if linestyle_specified else 2)
+        roc[next_roc].SetMarkerSize(1.2 if markers_specified else 0.8)
+        roc[next_roc].SetMarkerStyle(markers_processed[next_roc] if markers_specified else 20)
         roc[next_roc].SetMarkerColor(colors_processed[next_roc])
         roc[next_roc].SetTitle(title)
         next_roc += 1
@@ -355,7 +389,7 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, colors
         if(ptcut != -1):
             name += "_pt"+str(ptcut)
 
-    c.SaveAs(path+"/"+name+".png")
+    c.SaveAs(path+"/"+name+"."+fileformat)
     c.Close()
     return 0
 
