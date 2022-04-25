@@ -34,7 +34,7 @@ class IVFhelper():
         return indexlist
 
     #cuts
-    def NtracksCut(self, i): 
+    def NtracksCut(self, i):
         return bytearray(self.tr.SV_ntracks[i])[0] >= 3
 
     def SVdxyCut(self, i):
@@ -48,12 +48,12 @@ class IVFhelper():
 
     def S3Dcut(self, i):
         return self.tr.SV_dlenSig[i] > 4.0
-    
-    def angleCut(self, i): 
+
+    def angleCut(self, i):
         return self.tr.SV_pAngle[i] > 0.98
 
     def ptCut(self, i):
-        return self.tr.SV_pt[i] < 20.0 #GeV      
+        return self.tr.SV_pt[i] < 20.0 #GeV
 
     def deltaRcut(self, i):
         ret = False
@@ -112,8 +112,8 @@ class IVFhelper():
         return pT
 
     def getSVdR(self):
-        dR = 3.14   
-        for i in self.cut_indices:    
+        dR = 3.14
+        for i in self.cut_indices:
             for j in self.getsel.selectjetIdx(20):
                 dR = min(DeltaR(self.tr.SV_eta[i], self.tr.SV_phi[i], self.tr.Jet_eta[j], self.tr.Jet_phi[j]), dR)
         return dR

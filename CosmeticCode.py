@@ -103,14 +103,17 @@ LegendTitleDict = {
     'TTLep_pow' : 't#bar{t}_2l',
     'ST' : 'Single Top',
     'WJetsToLNu' : 'W + Jets',
+    'WJetsToLNu_comb' : 'W + Jets',
     'ZJetsToNuNu' : 'Z(#nu#nu) + Jets',
     'DYJetsToLL' : 'DY + Jets',
     'QCD' : 'QCD', 
     'TTV' : 't#bar{t}X',
     'VV' : 'Diboson',
     'Data': 'Data',
-    'UL17V9_Full99mm' : 'UL17V9_Full99mm', 
-    'TTToSemiLeptonic' : 'TTToSemiLeptonic', 
+    'DoubleMuon_Data': 'Data(Double#mu)',
+    'SingleMuon_Data': 'Data(Single#mu)',
+    'UL17V9_Full99mm' : 'UL17V9_Full99mm',
+    'TTToSemiLeptonic' : 'TTToSemiLeptonic',
     'TTTo2L2Nu' : 'TTTo2L2Nu',
     }
 
@@ -128,6 +131,7 @@ vidNestedWPBitMapNamingList = [
 ]
 
 def getXTitle(title):
+    #return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
     return XlabelDict[title] if title in XlabelDict.keys() else title
 
 def getColor(sample):
