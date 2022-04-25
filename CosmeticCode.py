@@ -59,7 +59,7 @@ XlabelDict = {
     'SVpAngle' : 'cos(PV-SV, SVp)',
     'SVpT' : 'p_{T}(SV) [Gev]',
     'SVdR' : '#Delta R(SV, jet)'
-    
+
 }
 
 colDict = {
