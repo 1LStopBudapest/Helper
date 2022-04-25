@@ -45,10 +45,10 @@ XlabelDict = {
     'Elept'   : 'p_{T}(e)',
     'LepPt_loose'   : 'p_{T}(loose l) [GeV]',
     'LepPt_tight'   : 'p_{T}(tight l) [GeV]',
-    'MuPt_loose'    : 'Loose #mu p_{T}',
-    'MuPt_tight'    : 'Tight #mu p_{T}',
-    'ElePt_loose'   : 'Loose e p_{T}',
-    'ElePt_tight'   : 'Tight e p_{T}',
+    'MuPt_loose'    : 'Loose #mu p_{T} [GeV]',
+    'MuPt_tight'    : 'Tight #mu p_{T} [GeV]',
+    'ElePt_loose'   : 'Loose e p_{T} [GeV]',
+    'ElePt_tight'   : 'Tight e p_{T} [GeV]',
     'Ntracks' : 'N_{tracks}',
     'nSV' : 'N_{SV}',
     'Ntracks' : 'N_{tracks}',
@@ -128,7 +128,7 @@ vidNestedWPBitMapNamingList = [
 ]
 
 def getXTitle(title):
-    return XlabelDict[title] if title in XlabelDict.keys() else 'x axis'
+    return XlabelDict[title] if title in XlabelDict.keys() else title
 
 def getColor(sample):
     if "Stop" in sample:
