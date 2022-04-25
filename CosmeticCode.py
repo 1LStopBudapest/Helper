@@ -85,6 +85,9 @@ XlabelDict = {
     'gVtx_gLSP_dz' : 'd_{z}(genVtx,genLSP) [cm]',
     'gVtx_gLSP_2D' : 'd_{xy}(genVtx,genLSP) [cm]',
     'gVtx_gLSP_3D' : 'd_{xyz}(genVtx,genLSP) [cm]',
+    'SV_gLSP_dx' : 'd_{x}(SV,genLSP) [cm]',
+    'SV_gLSP_dy' : 'd_{y}(SV,genLSP) [cm]',
+    'SV_gLSP_dz' : 'd_{z}(SV,genLSP) [cm]',
 
 }
 

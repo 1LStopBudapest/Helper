@@ -12,7 +12,7 @@ class TreeVarSel():
         self.tr = tr
         self.yr = yr
 
-    #GenPart = generated particle vertex, len={0,1,2,...}
+    #GenPart = generated particle vertex
     def getGenPartStop(self):
         genStop = []
         for i in range(self.tr.nGenPart): 
@@ -27,7 +27,7 @@ class TreeVarSel():
                 genAStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return genAStop
 
-    #GenVt = generated primary vertex, len=1
+    #GenVt = generated primary vertex
     def getGenVtx(self):
         return {'x':self.tr.GenVtx_x, 'y':self.tr.GenVtx_y, 'z':self.tr.GenVtx_z}
 
@@ -43,6 +43,12 @@ class TreeVarSel():
 
     def getPV(self):
         return {'x':self.tr.PV_x, 'y':self.tr.PV_y, 'z':self.tr.PV_z}
+
+    def getSV(self):
+        L = []
+        for i in range(self.tr.nSV):
+            L.append({'x':self.tr.SV_x[i], 'y':self.tr.SV_y[i], 'z':self.tr.SV_z[i]})
+        return L
 
     def distance(self, v1, v2, coord):
         return abs(v1[coord]-v2[coord])
