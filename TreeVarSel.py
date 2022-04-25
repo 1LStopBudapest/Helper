@@ -61,7 +61,7 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 len(self.selectjetIdx(325))>0 and and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -297,7 +297,7 @@ class TreeVarSel():
             return True
         
 
-    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year=2016):
+    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2016'):
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >3.5:
