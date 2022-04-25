@@ -5,7 +5,7 @@ from Helper.VarCalc import *
 from Helper.TreeVarSel import TreeVarSel
 
 class IVFhelper():
-    
+
     def __init__(self, tr, isData, yr):
         self.tr = tr
         self.yr = yr

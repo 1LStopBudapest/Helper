@@ -73,8 +73,8 @@ colDict = {
     'TTV' : ROOT.kAzure-7,
     'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
-    'UL17V9_Full99mm' : ROOT.kAzure+2, 
-    'TTToSemiLeptonic' : 8, 
+    'UL17V9_Full99mm' : ROOT.kAzure+2,
+    'TTToSemiLeptonic' : 8,
     'TTTo2L2Nu' : ROOT.kOrange,
 }
 
