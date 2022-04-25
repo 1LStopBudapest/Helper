@@ -24,7 +24,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-            if len(lepvar) >= 1 and lepvar[0]['pt']<=30:
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=30 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -33,13 +33,13 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
 
     def ControlRegion(self):
         if not self.PreSelection():
@@ -55,13 +55,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 len(self.selectjetIdx(325))>0 and and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -182,8 +182,11 @@ class TreeVarSel():
         return self.tr.Jet_eta[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -99
 
 
-    def cntBtagjet(self, discOpt='CSVV2', pt=JetPtThreshold):
+    def cntBtagjet(self, discOpt='DeepCSV', pt=JetPtThreshold):
         return len(self.selectBjetIdx(discOpt, pt))
+
+    def cntSoftB(self):
+        return len(self.selectSoftBIdx())
 
     def cntMuon(self):
         return len(self.selectMuIdx())
@@ -218,6 +221,15 @@ class TreeVarSel():
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
+
+    def selectSoftBIdx(self):
+        indx = []
+        for idx in self.IVFIdx():
+            if self.tr.SV_pt[idx] < 20.0 \
+               and self.jetcleanedB(idx) :
+                indx.append(idx)
+        return indx
+
 
     def	selectEleIdx(self):
         idx = []
@@ -267,19 +279,19 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == 2016:
+        if year == '2016':
             return jetb > 0.6321
-        elif year == 2017:
+        elif year == '2017':
             return jetb > 0.4941
-        elif year == 2018:
+        elif year == '2018':
             return jetb > 0.4184
         else:
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == 2016:
+        if year == '2016':
             return jetb > 0.8484
-        elif year == 2017 or year == 2018:
+        elif year == '2017' or year == '2018':
             return jetb > 0.8838
         else:
             return True
@@ -328,14 +340,21 @@ class TreeVarSel():
         return func()
 
 
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year=2016):
+    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year='2016', isolationType='standard'):
+        isolationWeight = 1.0
+        if(isolationType == 'mini'):
+            # below 50 GeV, 0.2 cone size
+            # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
+            if(pt < 50):
+                isolationWeight = 0.42942652
+
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso* pt) < 5.0 \
+                        and (iso* pt) < 5.0 * isolationWeight \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
@@ -343,7 +362,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.2 \
+                        and iso < 0.2 * isolationWeight \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
@@ -354,7 +373,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso*pt) < 20.0 \
+                        and (iso*pt) < 20.0 * isolationWeight \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
@@ -362,7 +381,7 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.8 \
+                        and iso < 0.8 * isolationWeight \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
@@ -383,7 +402,28 @@ class TreeVarSel():
     def eleID(self, idval, idtype):
         return idval >= idtype
 
-    
+
+    def IVFIdx(self):
+        idx = []
+        for i in range(self.tr.nSV):
+            if bytearray(self.tr.SV_ntracks[i])[0] >= 3 \
+               and self.tr.SV_dxy[i] < 2.5 \
+               and self.tr.SV_dxySig[i] > 3.0 \
+               and self.tr.SV_mass[i] < 6.5 \
+               and self.tr.SV_dlenSig[i] > 4.0 \
+               and self.tr.SV_pAngle[i] > 0.98 :
+                idx.append(i)
+        return idx
+               
+
+    def jetcleanedB(self, idx):
+        ret = True
+        for j in self.selectjetIdx(20):
+            if DeltaR(self.tr.SV_eta[idx], self.tr.SV_phi[idx], self.tr.Jet_eta[j], self.tr.Jet_phi[j]) < 0.4 :
+                ret = False
+                break
+        return ret
+            
     def genEle(self):
         L = []
         for i in range(self.tr.nGenPart):
