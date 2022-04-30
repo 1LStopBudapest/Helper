@@ -49,3 +49,10 @@ class TreeVarSel():
 
     def distance(self, v1, v2, coord):
         return abs(v1[coord]-v2[coord])
+
+    def listDist(self, L1, L2, coord):
+        D = []
+        for l1 in L1:
+            for l2 in L2:
+                D.append(abs(l1[coord]-l2[coord]))
+        return D
