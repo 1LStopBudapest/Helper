@@ -7,7 +7,7 @@ from Helper.VarCalc import *
 
 
 class TreeVarSel():
-    
+
     def __init__(self, tr, yr):
         self.tr = tr
         self.yr = yr
@@ -15,14 +15,14 @@ class TreeVarSel():
     #GenPart = generated particle vertex
     def getGenPartStop(self):
         genStop = []
-        for i in range(self.tr.nGenPart): 
+        for i in range(self.tr.nGenPart):
             if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102: # 102==initial location (of collision)
                 genStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
-        return genStop[0] #this list always has only 1 element 
+        return genStop[0] #this list always has only 1 element
 
     def getGenPartAntiStop(self):
         genAStop = []
-        for i in range(self.tr.nGenPart): 
+        for i in range(self.tr.nGenPart):
             if self.tr.GenPart_pdgId[i]==-1000006 and self.tr.GenPart_status[i]==102:
                 genAStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return genAStop[0] #this list always has only 1 element

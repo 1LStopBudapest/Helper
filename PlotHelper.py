@@ -138,119 +138,211 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
 
 
 # ROC plotting
-def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path, name, samplename, BKsamplename, xmin = 0, ymin = 0, xmax = 1, ymax = 1, title = "", ptcut = -1, xtitle = "Average signal efficiency", ytitle ="Average BK rejection (1-eff)", cmssimwip = True):
-    # signal_pass, signal_total: nominator and denominator TH1F's, from which signal eff is calculated
-    # bk_pass, bk_total: same for BK rejection
-    # colors: array of colors for each point on ROC
-    # legTitle: array of legend names for points
-    # path, name: file is named <path>/name.png. Leave name empty ("") to auto-format with samplename and BKsamplename
-    # title: the title of the figure. Leave empty ("") to auto-format 
-    # samplename, BKsamplename, ptcut: Auto-formatted uses this name of the signal sample (string), the BK samplename (string), and stating a ptcut (int), if any
-    # xtitle, ytitle: lables of axes
-    # xmin, ymin, xmax, ymax: ranges of axes
-    # cmssimwip: if true, also prints "CMS Simulation Work In Progress" on figure
+def plotROC(signal_pass, signal_total, bk_pass, bk_total, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
+    plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], markdown, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale, fileformat)
 
 
+def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1 - BKeff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
+    if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total)):
+        print 'Error in plotROCLines: arrays are incompatible'
+        return -1
+    
+    required_length = len(line_info) + (len(signal_pass) - sum(line_info))
+    if(len(legTitle) < required_length):
+        print 'Error in plotROCLines: not enough labels: '+str(len(legTitle))+', required: '+str(required_length)
+        return -1
 
-    if(len(signal_pass) != len(bk_pass) or len(signal_pass) < len(signal_total) or len(bk_pass) < len(bk_total) or len(colors) < len(signal_pass)):
-        print 'Error in plotROC: arrays are incompatible'
+
+    if(not isinstance(markdown, list)):
+        print 'Error in plotROCLines: markdown must be a list of colors, or a joint list of markdown options, refer to manual'
         return -1
     
 
+    colors_processed = markdown
+    complex_markdown = isinstance(markdown[0], list)
+
+    markers_specified = False
+    linestyle_specified = False
+    if(complex_markdown):
+        if(len(markdown[0]) > 0):
+            colors_processed = markdown[0]
+        else:
+            colors_processed = [ROOT.kBlack] * len(required_length)
+        
+        if(len(markdown) > 1 and len(markdown[1]) > 0):
+            markers_processed = markdown[1]
+            markers_specified = True
+        
+        if(len(markdown) > 2 and len(markdown[2]) > 0):
+            linestyle_processed = markdown[2]
+            linestyle_specified = True
+
+
+    if(len(colors_processed) < required_length):
+        print 'Warning in plotROCLines: not enough colors specified, cycling. Make sure this is what you intended!'
+        while(len(colors_processed) < required_length):
+            for i in range(len(markdown[0] if markers_specified else markdown)):
+                colors_processed.append(markdown[0][i] if markers_specified else markdown[i])
+
+    if(markers_specified and len(markers_processed) < required_length):
+        print 'Warning in plotROCLines: not enough marker styles specified, cycling. Make sure this is what you intended!'
+        while(len(markers_processed) < required_length):
+            for i in range(len(markdown[1])):
+                markers_processed.append(markdown[1][i])
+
+    if(linestyle_specified and len(linestyle_processed) < required_length):
+        print 'Warning in plotROCLines: not enough linestyles specified, cycling. Make sure this is what you intended!'
+        while(len(linestyle_processed) < required_length):
+            for i in range(len(markdown[2])):
+                linestyle_processed.append(markdown[2][i])
+
+
     effs = []
-    Deffs = []
+    Deffs_low = []
+    Deffs_high = []
 
     for i in range(len(signal_pass)):
-        Nbins = signal_pass[i].GetNbinsX()
-        bineffs = []
-        Dbineffs = []
-        for j in range (Nbins):
-            num = signal_pass[i].GetBinContent(j+1)
-            den = signal_total[i].GetBinContent(j+1) 
-            if(den == 0 or num == 0):
-                continue
-            eff = num / den 
-            if(eff > 1):
-                print 'Warning in ROC: eff > 1'
-
-            Dden = signal_total[i].GetBinError(j+1)
-            Dnum = signal_pass[i].GetBinError(j+1)
-            Deff = eff*math.sqrt((Dnum/num)**2 + (Dden/den)**2)
-
-            bineffs.append(eff)
-            Dbineffs.append(Deff)
+        if(signal_pass[i] == None):
+            print 'Warning: None object in signal pass at: '+str(i)
+        if(signal_total[i] == None):
+            print 'Warning: None object in signal total at: '+str(i)
         
-        # take average, and take average corrected empirical deviation as errorbars:
-        aveff = sum(bineffs)/len(bineffs)
-        devi = 0
-        for j in range(len(bineffs)):
-            devi += (bineffs[j] - aveff)**2
-        devi /= len(bineffs)*(len(bineffs)-1)
-        devi = math.sqrt(devi)
+        signal_pass[i].Rebin(signal_pass[i].GetNbinsX())
+        signal_total[i].Rebin(signal_total[i].GetNbinsX())
+        teff = ROOT.TEfficiency(signal_pass[i],signal_total[i])
 
-        effs.append(aveff)
-        Deffs.append(devi)
 
+        effs.append(teff.GetEfficiency(teff.GetGlobalBin(1)))
+        Deffs_low.append(teff.GetEfficiencyErrorLow(teff.GetGlobalBin(1)))
+        Deffs_high.append(teff.GetEfficiencyErrorUp(teff.GetGlobalBin(1)))
 
     rejs = []
-    Drejs = []
+    Drejs_low = []
+    Drejs_high = []
 
     for i in range(len(bk_pass)):
-        Nbins = bk_pass[i].GetNbinsX()
-        bineffs = []
-        Dbineffs = []
-        for j in range (Nbins):
-            num = bk_pass[i].GetBinContent(j+1)
-            den = bk_total[i].GetBinContent(j+1) 
-            if(den == 0):
-                continue
-            eff = num / den 
-            if(eff > 1):
-                print 'Warning in ROC: eff > 1'
-
-            Dden = bk_total[i].GetBinError(j+1)
-            Dnum = bk_pass[i].GetBinError(j+1)
-            Deff = eff*math.sqrt((Dnum/num)**2 + (Dden/den)**2)
-
-            bineffs.append(eff)
-            Dbineffs.append(Deff)
-        
-        # take average, and take average corrected empirical deviation as errorbars:
-        aveff = sum(bineffs)/len(bineffs)
-        devi = 0
-        for j in range(len(bineffs)):
-            devi += (bineffs[j] - aveff)**2
-        devi /= len(bineffs)*(len(bineffs)-1)
-        devi = math.sqrt(devi)
-
-        rejs.append(aveff)
-        Drejs.append(devi)
+        if(bk_pass[i] == None):
+            print 'Warning: None object in bk pass at: '+str(i)
+        if(bk_total[i] == None):
+            print 'Warning: None object in bk total at: '+str(i)
 
 
-    if(title == ""):
+        bk_pass[i].Rebin(bk_pass[i].GetNbinsX())
+        bk_total[i].Rebin(bk_total[i].GetNbinsX())
+        teff = ROOT.TEfficiency(bk_pass[i],bk_total[i])
+
+        rejs.append(teff.GetEfficiency(teff.GetGlobalBin(1)))
+        Drejs_low.append(teff.GetEfficiencyErrorLow(teff.GetGlobalBin(1)))
+        Drejs_high.append(teff.GetEfficiencyErrorUp(teff.GetGlobalBin(1)))
+
+    if(title == "auto"):
         if(-1 != ptcut):
             title = "#splitline{ROC for signal: "+samplename+"}{BK: "+BKsamplename+", pt > "+str(ptcut)+" GeV}"
         else:
             title = "#splitline{ROC for signal: "+samplename+"}{BK: "+BKsamplename+"}"
 
     roc = {}
-    for i in range(len(effs)):
-        x = [effs[i]]
-        y = [rejs[i]]
-        Dx = [Deffs[i]]
-        Dy = [Drejs[i]]
-        roc[i] = ROOT.TGraphAsymmErrors(1,np.array(x),np.array(y),np.array(Dx),np.array(Dx),np.array(Dy),np.array(Dy))
-    
-        roc[i].SetLineColor(colors[i])
-        roc[i].SetLineWidth(2)
-        roc[i].SetMarkerSize(0.8)
-        roc[i].SetMarkerStyle(20)
-        roc[i].SetMarkerColor(colors[i])
-        roc[i].SetTitle(title)
+    absolute_min_x = 1
+    absolute_max_x = 0
+    absolute_min_y = 1
+    absolute_max_y = 0
+    lineidx = 0
+    i = 0
+    next_roc = 0
+    while(i < len(effs)):
+        x = []
+        y = []
+        Dx_high = []
+        Dx_low = []
+        Dy_high = []
+        Dy_low = []
+        isline = False
+        if(lineidx < len(line_info)):
+            isline = True
+            for k in range(i,i+line_info[lineidx],1):
+                x.append(effs[k])
+                y.append(rejs[k])
+                #Dx_high.append(Deffs_high[k])
+                #Dx_low.append(Deffs_low[k])
+                #Dy_high.append(Drejs_high[k])
+                #Dy_low.append(Drejs_low[k])
+                # if line, don't put errorbars:
+                Dx_high.append(0)
+                Dx_low.append(0)
+                Dy_high.append(0)
+                Dy_low.append(0)
 
-    leg = ROOT.TLegend(0.5, 0.1, 0.9, 0.3)
-    for i in range(len(roc)):    
+        else:
+            x = [effs[i]]
+            y = [rejs[i]]
+            Dx_high = [Deffs_high[i]]
+            Dx_low = [Deffs_low[i]]
+            Dy_high = [Drejs_high[i]]
+            Dy_low = [Drejs_low[i]]
+
+        for j in range(len(x)):
+            if(x[j] + Dx_high[j] > 1):
+                Dx_high[j] = 1 - x[j]
+            if(x[j] - Dx_low[j] < 0):
+                Dx_low[j] = x[j]
+            if(y[j] + Dy_high[j] > 1):
+                Dy_high[j] = 1 - y[j]
+            if(y[j] - Dy_low[j] < 0):
+                Dy_low[j] = y[j]
+
+            if x[j] - Dx_low[j] < absolute_min_x:
+                absolute_min_x = x[j] - Dx_low[j]
+            if x[j] + Dx_high[j] > absolute_max_x:
+                absolute_max_x = x[j] + Dx_high[j]
+            if y[j] - Dy_low[j] < absolute_min_y:
+                absolute_min_y = y[j] - Dy_low[j]
+            if y[j] + Dy_high[j] > absolute_max_y:
+                absolute_max_y = y[j] + Dy_high[j]
+            
+        roc[next_roc] = ROOT.TGraphAsymmErrors(len(x),np.array(x),np.array(y),np.array(Dx_low),np.array(Dx_high),np.array(Dy_low),np.array(Dy_high))
+    
+        roc[next_roc].SetLineColor(colors_processed[next_roc])
+        roc[next_roc].SetLineWidth(2)
+        if(isline):
+            roc[next_roc].SetLineStyle(linestyle_processed[next_roc] if linestyle_specified else 2)
+        roc[next_roc].SetMarkerSize(1.2 if markers_specified else 0.8)
+        roc[next_roc].SetMarkerStyle(markers_processed[next_roc] if markers_specified else 20)
+        roc[next_roc].SetMarkerColor(colors_processed[next_roc])
+        roc[next_roc].SetTitle(title)
+        next_roc += 1
+
+        if(lineidx < len(line_info) ):
+            i += line_info[lineidx]
+            lineidx += 1
+        else:
+            i += 1
+
+    legxl = 0.5
+    legxu = 0.9
+    legyl = 0.1
+    legyu = 0.3 * legendscale
+    if(legendpos == "bl"):
+        legxl = 0.1
+        legxu = 0.5
+
+
+
+    leg = ROOT.TLegend(legxl, legyl, legxu, legyu)
+    for i in range(len(roc)):
         leg.AddEntry(roc[i], legTitle[i] ,"p")
+    ROOT.gStyle.SetLegendTextSize(0.019)
+
+
+    valuerange_x = absolute_max_x - absolute_min_x
+    valuerange_y = absolute_max_y - absolute_min_y
+    if(xmin == "auto"):
+        xmin = absolute_min_x - valuerange_x * 0.05
+    if(xmax == "auto"):
+        xmax = absolute_max_x + valuerange_x * 0.05
+    if(ymin == "auto"):
+        ymin = absolute_min_y - valuerange_y * 0.05
+    if(ymax == "auto"):
+        ymax = absolute_max_y + valuerange_y * 0.05
 
     c = ROOT.TCanvas('c', 'Title', 600, 800)
 
@@ -280,8 +372,14 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         tex.Draw()
 
     for i in range(len(roc)):
-        roc[i].Draw("P,SAME")
-    leg.Draw("SAME")
+        if(i < len(line_info)): 
+            roc[i].Draw("LP,SAME")
+        else:
+            roc[i].Draw("P,SAME")
+
+
+    if(legendpos != "no"):
+        leg.Draw("SAME")
 
 
     if(name == ""):
@@ -289,8 +387,8 @@ def plotROC(signal_pass, signal_total, bk_pass, bk_total, colors, legTitle, path
         if(ptcut != -1):
             name += "_pt"+str(ptcut)
 
-    c.SaveAs(path+"/"+name+".png")
+    c.SaveAs(path+"/"+name+"."+fileformat)
     c.Close()
     return 0
 
-    
+
