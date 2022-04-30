@@ -88,6 +88,16 @@ XlabelDict = {
     'SV_gLSP_dx' : 'd_{x}(SV,genLSP) [cm]',
     'SV_gLSP_dy' : 'd_{y}(SV,genLSP) [cm]',
     'SV_gLSP_dz' : 'd_{z}(SV,genLSP) [cm]',
+    'Ntracks' : 'N_{tracks}',
+    'nSV' : 'N_{SV}',
+    'Ntracks' : 'N_{tracks}',
+    'SVdxy' : 'SV_{dxy} [cm]',
+    'SVdxySig' : 'S_{2D}',
+    'SVmass' : 'SV_{mass} [GeV]',
+    'SVdlenSig' : 'S_{3D}',
+    'SVpAngle' : 'cos(PV-SV, SVp)',
+    'SVpT' : 'p_{T}(SV) [Gev]',
+    'SVdR' : '#Delta R(SV, jet)',
 
 }
 
@@ -103,6 +113,9 @@ colDict = {
     'TTV' : ROOT.kAzure-7,
     'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
+    'UL17V9_Full99mm' : ROOT.kAzure+2,
+    'TTToSemiLeptonic' : 8,
+    'TTTo2L2Nu' : ROOT.kOrange,
 
 }
 
@@ -122,8 +135,8 @@ RatioTitleDict = {
 }
 
 RatioLegendDict = {
-'fastfull' : ['FastSim', 'FullSim']
-
+    'fastfull' : ['FastSim', 'FullSim'],
+    'IVF' : ['Before IVF cut', 'After IVF cut']
 }
 
 LegendTitleDict = {
@@ -140,7 +153,10 @@ LegendTitleDict = {
     'Data': 'Data',
     'DoubleMuon_Data': 'Data(Double#mu)',
     'SingleMuon_Data': 'Data(Single#mu)',
-    }
+    'UL17V9_Full99mm' : 'UL17V9_Full99mm',
+    'TTToSemiLeptonic' : 'TTToSemiLeptonic',
+    'TTTo2L2Nu' : 'TTTo2L2Nu', 
+}
 
 vidNestedWPBitMapNamingList = [
     'GsfEleMissingHitsCut',
@@ -171,6 +187,8 @@ def getRatioTitle(comp):
 def getRatioLegendTitle(h1, h2, comp):
     if 'fastfull' in comp:
         return RatioLegendDict['fastfull']
+    elif 'IVF' in comp:
+        return RatioLegendDict['IVF']
     else:
         return [h1.GetName().strip(h1.GetTitle()+"_"), h2.GetName().strip(h2.GetTitle()+"_")]
 
