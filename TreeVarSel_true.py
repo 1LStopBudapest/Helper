@@ -18,28 +18,25 @@ class TreeVarSel():
         for i in range(self.tr.nGenPart): 
             if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102: # 102==initial location (of collision)
                 genStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
-        return genStop
+        return genStop[0] #this list always has only 1 element 
 
     def getGenPartAntiStop(self):
         genAStop = []
         for i in range(self.tr.nGenPart): 
             if self.tr.GenPart_pdgId[i]==-1000006 and self.tr.GenPart_status[i]==102:
                 genAStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
-        return genAStop
+        return genAStop[0] #this list always has only 1 element
 
     #GenVt = generated primary vertex
     def getGenVtx(self):
         return {'x':self.tr.GenVtx_x, 'y':self.tr.GenVtx_y, 'z':self.tr.GenVtx_z}
 
-    # Calculate the difference between stop GenPart_vx - LSP GenPart_vx, similarly for y, z --> this gives the stop decay length
-    # \tilde{chi}_1^0 == 1000022
     def getLSP(self):
         L = []
         for i in range(self.tr.nGenPart):
-            if abs(self.tr.GenPart_pdgId[i]) == 1000022:
-                #print 'i: ', i, 'mother: ', self.tr.GenPart_genPartIdxMother[i], 'status: ', self.tr.GenPart_status[i], 'ID: ', self.tr.GenPart_pdgId[i]
+            if abs(self.tr.GenPart_pdgId[i]) == 1000022: # \tilde{chi}_1^0 == 1000022
                 L.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
-        return L
+        return L #always 2 elements
 
     def getPV(self):
         return {'x':self.tr.PV_x, 'y':self.tr.PV_y, 'z':self.tr.PV_z}
