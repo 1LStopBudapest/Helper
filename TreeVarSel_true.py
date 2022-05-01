@@ -41,6 +41,7 @@ class TreeVarSel():
     def getPV(self):
         return {'x':self.tr.PV_x, 'y':self.tr.PV_y, 'z':self.tr.PV_z}
 
+    #deprecated
     def getSV(self):
         L = []
         for i in range(self.tr.nSV):
