@@ -20,7 +20,7 @@ def style1D(h, islogy, Ytitle="auto-format", Xtitle = "auto-format"):
             Ytitle = auto_yt
     maxRange = h.GetBinContent(h.GetMaximumBin())
     minRange = 0.1 if islogy else 0.0
-    h.SetTitle("")
+    h.SetTitle("PostVFP/Displaced, before IVF cut")
     h.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     h.GetYaxis().SetTitle(Ytitle)
     h.GetYaxis().SetTitleSize(0.035)

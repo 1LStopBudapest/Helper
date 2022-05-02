@@ -88,6 +88,8 @@ XlabelDict = {
     'SV_gLSP_dx' : 'd_{x}(SV,genLSP) [cm]',
     'SV_gLSP_dy' : 'd_{y}(SV,genLSP) [cm]',
     'SV_gLSP_dz' : 'd_{z}(SV,genLSP) [cm]',
+    'SV_gLSP_2D' : 'd_{xy}(SV,genLSP) [cm]',
+    'SV_gLSP_3D' : 'd_{xyz}(SV,genLSP) [cm]',
     'Ntracks' : 'N_{tracks}',
     'nSV' : 'N_{SV}',
     'Ntracks' : 'N_{tracks}',
