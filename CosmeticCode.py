@@ -100,6 +100,19 @@ XlabelDict = {
     'SVpAngle' : 'cos(PV-SV, SVp)',
     'SVpT' : 'p_{T}(SV) [Gev]',
     'SVdR' : '#Delta R(SV, jet)',
+    'SV_gVtx_dx' : 'd_{x}(SV,genVtx) [cm]',
+    'SV_gVtx_dy' : 'd_{y}(SV,genVtx) [cm]',
+    'SV_gVtx_dz' : 'd_{z}(SV,genVtx) [cm]',
+    'SV_gVtx_2D' : 'd_{xy}(SV,genVtx) [cm]',
+    'SV_gVtx_3D' : 'd_{xyz}(SV,genVtx) [cm]',
+    'SV_gB_dx' : 'd_{x}(SV,genB) [m]',
+    'SV_gB_dy' : 'd_{y}(SV,genB) [m]',
+    'SV_gB_dz' : 'd_{z}(SV,genB) [m]',
+    'SV_gB_2D' : 'd_{xy}(SV,genB) [m]',
+    'SV_gB_3D' : 'd_{xyz}(SV,genB) [m]',
+    'gB_dx' : 'genB x [m]',
+    'gB_dy' : 'genB y [m]',
+    'gB_dz' : 'genB z [m]',
 
 }
 

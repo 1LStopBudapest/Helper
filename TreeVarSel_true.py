@@ -16,7 +16,7 @@ class TreeVarSel_true():
     def getGenPartStop(self):
         genStop = []
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102: # 102==initial location (of collision), 62==same in case of prompt samples
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102: # 102==initial location (of collision), 62 == in case of prompt samples
                 genStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return genStop[0] #this list always has only 1 element
 
@@ -46,6 +46,15 @@ class TreeVarSel_true():
         L = []
         for i in range(self.tr.nSV):
             L.append({'x':self.tr.SV_x[i], 'y':self.tr.SV_y[i], 'z':self.tr.SV_z[i]})
+        return L
+
+    def genB(self):
+        L = []
+        for i in range(self.tr.nGenPart):
+            if abs(self.tr.GenPart_pdgId[i]) == 5 and self.tr.GenPart_genPartIdxMother[i] >=0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
+                if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])==1000006:
+                    print 'x:', self.tr.GenPart_vx[i], 'y:', self.tr.GenPart_vy[i], 'z:', self.tr.GenPart_vz[i] 
+                    L.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return L
 
     def distance(self, v1, v2, coord):
