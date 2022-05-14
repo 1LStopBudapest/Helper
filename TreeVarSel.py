@@ -169,16 +169,16 @@ class TreeVarSel():
             eta.append(self.tr.Jet_eta[self.selectjetIdx(JetPtThreshold)[i]])
         return eta
 
-    def getBjetPt(self, discOpt='CSVV2', pt=JetPtThreshold): #'DeepCSV'?
+    def getBjetPt(self, discOpt='DeepCSV', pt=JetPtThreshold):
         b_pt = []
         for i in range(len(self.selectBjetIdx(discOpt, pt))):
             b_pt.append(self.tr.Jet_pt[self.selectBjetIdx(discOpt, pt)[i]])
         return b_pt #if len(b_pt) else 0
 
-    def get1stBjetPt(self, discOpt='CSVV2', pt=JetPtThreshold): #'DeepCSV'?
+    def get1stBjetPt(self, discOpt='DeepCSV', pt=JetPtThreshold):
         return self.tr.Jet_pt[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -1
 
-    def get1stBjetEta(self, discOpt='CSVV2', pt=JetPtThreshold): #'DeepCSV'?
+    def get1stBjetEta(self, discOpt='DeepCSV', pt=JetPtThreshold):
         return self.tr.Jet_eta[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -99
 
 
@@ -218,7 +218,7 @@ class TreeVarSel():
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetPtThreshold):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
-            if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
+            if (self.isBtagDeepCSV(self.tr.Jet_btagDeepCSV[i], self.yr) if discOpt == 'DeepCSV' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
 
