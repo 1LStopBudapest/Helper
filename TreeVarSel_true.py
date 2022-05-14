@@ -53,7 +53,6 @@ class TreeVarSel_true():
         for i in range(self.tr.nGenPart):
             if abs(self.tr.GenPart_pdgId[i]) == 5 and self.tr.GenPart_genPartIdxMother[i] >=0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
                 if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])==1000006:
-                    print 'x:', self.tr.GenPart_vx[i], 'y:', self.tr.GenPart_vy[i], 'z:', self.tr.GenPart_vz[i] 
                     L.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return L
 
