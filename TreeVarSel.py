@@ -218,7 +218,7 @@ class TreeVarSel():
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetPtThreshold):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
-            if (self.isBtagDeepCSV(self.tr.Jet_btagDeepCSV[i], self.yr) if discOpt == 'DeepCSV' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
+            if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
 
