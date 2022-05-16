@@ -39,7 +39,7 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
 
     def ControlRegion(self):
         if not self.PreSelection():
