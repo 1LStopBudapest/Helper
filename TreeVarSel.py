@@ -5,7 +5,6 @@ import collections as coll
 
 from Helper.VarCalc import *
 
-
 class TreeVarSel():
     
     def __init__(self, tr, isData, yr):
@@ -60,7 +59,7 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
                 
 
     #cuts
