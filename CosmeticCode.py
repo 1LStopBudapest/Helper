@@ -113,6 +113,11 @@ XlabelDict = {
     'gB_dx' : 'genB x [cm]',
     'gB_dy' : 'genB y [cm]',
     'gB_dz' : 'genB z [cm]',
+    'gB_gLSP_dx' : 'd_{x}(genB,genLSP) [mm]',
+    'gB_gLSP_dy' : 'd_{y}(genB,genLSP) [mm]',
+    'gB_gLSP_dz' : 'd_{z}(genB,genLSP) [mm]',
+    'gB_gLSP_2D' : 'd_{xy}(genB,genLSP) [mm]',
+    'gB_gLSP_3D' : 'd_{xyz}(genB,genLSP) [mm]',
 
 }
 
