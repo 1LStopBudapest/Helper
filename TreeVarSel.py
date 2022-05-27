@@ -230,7 +230,7 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == '2016':
+        if year == '2016PreVFP' or year == '2016PostVFP':
             return jetb > 0.6321
         elif year == '2017':
             return jetb > 0.4941
@@ -240,7 +240,7 @@ class TreeVarSel():
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == '2016':
+        if year == '2016PreVFP' or year == '2016PostVFP':
             return jetb > 0.8484
         elif year == '2017' or year == '2018':
             return jetb > 0.8838
@@ -248,7 +248,7 @@ class TreeVarSel():
             return True
         
 
-    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2016'):
+    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2017'):
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >3.5:
@@ -291,7 +291,7 @@ class TreeVarSel():
         return func()
 
 
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year='2016', isolationType='standard'):
+    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='standard', year='2017'):
         isolationWeight = 1.0
         if(isolationType == 'mini'):
             # below 50 GeV, 0.2 cone size
