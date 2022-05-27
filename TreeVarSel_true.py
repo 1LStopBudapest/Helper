@@ -2,6 +2,7 @@ import ROOT
 import math
 import os, sys
 import collections as coll
+from numpy import binary_repr
 
 from Helper.VarCalc import *
 
@@ -31,25 +32,35 @@ class TreeVarSel_true():
     def getGenVtx(self):
         return {'x':self.tr.GenVtx_x, 'y':self.tr.GenVtx_y, 'z':self.tr.GenVtx_z}
 
-    def getLSP(self):
+    def kiir(self):
         L = []
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i] == 1000022 and abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]]) == 1000006: # \tilde{chi}_1^0 == 1000022
-                L.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
+            if self.tr.GenPart_genPartIdxMother[i] != -1:
+                print '\nIdx: %.2d, pdgId: %d \nIdxMother: %.2d, pdgIdMother: %d' % (i, self.tr.GenPart_pdgId[i], self.tr.GenPart_genPartIdxMother[i], self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])
+            else:
+	            print '\nIdx: %.2d, pdgId: %d \nIdxMother: %d, pdgIdMother: NaN' % (i, self.tr.GenPart_pdgId[i], self.tr.GenPart_genPartIdxMother[i])
+            print "Status: %d, StatusFlags: %s" % (self.tr.GenPart_status[i], binary_repr(self.tr.GenPart_statusFlags[i], width=15))
+            print "Position: (%.4f, %.4f, %.4f)" % (self.tr.GenPart_vx[i], self.tr.GenPart_vy[i], self.tr.GenPart_vz[i])
         return L #always 2 elements
 
     def getLSP_S(self): #from stop
         L = {}
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i] == 1000022 and self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == 1000006:
-                L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
+            if self.tr.GenPart_pdgId[i] == 1000022 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1': #last copy
+                if self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == 1000006:
+                    L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
+                elif self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[self.tr.GenPart_genPartIdxMother[i]]] == 1000006: #grandmother is stop
+                    L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
         return L 
 
     def getLSP_A(self): #from antistop
         L = {}
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i] == 1000022 and self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == -1000006:
-                L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
+            if self.tr.GenPart_pdgId[i] == 1000022 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1': #last copy
+                if self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == -1000006:
+                    L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
+                elif self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[self.tr.GenPart_genPartIdxMother[i]]] == -1000006: #grandmother is antistop
+                    L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
         return L
 
     def getPV(self):
@@ -73,16 +84,14 @@ class TreeVarSel_true():
     def getB_S(self):
         L = {}
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i] == 5 and self.tr.GenPart_genPartIdxMother[i] >=0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
-                if self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == 1000006:
+            if self.tr.GenPart_pdgId[i] == 5 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1' and self.tr.GenPart_genPartIdxMother[i] > 0:
                     L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
-        return L
+        return L #L is not always unique!
 
     def getB_A(self):
         L = {}
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i] == -5 and self.tr.GenPart_genPartIdxMother[i] >=0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
-                if self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]] == -1000006:
+            if self.tr.GenPart_pdgId[i] == -5 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1' and self.tr.GenPart_genPartIdxMother[i] > 0:
                     L = {'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]}
         return L
 
