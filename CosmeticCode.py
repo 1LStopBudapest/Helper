@@ -118,6 +118,17 @@ XlabelDict = {
     'gB_gLSP_dz' : 'd_{z}(genB,genLSP) [mm]',
     'gB_gLSP_2D' : 'd_{xy}(genB,genLSP) [mm]',
     'gB_gLSP_3D' : 'd_{xyz}(genB,genLSP) [mm]',
+    'SV_dx' : 'SV x [cm]',
+    'SV_dy' : 'SV y [cm]',
+    'SV_dz' : 'SV z [cm]',
+    'PV_dx' : 'PV x [cm]',
+    'PV_dy' : 'PV y [cm]',
+    'PV_dz' : 'PV z [cm]',
+    'SV_PV_dx' : 'd_{x}(SV,PV) [cm]',
+    'SV_PV_dy' : 'd_{y}(SV,PV) [cm]',
+    'SV_PV_dz' : 'd_{z}(SV,PV) [cm]',
+    'SV_PV_2D' : 'd_{xy}(SV,PV) [cm]',
+    'SV_PV_3D' : 'd_{xyz}(SV,PV) [cm]',
 
 }
 
