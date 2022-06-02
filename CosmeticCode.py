@@ -129,6 +129,21 @@ XlabelDict = {
     'SV_PV_dz' : 'd_{z}(SV,PV) [cm]',
     'SV_PV_2D' : 'd_{xy}(SV,PV) [cm]',
     'SV_PV_3D' : 'd_{xyz}(SV,PV) [cm]',
+    'dec_dx' : 'L(gStop) x [cm]',
+    'dec_dy' : 'L(gStop) y [cm]',
+    'dec_dz' : 'L(gStop) z [cm]',
+    'dec_2D' : 'L(gStop) xy [cm]',
+    'dec_3D' : 'L(gStop) xyz [cm]',
+    'PV_gStop_dx' : 'd_{x}(PV,gStop) [cm]',
+    'PV_gStop_dy' : 'd_{y}(PV,gStop) [cm]',
+    'PV_gStop_dz' : 'd_{z}(PV,gStop) [cm]',
+    'PV_gStop_2D' : 'd_{xy}(PV,gStop) [cm]',
+    'PV_gStop_3D' : 'd_{xyz}(PV,gStop) [cm]',
+    'SV_gStop_dx' : 'd_{x}(SV,gStop) [cm]',
+    'SV_gStop_dy' : 'd_{y}(SV,gStop) [cm]',
+    'SV_gStop_dz' : 'd_{z}(SV,gStop) [cm]',
+    'SV_gStop_2D' : 'd_{xy}(SV,gStop) [cm]',
+    'SV_gStop_3D' : 'd_{xyz}(SV,gStop) [cm]',
 
 }
 
