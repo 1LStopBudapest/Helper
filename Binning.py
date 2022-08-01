@@ -248,6 +248,56 @@ CRBinLabelList = [
     'CR2dY',
     ]
 
+TotLepPt_bin = [3.5, 5, 12, 20, 30, 50, -1]
+TotElePt_bin = [5, 12, 20, 30, 50, -1]
+
+def findReg1BinIndex(CT, MT, LepPt, LepChrg):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            lep = TotElePt_bin if j >= len(MT_bin)-3 else TotLepPt_bin #for last two MT bin, leppT start from 5 GeV
+            for k in range(len(lep)-1):
+                cut3 =LepPt>lep[k] if k==len(lep)-2 else LepPt>lep[k] and LepPt<=lep[k+1]
+                idx += 1
+                if (cut1 and cut2 and cut3 and cutchrg):
+                    pickIdx = idx
+                    break
+            else:
+                continue
+            break
+        else:
+            continue
+        break
+    
+    return pickIdx
+
+def findReg2BinIndex(CT, MT, LepPt):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            lep = TotElePt_bin if j >= len(MT_bin)-3 else TotLepPt_bin #for last two MT bins, leppT start from 5 GeV
+            for k in range(len(lep)-1):
+                cut3 = LepPt>lep[k] if k==len(lep)-2 else LepPt>lep[k] and LepPt<=lep[k+1]
+                idx += 1
+                if (cut1 and cut2 and cut3):
+                    pickIdx = idx
+                    break
+            else:
+                continue
+            break
+        else:
+            continue
+        break
+    
+    return pickIdx
+
 SRCRBinLabelList = [
     'VL',
     'L',
