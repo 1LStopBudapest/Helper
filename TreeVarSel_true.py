@@ -113,5 +113,48 @@ class TreeVarSel_true():
     def smallestDist3D(self, v, L):
         D = 1e5
         for l in L:
-            D = min(D, sqrt((v['x'] - l['x'])**2 + (v['y'] - l['y'])**2 + (v['z'] - l['z'])**2))            
+            D = min(D, sqrt((v['x'] - l['x'])**2 + (v['y'] - l['y'])**2 + (v['z'] - l['z'])**2))
         return D
+
+    def distance3D(self, v, L):
+        D = {}
+        for l in L:
+            D[sqrt((v['x'] - l['x'])**2 + (v['y'] - l['y'])**2 + (v['z'] - l['z'])**2)] = l #{distance : reference SV}
+        return {k: v for k, v in sorted(D.items(), key=lambda item: item[0])} 
+
+    def smallestUniqueDist3D(self, L, SV): #LSP, SV
+        D1 = self.distance3D(L[0], SV) #S
+        D2 = self.distance3D(L[1], SV) #A
+        if list(D1.values())[0] != list(D2.values())[0]:
+            return [list(D1.keys())[0], list(D2.keys())[0]]
+        elif list(D1.values())[0] < list(D2.values())[0]:
+            return [list(D1.keys())[0], list(D2.keys())[1]]
+        else:
+            return [list(D1.keys())[1], list(D2.keys())[0]]
+
+    def only1SV(self, S, A, SV): #LSP from (S)top and (A)ntistop
+        d1 = list(self.distance3D(S,SV).keys())[0]
+        d2 = list(self.distance3D(A,SV).keys())[0]
+        if d1 < d2:
+            return [d1, 1e5] #[S,A]
+        else:
+            return [1e5, d2]
+
+    def getStopPt(self):
+        pT = -1.0
+        for i in range(self.tr.nGenPart):
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102:
+                pT = self.tr.GenPart_pt[i]
+        return pT
+
+    def getLSPStopPt(self):
+        pT_stop = -1.0
+        pT_lsp = -1.0
+        for i in range(self.tr.nGenPart):
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102:
+                pT_stop = self.tr.GenPart_pt[i]
+        for i in range(self.tr.nGenPart):
+            if self.tr.GenPart_pdgId[i] == 1000022 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1': #last copy
+                if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]]) == 1000006 or abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[self.tr.GenPart_genPartIdxMother[i]]]) == 1000006:
+                    pT_lsp = self.tr.GenPart_pt[i]
+        return abs(pT_stop-pT_lsp)
