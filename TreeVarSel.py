@@ -1,3 +1,4 @@
+from traceback import print_tb
 import ROOT
 import math
 import os, sys
@@ -295,9 +296,15 @@ class TreeVarSel():
         isolationWeight = 1.0
         if(isolationType == 'mini'):
             # below 50 GeV, 0.2 cone size
-            # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
+            # 50 < pt < 200: cone size = 10 / pt(lepton)
+            # pt > 200: 0.05 cone size
+            # calculated by weighting with cone area, from different cone sizes (0.3 -> new_cone)
             if(pt < 50):
                 isolationWeight = 0.42942652
+            elif( pt < 200):
+                isolationWeight = math.tan(10.0 / pt)**2 / math.tan(0.3)**2
+            else:
+                isolationWeight = 0.02616993
 
         if lepton_selection == 'HybridIso':
             def func():
