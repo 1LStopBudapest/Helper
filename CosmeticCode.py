@@ -144,6 +144,9 @@ XlabelDict = {
     'SV_gStop_dz' : 'd_{z}(SV,gStop) [cm]',
     'SV_gStop_2D' : 'd_{xy}(SV,gStop) [cm]',
     'SV_gStop_3D' : 'd_{xyz}(SV,gStop) [cm]',
+    'pt_stop' : 'p_{T}(stop) [GeV]',
+    'pt_LSP_stop' : '|p_{T}(stop)-p_{T}(LSP)| [GeV]',
+    'gVtx_gLSP_3D_if' : 'd_{xyz}(genVtx,genLSP) [cm]',
 
 }
 
