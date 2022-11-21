@@ -12,12 +12,13 @@ class TreeVarSel_true():
     def __init__(self, tr, yr):
         self.tr = tr
         self.yr = yr
+        self.colloc = 102 #initial location (of collision), 102=displaced, 62=prompt samples
 
     #GenPart = generated particle vertex
     def getGenPartStop(self):
         genStop = []
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102: # 102==initial location (of collision), 62 == in case of prompt samples
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==self.colloc: 
                 genStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return genStop[0] #this list always has only 1 element
 
@@ -31,7 +32,7 @@ class TreeVarSel_true():
     def getGenPartAntiStop(self):
         genAStop = []
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i]==-1000006 and self.tr.GenPart_status[i]==102:
+            if self.tr.GenPart_pdgId[i]==-1000006 and self.tr.GenPart_status[i]==self.colloc:
                 genAStop.append({'x':self.tr.GenPart_vx[i], 'y':self.tr.GenPart_vy[i], 'z':self.tr.GenPart_vz[i]})
         return genAStop[0] #this list always has only 1 element
 
@@ -143,7 +144,7 @@ class TreeVarSel_true():
     def getStopPt(self):
         pT = -1.0
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102:
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==self.colloc:
                 pT = self.tr.GenPart_pt[i]
         return pT
 
@@ -151,7 +152,7 @@ class TreeVarSel_true():
         pT_stop = -1.0
         pT_lsp = -1.0
         for i in range(self.tr.nGenPart):
-            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==102:
+            if self.tr.GenPart_pdgId[i]==1000006 and self.tr.GenPart_status[i]==self.colloc:
                 pT_stop = self.tr.GenPart_pt[i]
         for i in range(self.tr.nGenPart):
             if self.tr.GenPart_pdgId[i] == 1000022 and binary_repr(self.tr.GenPart_statusFlags[i], width=15)[1] == '1': #last copy
