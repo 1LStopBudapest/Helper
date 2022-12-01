@@ -3,6 +3,7 @@
 Various helper functions.
   
 <b>Manual for printing png images:</b>
+
 The SaveAsQualityPng(canvas, filename) function can be used to save a TCanvas object as a png image with included anti-aliasing for near vectorgraphics-quality. Parameters of the function:
 - canvas: the TCanvas object to save
 - filename: the output filename (string)
