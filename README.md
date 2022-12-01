@@ -20,6 +20,8 @@ Example of very simple usage, supposing we already have an "images/example.pdf" 
 PlotHelper.printNicePng("images/example.pdf")
 This will create an "images/example.png" in near-matching fidelity.
   
+
+These png functions will only work when running on higgs.
   
   
 <b>Manual for ROC plotting:</b>
