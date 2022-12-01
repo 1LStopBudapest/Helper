@@ -1,7 +1,8 @@
 import ROOT
-import os, sys
+import os, sys, io
 import numpy as np
 import math
+import subprocess
 
 from Style import *
 
@@ -139,7 +140,56 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     c.Close()
 
 
-# ROC plotting
+
+# Functions to print out a pdf-quality png file:
+def SaveAsQualityPng(canvas,filename,import_scale=1.5):
+    if not isinstance(canvas, ROOT.TCanvas):
+        print "Error in <PlotHelper.SaveAsQualityPng>: invalid input canvas"
+        return
+
+    oldignore = ROOT.gErrorIgnoreLevel
+    ROOT.gErrorIgnoreLevel = ROOT.kWarning
+    canvas.SaveAs("./temp_pdffile.pdf")
+    ROOT.gErrorIgnoreLevel = oldignore
+    printNicePng("./temp_pdffile.pdf",filename,import_scale)
+    os.remove("./temp_pdffile.pdf")
+
+def printNicePng(filename,outfile = "",import_scale=1.5,silent=True):
+    if ".pdf" in filename or ".png" in filename:
+        filename = filename[:-4]
+
+    if not os.path.exists(filename+".pdf"):
+        print "Error: in <PlotHelper.printNicePng>: input "+filename+".pdf not found or not accessible!"
+        return
+
+    if not outfile:
+        outfile = filename
+    elif ".png" in outfile:
+        outfile = outfile[:-4]
+
+    if not import_scale:
+        import_scale = 1.0
+
+    with open(os.devnull, 'wb') as devnull:
+        bashCall = '/big_data/kadlec/tools/cdpf/cpdf -scale-page "'+str(import_scale)+' '+str(import_scale)+'" '+filename+'.pdf -o temp_upscaled.pdf'
+        if(silent):
+            subprocess.check_call(bashCall, shell=True,stdout=devnull, stderr=subprocess.STDOUT)
+        else:
+            subprocess.check_call(bashCall, shell=True)
+
+        bashCall =  "gimp -i -b '(let* ((image (car (gimp-file-load RUN-NONINTERACTIVE \"temp_upscaled.pdf\" \"temp_upscaled.pdf\"))) (drawable (car (gimp-image-get-active-layer image))))  (set! drawable (car (gimp-image-get-active-layer image)))      (gimp-file-save RUN-NONINTERACTIVE image drawable \""+outfile+".png\" \""+outfile+".png\") (gimp-image-delete image))' -b '(gimp-quit 0)'"
+        if(silent):
+            subprocess.check_call(bashCall, shell=True,stdout=devnull, stderr=subprocess.STDOUT)
+        else:
+            subprocess.check_call(bashCall, shell=True)
+            
+        os.remove('temp_upscaled.pdf')
+        print "Info in <PlotHelper.printNicePng>: png file "+outfile+".png has been created"
+
+
+
+# ROC curve plot 
+# This function is capable of plotting a combination of points and lines on a ROC curve.
 def plotROC(signal_pass, signal_total, bk_pass, bk_total, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
     plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], markdown, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale, fileformat)
 
@@ -328,6 +378,16 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         legxu = 0.5
 
 
+    if(legendpos == "separate"):
+        legxl = 0.1
+        legxu = 0.9
+        legyl = 0.1
+        legyu = 0.9
+
+
+
+
+
 
     leg = ROOT.TLegend(legxl, legyl, legxu, legyu)
     for i in range(len(roc)):
@@ -346,17 +406,27 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
     if(ymax == "auto"):
         ymax = absolute_max_y + valuerange_y * 0.05
 
-    c = ROOT.TCanvas('c', 'Title', 600, 800)
 
-    c.SetGrid()
-    fr = c.DrawFrame(xmin,ymin,xmax,ymax)
+    #c = ROOT.TCanvas('c', 'Title', 600, 800)
+    if(legendpos == "separate"):
+        ROOT.gStyle.SetPaperSize(40,26.6666)
+        canvas = ROOT.TCanvas('c', 'Title', 1200, 800)
+        figurepad = ROOT.TPad("figurepad", "figurepad",0.5,0.0,1.0,1.0)
+        figurepad.SetGrid()
+        figurepad.Draw()
+        figurepad.cd()
+        fr = figurepad.DrawFrame(xmin,ymin,xmax,ymax)
+    else:
+        canvas = ROOT.TCanvas('c', 'Title', 600, 800)
+        canvas.SetGrid()
+        fr = canvas.DrawFrame(xmin,ymin,xmax,ymax)
 
     fr.SetTitle(title)
     fr.SetTitleSize(0.01)
 
     fr.GetYaxis().SetTitle(ytitle)
     fr.GetYaxis().SetTitleSize(0.04)
-    fr.GetYaxis().SetTitleOffset(1.15)
+    fr.GetYaxis().SetTitleOffset(1.25)
     fr.GetYaxis().SetLabelSize(0.03)
     fr.GetXaxis().SetTitle(xtitle)
     fr.GetXaxis().SetTitleSize(0.04)
@@ -380,8 +450,14 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
             roc[i].Draw("P,SAME")
 
 
-    if(legendpos != "no"):
+    if(legendpos == "separate"):
+        canvas.cd()
+        legendpad = ROOT.TPad("legendpad", "legendpad",0.0,0.0,0.5,1.0)
+        legendpad.Draw()
+        legendpad.cd()
+    if(legendpos != "no" and legendpos != "disable" and legendpos != False):
         leg.Draw("SAME")
+    
 
 
     if(name == ""):
@@ -389,8 +465,16 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         if(ptcut != -1):
             name += "_pt"+str(ptcut)
 
-    c.SaveAs(path+"/"+name+"."+fileformat)
-    c.Close()
+    if(not isinstance(fileformat, list)):
+        fileformat = [fileformat]
+
+    for fform in fileformat:
+        if(fform == "png"):
+            SaveAsQualityPng(canvas,path+"/"+name+"."+fform)
+        else:
+            canvas.SaveAs(path+"/"+name+"."+fform)
+
+    canvas.Close()
     return 0
 
 
