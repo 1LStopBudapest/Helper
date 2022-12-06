@@ -62,25 +62,25 @@ class ANEle():
             Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id]})
         return Llist
 
-        def getStdEleVar(self, eId):
-            Llist = []
-            for id in eId:
-                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
-            return Llist
+    def getStdEleVar(self, eId):
+        Llist = []
+        for id in eId:
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+        return Llist
 
     def LowselectEleIdx(self):
-            idx = {}
-            for i in range(len(self.tr.LowPtElectron_pt)):
-                if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection='HybridIso'):
-                    idx[i]='LowPtElectron'
-            return idx
+        idx = {}
+        for i in range(len(self.tr.LowPtElectron_pt)):
+            if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection='HybridIso'):
+                idx[i]='LowPtElectron'
+        return idx
 
     def StdselectEleIdx(self):
-            idx = []
-            for i in range(len(self.tr.Electron_pt)):
-                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
-                    idx[i]='Electron'
-            return idx
+        idx = {}
+        for i in range(len(self.tr.Electron_pt)):
+            if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
+                idx[i]='Electron'
+        return idx
 
 
 
