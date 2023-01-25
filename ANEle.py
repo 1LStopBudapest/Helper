@@ -2,18 +2,24 @@ import ROOT
 import math
 import os, sys
 
-from Helper.VarCalc import eleVID
+from Helper.VarCalc import eleVID, sortedlist
 
 class ANEle():
 
     def __init__(self, tr, objtype, pref):
         self.tr = tr
-        self.objtype = objtype #its a string: 'Std' for standard PF ele, 'LowPt' for low pT ele and 'comb' for combination of both satrting from low pT ele
+        self.objtype = objtype #its a string: 'Std' for standard PF ele, 'LowpT' for low pT ele and 'comb' for combination of both satrting from low pT ele
         self.pref = pref # pref is string which defines the preference between standard and low pT ele while using the 'comb' objtype
 
 
     def getTheType(self):
-        return "type"# need to fix
+        #return the type of leading ele,
+        #for all eles, one can check the type from the An ele var list    
+        try:
+            elvar = sortedlist(self.getANEleVar())
+            return elvar[0]['type']
+        except:
+            return 'No ele in the event'
     
     def getANEleIdx(self):
         if self.objtype=='comb':
@@ -25,7 +31,7 @@ class ANEle():
 
     def getANEleVar(self):
         if self.objtype=='comb':
-            return self.getCombEleVar(self.CombEleIdx())
+            return self.getCombEleVar(self.CombEleIdx(self.pref))
         elif self.objtype=='Std':
             return self.getStdEleVar(self.StdselectEleIdx())
         else:
@@ -33,11 +39,11 @@ class ANEle():
         
     def getCombEleVar(self, eId):
         Llist = []
-        for id, tp in eId:
+        for id, tp in eId.items():
             if tp =='LowPtElectron':
-                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id]})
+                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':'LowpT'})
             else:
-                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':'Std'})
         return Llist
 
     def CombEleIdx(self, pref):
@@ -59,28 +65,28 @@ class ANEle():
     def getLowPtEleVar(self, eId):
         Llist = []
         for id in eId:
-            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id]})
+            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':'LowpT'})
         return Llist
 
     def getStdEleVar(self, eId):
         Llist = []
         for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':'Std'})
         return Llist
 
     def LowselectEleIdx(self):
-        idx = {}
-        for i in range(len(self.tr.LowPtElectron_pt)):
-            if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection='HybridIso'):
-                idx[i]='LowPtElectron'
-        return idx
+            idx = {}
+            for i in range(len(self.tr.LowPtElectron_pt)):
+                if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection='HybridIso'):
+                    idx[i]='LowPtElectron'
+            return idx
 
     def StdselectEleIdx(self):
-        idx = {}
-        for i in range(len(self.tr.Electron_pt)):
-            if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
-                idx[i]='Electron'
-        return idx
+            idx = {}
+            for i in range(len(self.tr.Electron_pt)):
+                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
+                    idx[i]='Electron'
+            return idx
 
 
 
