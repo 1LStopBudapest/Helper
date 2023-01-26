@@ -106,7 +106,7 @@ class ANEle():
                 
         if lepton_selection == 'HybridIso':
             def func():
-                if pt <= 25 and pt >5:
+                if pt <= 25 and pt >3:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
@@ -124,7 +124,7 @@ class ANEle():
                         and Id > 0
         elif lepton_selection == 'looseHybridIso':
             def func():
-                if pt <= 25 and pt >5:
+                if pt <= 25 and pt >3:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
@@ -145,7 +145,7 @@ class ANEle():
         else:
             def func():
                 return \
-                    pt >5 \
+                    pt >3 \
                     and abs(eta)       < 2.5 \
                     and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                     and Id > 0
@@ -153,11 +153,6 @@ class ANEle():
                 
     def StdeleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='standard'):
         isolationWeight = 1.0
-        if(isolationType == 'mini'):
-            # below 50 GeV, 0.2 cone size
-            # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
-            if(pt < 50):
-                isolationWeight = 0.42942652
                 
         if lepton_selection == 'HybridIso':
             def func():
