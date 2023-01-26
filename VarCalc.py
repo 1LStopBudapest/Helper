@@ -145,13 +145,13 @@ def Fill1D(h, a, w=1):
 
 def Fill2D(h, a, b, w=1):
     nbinx = h.GetNbinsX()
-    lowx = h.GetBinLowEdge(nbinx)
-    highx = h.GetBinLowEdge(nbinx + 1)
+    lowx = h.GetXaxis().GetBinLowEdge(nbinx)
+    highx = h.GetXaxis().GetBinLowEdge(nbinx + 1)
     copyx = a
     if copyx >= highx: copyx = lowx
     nbiny = h.GetNbinsY()
-    lowy = h.GetBinLowEdge(nbiny)
-    highy = h.GetBinLowEdge(nbiny + 1)
+    lowy = h.GetYaxis().GetBinLowEdge(nbiny)
+    highy = h.GetYaxis().GetBinLowEdge(nbiny + 1)
     copyy = a
     if copyy >= highy: copyy = lowy
     h.Fill(copyx, copyy, w)
