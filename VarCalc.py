@@ -152,6 +152,6 @@ def Fill2D(h, a, b, w=1):
     nbiny = h.GetNbinsY()
     lowy = h.GetYaxis().GetBinLowEdge(nbiny)
     highy = h.GetYaxis().GetBinLowEdge(nbiny + 1)
-    copyy = a
+    copyy = b
     if copyy >= highy: copyy = lowy
     h.Fill(copyx, copyy, w)
