@@ -35,7 +35,7 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
@@ -57,7 +57,7 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
