@@ -4,7 +4,7 @@ import os, sys
 from Style import *
 
             
-def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=1400, canvasY=800):
+def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=1600, canvasY=600):
     outputdirpath = os.path.join(dir, "RegionPlots", cut)
     if not os.path.exists(outputdirpath):
         if os.path.exists(os.path.join(dir,"RegionPlots")):
@@ -21,7 +21,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hsig=[]
     sigleg=[]
     hData=[]
-    leg = ROOT.TLegend(0.5, 0.7, 0.9, 0.9)
+    leg = ROOT.TLegend(0.7, 0.8, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs, 0):
         if 'T2tt' in samplelist[i]:

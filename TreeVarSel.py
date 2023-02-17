@@ -40,6 +40,12 @@ class TreeVarSel():
         else:
             return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
 
+    def SR2extension(self):
+        if not self.SearchRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
+
     def ControlRegion(self):
         if not self.PreSelection():
             return False
