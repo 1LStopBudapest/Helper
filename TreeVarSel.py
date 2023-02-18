@@ -5,13 +5,16 @@ import os, sys
 import collections as coll
 
 from Helper.VarCalc import *
+from ANEle import ANEle
 
 class TreeVarSel():
     
-    def __init__(self, tr, isData, yr):
+    def __init__(self, tr, isData, yr, eletype='comb', elepref='Std'):
         self.tr = tr
         self.yr = yr
         self.isData = isData
+        self.eletype = eletype
+        self.elepref = elepref
         
     #selection
     def PreSelection(self):
@@ -22,7 +25,7 @@ class TreeVarSel():
         if not self.PreSelection():
             return False
         else:
-            lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
             if len(lepvar) >= 1 and lepvar[0]['pt']<=30 and self.tr.MET_pt > 300:
                 return True
             else:
@@ -32,7 +35,7 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
@@ -50,7 +53,7 @@ class TreeVarSel():
         if not self.PreSelection():
             return False
         else:
-            lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
             if len(lepvar) > 1 and lepvar[0]['pt']>30:
                 return True
             else:
@@ -60,7 +63,7 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
@@ -94,7 +97,7 @@ class TreeVarSel():
         return cut
 
     def lepcut(self):
-        return len(self.getLepVar(self.selectMuIdx(), self.selectEleIdx())) >= 1
+        return len(self.getLepVar(self.selectMuIdx())) >= 1
     
     def SingleElecut(self):
         return self.cntEle()>=1 and self.cntMuon()==0
@@ -104,7 +107,7 @@ class TreeVarSel():
     
     def XtralepVeto(self):
         cut = True
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         if len(lepvar) > 1 and lepvar[1]['pt']>20:
             cut = False
         return cut
@@ -122,7 +125,7 @@ class TreeVarSel():
         return cut
             
     def getLepMT(self):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         return MT(lepvar[0]['pt'], lepvar[0]['phi'], self.tr.MET_pt, self.tr.MET_phi) if len(lepvar) else 0
 
     def calCT(self, i):
@@ -153,7 +156,7 @@ class TreeVarSel():
     	return len(self.selectEleIdx())
     
     def selectjetIdx(self, thrsld):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         idx = []
         d = {}
         for j in range(len(self.tr.Jet_pt)):
@@ -190,12 +193,7 @@ class TreeVarSel():
 
 
     def	selectEleIdx(self):
-        idx = []
-        for i in range(len(self.tr.Electron_pt)):
-            #if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
-            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
-                idx.append(i)              
-	return idx
+	return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a dictionary with index and collection type too
 
     def selectMuIdx(self):
         idx = []
@@ -207,29 +205,25 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id]})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
-    def getEleVar(self, eId):
-        Llist = []
-        for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
-        return Llist
+    def getEleVar(self):
+        return ANEle(self.tr, self.eletype, self.elepref).getANEleVar()
     
-    def getLepVar(self, muId, eId):
+    def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id]})
-        for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+        Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
     def getSortedLepVar(self):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         return lepvar
 
     def getLepZero(self):
-        L = self.getLepVar(self.selectMuIdx(), self.selectEleIdx())
+        L = self.getLepVar(self.selectMuIdx())
         L2 = []
         for l in range(len(L)):
             L2.append(L[l]['pt'])
@@ -297,74 +291,6 @@ class TreeVarSel():
                     and Id
         return func()
 
-
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='standard', year='2017'):
-        isolationWeight = 1.0
-        if(isolationType == 'mini'):
-            # below 50 GeV, 0.2 cone size
-            # 50 < pt < 200: cone size = 10 / pt(lepton)
-            # pt > 200: 0.05 cone size
-            # calculated by weighting with cone area, from different cone sizes (0.3 -> new_cone)
-            if(pt < 50):
-                isolationWeight = 0.42942652
-            elif( pt < 200):
-                isolationWeight = math.tan(10.0 / pt)**2 / math.tan(0.3)**2
-            else:
-                isolationWeight = 0.02616993
-
-        if lepton_selection == 'HybridIso':
-            def func():
-                if pt <= 25 and pt >5:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso* pt) < 5.0 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
-                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
-                elif pt > 25:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.2 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
-                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
-
-        elif lepton_selection == 'looseHybridIso':
-            def func():
-                if pt <= 25 and pt >5:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso*pt) < 20.0 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
-                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
-                elif pt > 25:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.8 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
-                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
-
-
-        else:
-            def func():
-                return \
-                    pt >5 \
-                    and abs(eta)       < 2.5 \
-                    and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                    and eleVID(Id,1)
-        return func()
-
-
-
-
-    def eleID(self, idval, idtype):
-        return idval >= idtype
 
 
     def IVFIdx(self):

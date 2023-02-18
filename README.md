@@ -1,7 +1,12 @@
 # Helper
 
 Various helper functions.
-  
+
+TreeVarSel is used to select object and selection for the AN, it uses ANELe class for the elctron selection
+
+For AN binning implementation one can use Binning.py
+
+
 <b>Manual for printing png images:</b>
 
 The SaveAsQualityPng(canvas, filename) function can be used to save a TCanvas object as a png image with included anti-aliasing for near vectorgraphics-quality. Parameters of the function:
