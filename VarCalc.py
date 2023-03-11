@@ -29,6 +29,13 @@ def DeltaPhi(phi1, phi2):
 def DeltaR(eta1, phi1, eta2, phi2):
     return sqrt(DeltaPhi(phi1, phi2)**2 + (eta1 - eta2)**2)
 
+def MinDeltaR(eta, phi, L):
+    mindr = 99
+    for l in L:
+        dri = DeltaR(l['eta'], l['phi'], eta, phi)
+        if dri < mindr: mindr = dri
+    return mindr
+
 def DeltaRMatched(eta, phi, L, thr):
     dr = 99
     for l in L:
@@ -65,7 +72,10 @@ def AltMETCalc(MuonPt, MuonEta, MuonPhi, MuonMass, METPt, METPhi):
     Muon.SetPtEtaPhiM(MuonPt, MuonEta, MuonPhi, MuonMass)
     MET.SetPtEtaPhiM(METPt, 0, METPhi, 0)
     return MET+Muon
-    
+
+def CIsovar(C, Pt0, Pt):
+    return C * min(1, Pt/Pt0)
+
 def GenFlagString(flag):
     s = '{0:15b}'.format(flag)
     return s
