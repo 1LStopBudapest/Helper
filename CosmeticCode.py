@@ -64,6 +64,10 @@ colDict = {
     'TTV' : ROOT.kAzure-7,
     'VV' : ROOT.kOrange,
     'Data': ROOT.kBlack,
+    'TTbar' : 5,
+    'Sig_Displaced_300_290' : 8,
+    'Sig_Displaced_350_335' : ROOT.kOrange-3,
+    'Sig_Displaced_400_380' : ROOT.kMagenta-6,
 
 }
 
@@ -106,6 +110,10 @@ LegendTitleDict = {
     'Data': 'Data',
     'DoubleMuon_Data': 'Data(Double#mu)',
     'SingleMuon_Data': 'Data(Single#mu)',
+    'TTbar' : 't#bar{t}',
+    'Sig_Displaced_300_290' : 'Sig_Disp_300_290',
+    'Sig_Displaced_350_335' : 'Sig_Disp_350_335',
+    'Sig_Displaced_400_380' : 'Sig_Disp_400_380',
     }
 
 vidNestedWPBitMapNamingList = [
