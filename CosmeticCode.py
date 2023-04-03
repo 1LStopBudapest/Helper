@@ -68,6 +68,9 @@ colDict = {
     'Sig_Displaced_300_290' : 8,
     'Sig_Displaced_350_335' : ROOT.kOrange-3,
     'Sig_Displaced_400_380' : ROOT.kMagenta-6,
+    'Sig_Prompt_500_420' : 6,
+    'Sig_Prompt_500_450' : ROOT.kOrange,
+    'Sig_Prompt_500_470' : ROOT.kGreen,
 
 }
 
@@ -114,6 +117,9 @@ LegendTitleDict = {
     'Sig_Displaced_300_290' : 'Sig_Disp_300_290',
     'Sig_Displaced_350_335' : 'Sig_Disp_350_335',
     'Sig_Displaced_400_380' : 'Sig_Disp_400_380',
+    'Sig_Prompt_500_420' : 'Sig_Pr_500_420',
+    'Sig_Prompt_500_450' : 'Sig_Pr_500_450',
+    'Sig_Prompt_500_470' : 'Sig_Pr_500_470',
     }
 
 vidNestedWPBitMapNamingList = [
