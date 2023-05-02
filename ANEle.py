@@ -2,14 +2,14 @@ import ROOT
 import math
 import os, sys
 
-from Helper.VarCalc import eleVID, sortedlist
+from Helper.VarCalc import eleVID, sortedlist, DeltaR
 
 class ANEle():
 
     def __init__(self, tr, objtype, pref):
         self.tr = tr
-        self.objtype = objtype #its a string: 'Std' for standard PF ele, 'LowpT' for low pT ele and 'comb' for combination of both satrting from low pT ele
-        self.pref = pref # pref is string which defines the preference between standard and low pT ele while using the 'comb' objtype
+        self.objtype = objtype #its a string: 'Std' for standard PF ele, 'LowpT' for low pT ele and 'comb' for combination of both starting from the object according to the given preference 
+        self.pref = pref # pref is string which defines the preference between standard and low pT ele while using the 'comb' objtype, 'Std' for Standard & 'LowpT' for Low pT electron. *** for now we use satndard ele as the preference 
 
 
     def getTheType(self):
@@ -31,7 +31,7 @@ class ANEle():
 
     def getANEleVar(self):
         if self.objtype=='comb':
-            return self.getCombEleVar(self.CombEleIdx(self.pref))
+            return self.getCombEleVar(self.CombEleIdx())
         elif self.objtype=='Std':
             return self.getStdEleVar(self.StdselectEleIdx())
         else:
@@ -39,57 +39,69 @@ class ANEle():
         
     def getCombEleVar(self, eId):
         Llist = []
-        for id, tp in eId.items():
+        for id, tp in eId:
             if tp =='LowPtElectron':
-                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':'LowpT'})
+                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
             else:
-                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':'Std'})
+                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
-    def CombEleIdx(self, pref):
-        idx = {}
-        if pref=='Standard':
-            for id in self.StdselectEleIdx():
-                idx[id] = 'Electron'
-            if not idx:
-                for id in self.LowselectEleIdx():
-                    idx[id] = 'LowPtElectron'
+    def CombEleIdx(self):
+        idx = []
+        if self.pref=='Std':
+            for id, tp in self.StdselectEleIdx():
+                idx.append(tuple((id, tp)))
+            for id, tp in self.LowselectEleIdx():
+                if not id in list(self.SelectPairIdx().values()):
+                    idx.append(tuple((id, tp)))
         else:
-            for id in self.LowselectEleIdx():
-                idx[id] = 'LowPtElectron'
-            if not idx:
-                for id in self.StdselectEleIdx():
-                    idx[id] = 'Electron'
+            for id, tp in self.LowselectEleIdx():
+                idx.append(tuple((id, tp)))
+            for id, tp in self.StdselectEleIdx():
+                if not id in list(self.SelectPairIdx().keys()):
+                    idx.append(tuple((id, tp)))
         return idx
 
     def getLowPtEleVar(self, eId):
         Llist = []
-        for id in eId:
-            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':'LowpT'})
+        for id, tp in eId:
+            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
         return Llist
 
     def getStdEleVar(self, eId):
         Llist = []
-        for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':'Std'})
+        for id, tp in eId:
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
-    def LowselectEleIdx(self):
-            idx = {}
+    def LowselectEleIdx(self, lepsel='HybridIso'):
+            idx = []
             for i in range(len(self.tr.LowPtElectron_pt)):
-                if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection='HybridIso'):
-                    idx[i]='LowPtElectron'
+                if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection=lepsel):
+                    idx.append(tuple((i, 'LowPtElectron')))
             return idx
 
-    def StdselectEleIdx(self):
-            idx = {}
+    def StdselectEleIdx(self, lepsel='HybridIso'):
+            idx = []
             for i in range(len(self.tr.Electron_pt)):
-                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
-                    idx[i]='Electron'
+                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
+                    idx.append(tuple((i, 'Electron')))
             return idx
 
-
-
+    def SelectPairIdx(self):
+        PIdx = []
+        for isx, ist in self.StdselectEleIdx():
+            mindr=9999
+            milx=-9999
+            for ilx, ilt in self.LowselectEleIdx():
+                dr=DeltaR(self.tr.Electron_eta[isx], self.tr.Electron_phi[isx], self.tr.LowPtElectron_eta[ilx], self.tr.LowPtElectron_phi[ilx])
+                if dr < mindr:
+                    mindr = dr
+                    milx = ilx
+            if mindr < 0.1: # now DR threshold is 0.1
+                PIdx.append(tuple((isx, ilx)))                
+        return dict(PIdx)
+    
     def LoweleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='mini'):
         isolationWeight = 1.0
         if(isolationType == 'mini'):
@@ -153,7 +165,6 @@ class ANEle():
                 
     def StdeleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='standard'):
         isolationWeight = 1.0
-                
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >5:
