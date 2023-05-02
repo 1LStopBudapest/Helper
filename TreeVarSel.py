@@ -187,12 +187,12 @@ class TreeVarSel():
 
 
     def	selectEleIdx(self):
-	return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a dictionary with index and collection type too
+	return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a list of tuple where tuple contain index and collection type
 
-    def selectMuIdx(self):
+    def selectMuIdx(self, lepsel='HybridIso'):
         idx = []
         for i in range(len(self.tr.Muon_pt)):
-            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_pfRelIso03_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], lepton_selection='HybridIso'):
+            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_pfRelIso03_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel):
                 idx.append(i)
         return idx
     
@@ -243,7 +243,7 @@ class TreeVarSel():
             return True
         
 
-    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2017'):
+    def muonSelector( self, pt, eta, iso, dxy, dz, Id, lepton_selection='HybridIso'):
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 25 and pt >3.5:
