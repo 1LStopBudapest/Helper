@@ -51,14 +51,16 @@ class ANEle():
         if self.pref=='Std':
             for id, tp in self.StdselectEleIdx():
                 idx.append(tuple((id, tp)))
+            pair_idx = list(self.SelectPairIdx().values())
             for id, tp in self.LowselectEleIdx():
-                if not id in list(self.SelectPairIdx().values()):
+                if not id in pair_idx:
                     idx.append(tuple((id, tp)))
         else:
             for id, tp in self.LowselectEleIdx():
                 idx.append(tuple((id, tp)))
+            pair_idx = list(self.SelectPairIdx().keys())
             for id, tp in self.StdselectEleIdx():
-                if not id in list(self.SelectPairIdx().keys()):
+                if not id in pair_idx:
                     idx.append(tuple((id, tp)))
         return idx
 
@@ -99,7 +101,7 @@ class ANEle():
                     mindr = dr
                     milx = ilx
             if mindr < 0.1: # now DR threshold is 0.1
-                PIdx.append(tuple((isx, ilx)))                
+                PIdx.append(tuple((isx, milx)))                
         return dict(PIdx)
     
     def LoweleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', isolationType='mini'):
