@@ -23,7 +23,7 @@ class ANEle():
     
     def getANEleIdx(self):
         if self.objtype=='comb':
-            return self.CombEleIdx(self.pref)
+            return self.CombEleIdx()
         elif self.objtype=='Std':
             return self.StdselectEleIdx()
         else:
