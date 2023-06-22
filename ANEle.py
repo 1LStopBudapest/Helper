@@ -212,5 +212,5 @@ class ANEle():
                     pt >5 \
                     and abs(eta)       < 2.5 \
                     and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                    and eleVID(Id,1)
+                    and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
         return func()
