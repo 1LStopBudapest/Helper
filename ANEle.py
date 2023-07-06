@@ -86,7 +86,7 @@ class ANEle():
     def StdselectEleIdx(self, lepsel='HybridIso'):
             idx = []
             for i in range(len(self.tr.Electron_pt)):
-                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
+                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_miniPFRelIso_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
                     idx.append(tuple((i, 'Electron')))
             return idx
 
