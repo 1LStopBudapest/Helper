@@ -118,7 +118,7 @@ class ANEle():
                 isolationWeight = math.tan(10.0 / pt)**2 / math.tan(0.3)**2
             else:
                 isolationWeight = 0.02616993
-         '''     
+        '''     
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 12 and pt >3: #new transition point 12 GeV
@@ -126,16 +126,12 @@ class ANEle():
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso* pt) < 2.4 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
                         and Id > 2.5 #BDT score larger than 2.5
-                elif pt > 12:
+                elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.2 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
                         and Id > 2.5
         elif lepton_selection == 'looseHybridIso':
             def func():
@@ -144,16 +140,12 @@ class ANEle():
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso*pt) < 20.0 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and Id > 0
                 elif pt > 12:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.8 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and Id > 0
                 
                     
@@ -175,16 +167,12 @@ class ANEle():
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso* pt) < 2.4 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
                 elif pt > 12:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.2 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
                                                                                                                         
         elif lepton_selection == 'looseHybridIso':
@@ -194,16 +182,12 @@ class ANEle():
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and (iso*pt) < 20.0 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
                 elif pt > 12:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
                         and iso < 0.8 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
                 
                     

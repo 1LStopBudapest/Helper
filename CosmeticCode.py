@@ -82,7 +82,7 @@ TrigcolDict = {
 }
 
 RatioTitleDict = {
-    'fastfull' : 'fast / full',
+    'fastfull' : 'full / fast',
     'DataMC' : 'Data/MC',
     'FakeRate' : '#epsilon_{TL}'
 }
