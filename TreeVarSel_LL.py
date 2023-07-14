@@ -5,7 +5,7 @@ import os, sys
 import collections as coll
 
 from Helper.VarCalc import *
-from ANEle import ANEle
+from ANEle_LL import ANEle
 
 class TreeVarSel():
     
@@ -249,16 +249,12 @@ class TreeVarSel():
                 if pt <= 12 and pt >3: #new transition point 12 GeV
                     return \
                         abs(eta)       < 2.4 \
-                        and (iso* pt) < 2.4 \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
+                        and (iso* pt) < 5.0 \
                         and Id
-                elif pt > 25:
+                elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.2 \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
                         and Id
             
         elif lepton_selection == 'looseHybridIso':
@@ -267,15 +263,11 @@ class TreeVarSel():
                     return \
                         abs(eta)       < 2.4 \
                         and (iso*pt) < 20.0 \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and Id
                 elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.8 \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
                         and Id
         else:
             def func():
