@@ -21,10 +21,10 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hsig=[]
     sigleg=[]
     hData=[]
-    leg = ROOT.TLegend(0.7, 0.8, 0.9, 0.9)
+    leg = ROOT.TLegend(0.6, 0.7, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs, 0):
-        if 'T2tt' in samplelist[i]:
+        if 'Sig' in samplelist[i]:
             hsig.append(h)
             h.SetLineColor(len(hs)-i)
             h.SetLineWidth(2)
