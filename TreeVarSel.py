@@ -231,7 +231,7 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP':
+        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
             return jetb > 0.6321
         elif year == '2017':
             return jetb > 0.4941
@@ -241,7 +241,7 @@ class TreeVarSel():
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP':
+        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
             return jetb > 0.8484
         elif year == '2017' or year == '2018':
             return jetb > 0.8838
