@@ -41,9 +41,9 @@ class ANEle():
         Llist = []
         for id, tp in eId:
             if tp =='LowPtElectron':
-                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
+                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
             else:
-                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
+                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
     def CombEleIdx(self):
@@ -67,26 +67,26 @@ class ANEle():
     def getLowPtEleVar(self, eId):
         Llist = []
         for id, tp in eId:
-            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
+            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
         return Llist
 
     def getStdEleVar(self, eId):
         Llist = []
         for id, tp in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
     def LowselectEleIdx(self, lepsel='HybridIso'):
             idx = []
             for i in range(len(self.tr.LowPtElectron_pt)):
-                if self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection=lepsel):
+                if ord(self.tr.LowPtElectron_genPartFlav[i]) in [1, 15] and self.LoweleSelector(pt=self.tr.LowPtElectron_pt[i], eta=self.tr.LowPtElectron_eta[i], deltaEtaSC=self.tr.LowPtElectron_deltaEtaSC[i], iso=self.tr.LowPtElectron_miniPFRelIso_all[i], dxy=self.tr.LowPtElectron_dxy[i], dz=self.tr.LowPtElectron_dz[i], Id=self.tr.LowPtElectron_ID[i],lepton_selection=lepsel):
                     idx.append(tuple((i, 'LowPtElectron')))
             return idx
 
     def StdselectEleIdx(self, lepsel='HybridIso'):
             idx = []
             for i in range(len(self.tr.Electron_pt)):
-                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_miniPFRelIso_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
+                if ord(self.tr.Electron_genPartFlav[i]) in [1, 15] and self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_miniPFRelIso_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
                     idx.append(tuple((i, 'Electron')))
             return idx
 
