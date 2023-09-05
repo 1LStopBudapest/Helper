@@ -198,14 +198,14 @@ class TreeVarSel():
     def selectMuIdx(self, lepsel='HybridIso'):
         idx = []
         for i in range(len(self.tr.Muon_pt)):
-            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_miniPFRelIso_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel):
+            if ord(self.tr.Muon_genPartFlav[i]) in [1, 15] and self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_miniPFRelIso_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel): #temp genmatch flag for signal
                 idx.append(i)
         return idx
     
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -214,7 +214,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -259,7 +259,7 @@ class TreeVarSel():
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and Id
-                elif pt > 25:
+                elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.2 \
