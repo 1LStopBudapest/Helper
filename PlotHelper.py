@@ -46,8 +46,8 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     hRatioFrame = getHistratioframe(hRatio)
 
     leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
-    leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
-    leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
+    leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
+    leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
     
     c = ROOT.TCanvas('c', '', 600, 800)
     p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
@@ -58,6 +58,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     h2.Draw(drawOption+"ESAME")
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
+    if 'dxy' in htitle:ROOT.gPad.SetLogx()
     c.cd()
     p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
     p2.SetTopMargin(0)
@@ -65,6 +66,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     p2.Draw()
     p2.cd()
     hRatio.SetMarkerSize(0.6)
+    hRatio.GetYaxis().SetRangeUser(0.6,1.4)
     hRatio.Draw("PE")
     hRatioFrame.Draw("HISTsame")
     c.SaveAs(outputdirpath+"/"+htitle+".png")
