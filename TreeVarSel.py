@@ -88,11 +88,24 @@ class TreeVarSel():
         if HT > thr:
             cut = True
         return cut
-
-    def dphicut(self, thr=20):
+'''
+    def dphicut(self, thr=20): #old cut
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
+                cut = False
+        return cut
+'''
+    def dphicut(self, thr=20):
+        cut = True
+        if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
+            Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
+        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+            Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
+        else:
+            Adphi = -999
+            
+        if Adphi > 2.5:
                 cut = False
         return cut
 
@@ -205,7 +218,7 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -214,7 +227,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -259,7 +272,7 @@ class TreeVarSel():
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and Id
-                elif pt > 25:
+                elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.2 \
