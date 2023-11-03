@@ -105,7 +105,7 @@ class TreeVarSel():
         else:
             Adphi = -999
             
-        if Adphi > 2.5:
+        if Adphi < 0.5:
                 cut = False
         return cut
 
