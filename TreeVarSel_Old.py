@@ -5,11 +5,11 @@ import os, sys
 import collections as coll
 
 from Helper.VarCalc import *
-from ANEle import ANEle
+from ANEle_Old import ANEle
 
 class TreeVarSel():
     
-    def __init__(self, tr, isData, yr, eletype='comb', elepref='Std'):
+    def __init__(self, tr, isData, yr, eletype='Std', elepref='Std'):
         self.tr = tr
         self.yr = yr
         self.isData = isData
@@ -192,7 +192,7 @@ class TreeVarSel():
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
-            if self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr):
+            if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
 
@@ -211,7 +211,7 @@ class TreeVarSel():
     def selectMuIdx(self, lepsel='HybridIso'):
         idx = []
         for i in range(len(self.tr.Muon_pt)):
-            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_miniPFRelIso_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel):
+            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_pfRelIso03_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel):
                 idx.append(i)
         return idx
     
@@ -244,7 +244,7 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
+        if year == '2016PreVFP' or year == '2016PostVFP':
             return jetb > 0.6321
         elif year == '2017':
             return jetb > 0.4941
@@ -253,18 +253,26 @@ class TreeVarSel():
         else:
             return True
 
+    def isBtagCSVv2(self, jetb, year):
+        if year == '2016PreVFP' or year == '2016PostVFP':
+            return jetb > 0.8484
+        elif year == '2017' or year == '2018':
+            return jetb > 0.8838
+        else:
+            return True
+        
 
     def muonSelector( self, pt, eta, iso, dxy, dz, Id, lepton_selection='HybridIso'):
         if lepton_selection == 'HybridIso':
             def func():
-                if pt <= 12 and pt >3: #new transition point 12 GeV
+                if pt <= 25 and pt >3.5:
                     return \
                         abs(eta)       < 2.4 \
-                        and (iso* pt) < 2.4 \
+                        and (iso* pt) < 5.0 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and Id
-                elif pt > 12:
+                elif pt > 25:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.2 \
@@ -274,14 +282,14 @@ class TreeVarSel():
             
         elif lepton_selection == 'looseHybridIso':
             def func():
-                if pt <= 12 and pt >3:
+                if pt <= 25 and pt >3.5:
                     return \
                         abs(eta)       < 2.4 \
                         and (iso*pt) < 20.0 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and Id
-                elif pt > 12:
+                elif pt > 25:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.8 \
@@ -291,7 +299,7 @@ class TreeVarSel():
         else:
             def func():
                 return \
-                    pt >3 \
+                    pt >3.5 \
                     and abs(eta)       < 2.4 \
                     and Id
         return func()
