@@ -1,5 +1,6 @@
 import ROOT
 from math import pi, sqrt, cos, sin, sinh, log, cosh
+from ROOT import TLorentzVector
 import textwrap
 
 from CosmeticCode import vidNestedWPBitMapNamingList
@@ -27,6 +28,13 @@ def DeltaPhi(phi1, phi2):
 
 def DeltaR(eta1, phi1, eta2, phi2):
     return sqrt(DeltaPhi(phi1, phi2)**2 + (eta1 - eta2)**2)
+
+def MinDeltaR(eta, phi, L):
+    mindr = 99
+    for l in L:
+        dri = DeltaR(l['eta'], l['phi'], eta, phi)
+        if dri < mindr: mindr = dri
+    return mindr
 
 def DeltaRMatched(eta, phi, L, thr):
     dr = 99
@@ -58,7 +66,16 @@ def CT1(met, HT):
 def CT2(met, ISRpt):
     return min(met, ISRpt-25)
 
-    
+def AltMETCalc(MuonPt, MuonEta, MuonPhi, MuonMass, METPt, METPhi):
+    Muon = TLorentzVector()
+    MET= TLorentzVector()
+    Muon.SetPtEtaPhiM(MuonPt, MuonEta, MuonPhi, MuonMass)
+    MET.SetPtEtaPhiM(METPt, 0, METPhi, 0)
+    return MET+Muon
+
+def CIsovar(C, Pt0, Pt):
+    return C * min(1, Pt/Pt0)
+
 def GenFlagString(flag):
     s = '{0:15b}'.format(flag)
     return s
@@ -138,13 +155,13 @@ def Fill1D(h, a, w=1):
 
 def Fill2D(h, a, b, w=1):
     nbinx = h.GetNbinsX()
-    lowx = h.GetBinLowEdge(nbinx)
-    highx = h.GetBinLowEdge(nbinx + 1)
+    lowx = h.GetXaxis().GetBinLowEdge(nbinx)
+    highx = h.GetXaxis().GetBinLowEdge(nbinx + 1)
     copyx = a
     if copyx >= highx: copyx = lowx
     nbiny = h.GetNbinsY()
-    lowy = h.GetBinLowEdge(nbiny)
-    highy = h.GetBinLowEdge(nbiny + 1)
-    copyy = a
+    lowy = h.GetYaxis().GetBinLowEdge(nbiny)
+    highy = h.GetYaxis().GetBinLowEdge(nbiny + 1)
+    copyy = b
     if copyy >= highy: copyy = lowy
     h.Fill(copyx, copyy, w)
