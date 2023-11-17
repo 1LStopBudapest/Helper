@@ -49,14 +49,13 @@ XlabelDict = {
     'MuPt_tight'    : 'Tight #mu p_{T} [GeV]',
     'ElePt_loose'   : 'Loose e p_{T} [GeV]',
     'ElePt_tight'   : 'Tight e p_{T} [GeV]',
-    'Ntracks' : 'N_{tracks}',
     'nSV' : 'N_{SV}',
     'Ntracks' : 'N_{tracks}',
-    'SVdxy' : 'SV_{dxy} [cm]',
+    'SVdxy' : 'D_{xy}(SV) [cm]',
     'SVdxySig' : 'S_{2D}',
-    'SVmass' : 'SV_{mass} [GeV]',
+    'SVmass' : 'm_{SV} [GeV]',
     'SVdlenSig' : 'S_{3D}',
-    'SVpAngle' : 'cos(PV-SV, SVp)',
+    'SVpAngle' : 'cos(#beta)',
     'SVpT' : 'p_{T}(SV) [Gev]',
     'SVdR' : '#Delta R(SV, jet)'
 
@@ -77,6 +76,7 @@ colDict = {
     'UL17V9_Full99mm' : ROOT.kAzure+2,
     'TTToSemiLeptonic' : 8,
     'TTTo2L2Nu' : ROOT.kOrange,
+    'TTbar' : 5,
 
 }
 
@@ -117,6 +117,7 @@ LegendTitleDict = {
     'UL17V9_Full99mm' : 'UL17V9_Full99mm',
     'TTToSemiLeptonic' : 'TTToSemiLeptonic',
     'TTTo2L2Nu' : 'TTTo2L2Nu',
+    'TTbar' : 't#bar{t}',
     }
 
 vidNestedWPBitMapNamingList = [
