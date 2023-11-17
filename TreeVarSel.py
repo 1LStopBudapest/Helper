@@ -1,18 +1,20 @@
+from traceback import print_tb
 import ROOT
 import math
 import os, sys
 import collections as coll
 
 from Helper.VarCalc import *
-
-JetPtThreshold = 20
+from ANEle import ANEle
 
 class TreeVarSel():
     
-    def __init__(self, tr, isData, yr):
+    def __init__(self, tr, isData, yr, eletype='comb', elepref='Std'):
         self.tr = tr
         self.yr = yr
         self.isData = isData
+        self.eletype = eletype
+        self.elepref = elepref
 
     #selection
     def PreSelection(self):
@@ -23,8 +25,8 @@ class TreeVarSel():
         if not self.PreSelection():
             return False
         else:
-            lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-            if len(lepvar) >= 1 and lepvar[0]['pt']<=30 and self.tr.MET_pt > 300:
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=50 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -33,20 +35,26 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def SR2(self):
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+
+    def SR2extension(self):
+        if not self.SearchRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
 
     def ControlRegion(self):
         if not self.PreSelection():
             return False
         else:
-            lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>30:
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) > 1 and lepvar[0]['pt']>50:
                 return True
             else:
                 return False
@@ -55,13 +63,13 @@ class TreeVarSel():
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
 
     def CR2(self):
         if not self.ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=JetPtThreshold)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
                 
 
     #cuts
@@ -80,16 +88,29 @@ class TreeVarSel():
         if HT > thr:
             cut = True
         return cut
-
-    def dphicut(self, thr=JetPtThreshold):
+'''
+    def dphicut(self, thr=20): #old cut
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
                 cut = False
         return cut
+'''
+    def dphicut(self, thr=20):
+        cut = True
+        if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
+            Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
+        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+            Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
+        else:
+            Adphi = -999
+
+        if Adphi < 0.5:
+                cut = False
+        return cut
 
     def lepcut(self):
-        return len(self.getLepVar(self.selectMuIdx(), self.selectEleIdx())) >= 1
+        return len(self.getLepVar(self.selectMuIdx())) >= 1
     
     def SingleElecut(self):
         return self.cntEle()>=1 and self.cntMuon()==0
@@ -99,12 +120,12 @@ class TreeVarSel():
     
     def XtralepVeto(self):
         cut = True
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         if len(lepvar) > 1 and lepvar[1]['pt']>20:
             cut = False
         return cut
 
-    def XtraJetVeto(self, thrJet=JetPtThreshold, thrExtra=60):
+    def XtraJetVeto(self, thrJet=20, thrExtra=60):
         cut = True
         if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] > thrExtra:
             cut = False
@@ -118,7 +139,7 @@ class TreeVarSel():
         return cut
             
     def getLepMT(self):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         return MT(lepvar[0]['pt'], lepvar[0]['phi'], self.tr.MET_pt, self.tr.MET_phi) if len(lepvar) else 0
 
     def calCT(self, i):
@@ -126,7 +147,7 @@ class TreeVarSel():
         
     def calHT(self):
         HT = 0
-        for i in self.selectjetIdx(JetPtThreshold):
+        for i in self.selectjetIdx(20):
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
@@ -134,7 +155,7 @@ class TreeVarSel():
         return len(self.selectjetIdx(thrsld))
         
     def getISRPt(self):
-        return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -1
+        return self.tr.Jet_pt[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else 0
 
     def getISRJetEta(self):
         return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -99
@@ -156,8 +177,8 @@ class TreeVarSel():
             return DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(100)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]])
         else:
             return -1
-
-    def getJetPhi(self):
+        
+        def getJetPhi(self):
         phi = []
         for i in range(len(self.selectjetIdx(JetPtThreshold))):
             phi.append(self.tr.Jet_phi[self.selectjetIdx(JetPtThreshold)[i]])
@@ -182,7 +203,7 @@ class TreeVarSel():
         return self.tr.Jet_eta[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -99
 
 
-    def cntBtagjet(self, discOpt='DeepCSV', pt=JetPtThreshold):
+    def cntBtagjet(self, discOpt='DeepCSV', pt=20):
         return len(self.selectBjetIdx(discOpt, pt))
 
     def cntSoftB(self):
@@ -195,7 +216,7 @@ class TreeVarSel():
     	return len(self.selectEleIdx())
     
     def selectjetIdx(self, thrsld):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         idx = []
         d = {}
         for j in range(len(self.tr.Jet_pt)):
@@ -215,7 +236,7 @@ class TreeVarSel():
             idx.append(od[jetpt])
         return idx
 
-    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=JetPtThreshold):
+    def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
@@ -232,46 +253,37 @@ class TreeVarSel():
 
 
     def	selectEleIdx(self):
-        idx = []
-        for i in range(len(self.tr.Electron_pt)):
-            #if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_cutBased_Fall17_V1[i],lepton_selection='HybridIso'):
-            if self.eleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection='HybridIso'):
-                idx.append(i)              
-	return idx
+	return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a list of tuple where tuple contain index and collection type
 
-    def selectMuIdx(self):
+    def selectMuIdx(self, lepsel='HybridIso'):
         idx = []
         for i in range(len(self.tr.Muon_pt)):
-            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_pfRelIso03_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], lepton_selection='HybridIso'):
+            if self.muonSelector(pt=self.tr.Muon_pt[i], eta=self.tr.Muon_eta[i], iso=self.tr.Muon_miniPFRelIso_all[i], dxy=self.tr.Muon_dxy[i], dz=self.tr.Muon_dz[i], Id=self.tr.Muon_looseId[i], lepton_selection=lepsel):
                 idx.append(i)
         return idx
     
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id]})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
-    def getEleVar(self, eId):
-        Llist = []
-        for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
-        return Llist
+    def getEleVar(self):
+        return ANEle(self.tr, self.eletype, self.elepref).getANEleVar()
     
-    def getLepVar(self, muId, eId):
+    def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id]})
-        for id in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id]})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+        Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
     def getSortedLepVar(self):
-        lepvar = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         return lepvar
 
     def getLepZero(self):
-        L = self.getLepVar(self.selectMuIdx(), self.selectEleIdx())
+        L = self.getLepVar(self.selectMuIdx())
         L2 = []
         for l in range(len(L)):
             L2.append(L[l]['pt'])
@@ -279,7 +291,7 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == '2016':
+        if year == '2016PreVFP' or year == '2016PostVFP':
             return jetb > 0.6321
         elif year == '2017':
             return jetb > 0.4941
@@ -289,7 +301,7 @@ class TreeVarSel():
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == '2016':
+        if year == '2016PreVFP' or year == '2016PostVFP':
             return jetb > 0.8484
         elif year == '2017' or year == '2018':
             return jetb > 0.8838
@@ -297,17 +309,17 @@ class TreeVarSel():
             return True
         
 
-    def muonSelector( self, pt, eta, iso, dxy, dz, Id = True, lepton_selection='HybridIso', year='2016'):
+    def muonSelector( self, pt, eta, iso, dxy, dz, Id, lepton_selection='HybridIso'):
         if lepton_selection == 'HybridIso':
             def func():
-                if pt <= 25 and pt >3.5:
+                if pt <= 12 and pt >3: #new transition point 12 GeV
                     return \
                         abs(eta)       < 2.4 \
-                        and (iso* pt) < 5.0 \
+                        and (iso* pt) < 2.4 \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and Id
-                elif pt > 25:
+                elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.2 \
@@ -317,14 +329,14 @@ class TreeVarSel():
             
         elif lepton_selection == 'looseHybridIso':
             def func():
-                if pt <= 25 and pt >3.5:
+                if pt <= 12 and pt >3:
                     return \
                         abs(eta)       < 2.4 \
                         and (iso*pt) < 20.0 \
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and Id
-                elif pt > 25:
+                elif pt > 12:
                     return \
                         abs(eta)       < 2.4 \
                         and iso < 0.8 \
@@ -334,73 +346,11 @@ class TreeVarSel():
         else:
             def func():
                 return \
-                    pt >3.5 \
+                    pt >3 \
                     and abs(eta)       < 2.4 \
                     and Id
         return func()
 
-
-    def eleSelector(self, pt, eta, deltaEtaSC, iso, dxy, dz, Id, lepton_selection='HybridIso', year='2016', isolationType='standard'):
-        isolationWeight = 1.0
-        if(isolationType == 'mini'):
-            # below 50 GeV, 0.2 cone size
-            # calculated by weighting with cone area, from different cone sizes (0.3 -> 0.2)
-            if(pt < 50):
-                isolationWeight = 0.42942652
-
-        if lepton_selection == 'HybridIso':
-            def func():
-                if pt <= 25 and pt >5:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso* pt) < 5.0 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
-                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
-                elif pt > 25:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.2 * isolationWeight \
-                        and abs(dxy)       < 0.02 \
-                        and abs(dz)        < 0.1 \
-                        and eleVID(Id, 1, removedCuts=['pfRelIso03_all'])
-
-        elif lepton_selection == 'looseHybridIso':
-            def func():
-                if pt <= 25 and pt >5:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso*pt) < 20.0 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
-                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
-                elif pt > 25:
-                    return \
-                        abs(eta)       < 2.5 \
-                        and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and iso < 0.8 * isolationWeight \
-                        and abs(dxy)       < 0.1 \
-                        and abs(dz)        < 0.5 \
-                        and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
-
-
-        else:
-            def func():
-                return \
-                    pt >5 \
-                    and abs(eta)       < 2.5 \
-                    and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                    and eleVID(Id,1)
-        return func()
-
-
-
-
-    def eleID(self, idval, idtype):
-        return idval >= idtype
 
 
     def IVFIdx(self):
