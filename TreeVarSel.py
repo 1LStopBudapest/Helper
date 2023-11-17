@@ -180,7 +180,7 @@ class TreeVarSel():
         else:
             return -1
         
-        def getJetPhi(self):
+    def getJetPhi(self):
         phi = []
         for i in range(len(self.selectjetIdx(JetPtThreshold))):
             phi.append(self.tr.Jet_phi[self.selectjetIdx(JetPtThreshold)[i]])
@@ -255,7 +255,7 @@ class TreeVarSel():
 
 
     def	selectEleIdx(self):
-	return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a list of tuple where tuple contain index and collection type
+        return ANEle(self.tr, self.eletype, self.elepref).getANEleIdx() #return a list of tuple where tuple contain index and collection type
 
     def selectMuIdx(self, lepsel='HybridIso'):
         idx = []
