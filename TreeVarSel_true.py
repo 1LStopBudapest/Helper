@@ -12,7 +12,7 @@ class TreeVarSel_true():
     def __init__(self, tr, yr):
         self.tr = tr
         self.yr = yr
-        self.colloc = 102 #initial location (of collision), 102=displaced, 62=prompt samples
+        self.colloc = 62 #initial location (of collision), 102=displaced, 62=prompt samples
 
     #GenPart = generated particle vertex
     def getGenPartStop(self):

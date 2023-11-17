@@ -84,12 +84,12 @@ XlabelDict = {
     'gVtx_gLSP_dy' : 'd_{y}(genVtx,genLSP) [cm]',
     'gVtx_gLSP_dz' : 'd_{z}(genVtx,genLSP) [cm]',
     'gVtx_gLSP_2D' : 'd_{xy}(genVtx,genLSP) [cm]',
-    'gVtx_gLSP_3D' : 'd_{xyz}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_3D' : 'd_{xyz}(genVtx,genLSP) [#mum]',
     'SV_gLSP_dx' : 'd_{x}(SV,genLSP) [cm]',
     'SV_gLSP_dy' : 'd_{y}(SV,genLSP) [cm]',
     'SV_gLSP_dz' : 'd_{z}(SV,genLSP) [cm]',
     'SV_gLSP_2D' : 'd_{xy}(SV,genLSP) [cm]',
-    'SV_gLSP_3D' : 'd_{xyz}(SV,genLSP) [cm]',
+    'SV_gLSP_3D' : 'd_{xyz}(SV,genLSP) [#mum]',
     'Ntracks' : 'N_{tracks}',
     'nSV' : 'N_{SV}',
     'Ntracks' : 'N_{tracks}',
@@ -146,7 +146,7 @@ XlabelDict = {
     'SV_gStop_3D' : 'd_{xyz}(SV,gStop) [cm]',
     'pt_stop' : 'p_{T}(stop) [GeV]',
     'pt_LSP_stop' : '|p_{T}(stop)-p_{T}(LSP)| [GeV]',
-    'gVtx_gLSP_3D_if' : 'd_{xyz}(genVtx,genLSP) [cm]',
+    'gVtx_gLSP_3D_if' : 'd_{xyz}(genVtx,genLSP) [#mum]',
 
 }
 
