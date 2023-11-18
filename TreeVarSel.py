@@ -162,19 +162,19 @@ class TreeVarSel():
     def getISRJetEta(self):
         return self.tr.Jet_eta[self.selectjetIdx(100)[0]] if len(self.selectjetIdx(100)) else -99
 
-    def getNthJetPt(self, thr=JetPtThreshold, N=2):
+    def getNthJetPt(self, thr=20, N=2):
         return self.tr.Jet_pt[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -1
 
-    def getNthJetEta(self, thr=JetPtThreshold, N=2):
+    def getNthJetEta(self, thr=20, N=2):
         return self.tr.Jet_eta[self.selectjetIdx(thr)[N-1]] if len(self.selectjetIdx(thr)) >= N else -99
 
     def getJetPt(self):
         pT = []
-        for i in range(len(self.selectjetIdx(JetPtThreshold))):
-            pT.append(self.tr.Jet_pt[self.selectjetIdx(JetPtThreshold)[i]])
+        for i in range(len(self.selectjetIdx(20))):
+            pT.append(self.tr.Jet_pt[self.selectjetIdx(20)[i]])
         return pT
 
-    def getDeltaPhiJets(self, thr=JetPtThreshold):
+    def getDeltaPhiJets(self, thr=20):
         if len(self.selectjetIdx(100)) and len(self.selectjetIdx(thr)) >= 2:
             return DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(100)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]])
         else:
@@ -182,26 +182,26 @@ class TreeVarSel():
         
     def getJetPhi(self):
         phi = []
-        for i in range(len(self.selectjetIdx(JetPtThreshold))):
-            phi.append(self.tr.Jet_phi[self.selectjetIdx(JetPtThreshold)[i]])
+        for i in range(len(self.selectjetIdx(20))):
+            phi.append(self.tr.Jet_phi[self.selectjetIdx(20)[i]])
         return phi
 
     def getJetEta(self):
         eta = []
-        for i in range(len(self.selectjetIdx(JetPtThreshold))):
-            eta.append(self.tr.Jet_eta[self.selectjetIdx(JetPtThreshold)[i]])
+        for i in range(len(self.selectjetIdx(20))):
+            eta.append(self.tr.Jet_eta[self.selectjetIdx(20)[i]])
         return eta
 
-    def getBjetPt(self, discOpt='CSVV2', pt=JetPtThreshold):
+    def getBjetPt(self, discOpt='CSVV2', pt=20):
         b_pt = []
         for i in range(len(self.selectBjetIdx(discOpt, pt))):
             b_pt.append(self.tr.Jet_pt[self.selectBjetIdx(discOpt, pt)[i]])
         return b_pt #if len(b_pt) else 0
 
-    def get1stBjetPt(self, discOpt='CSVV2', pt=JetPtThreshold):
+    def get1stBjetPt(self, discOpt='CSVV2', pt=20):
         return self.tr.Jet_pt[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -1
 
-    def get1stBjetEta(self, discOpt='CSVV2', pt=JetPtThreshold):
+    def get1stBjetEta(self, discOpt='CSVV2', pt=20):
         return self.tr.Jet_eta[self.selectBjetIdx(discOpt, pt)[0]] if len(self.selectBjetIdx(discOpt, pt)) else -99
 
 
@@ -400,7 +400,7 @@ class TreeVarSel():
     # good taus in IVF
     def getGoodTaus(self):
         taus = sortedlist(self.getTauVar(self.selectTauIdx()))
-        leptons = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
+        leptons = sortedlist(self.getLepVar(self.selectMuIdx()))
         res  =  []
         for tau in taus:
             clean = True
