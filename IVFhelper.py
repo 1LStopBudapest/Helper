@@ -14,8 +14,8 @@ class IVFhelper():
 
         self.ivfList = self.IVFSelection()
         self.hadronicList = self.HadronicSelection()
-        self.cut_indices = list(set(self.ivfList).intersection(self.hadronicList)) # ==> before cut
-        #self.cut_indices = list(range(self.tr.nSV)) # ==> after cut
+        #self.cut_indices = list(set(self.ivfList).intersection(self.hadronicList)) # ==> before cut
+        self.cut_indices = list(range(self.tr.nSV)) # ==> after cut
 
     #IVF selection
     def IVFSelection(self):
