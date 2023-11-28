@@ -105,7 +105,7 @@ class TreeVarSel():
         else:
             Adphi = -999
             
-        if Adphi > 2.5:
+        if Adphi < 0.5:
                 cut = False
         return cut
 
@@ -192,7 +192,7 @@ class TreeVarSel():
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
         idx = []
         for i in self.selectjetIdx(ptthrsld):
-            if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
+            if self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr):
                 idx.append(i)
         return idx
 
@@ -253,14 +253,6 @@ class TreeVarSel():
         else:
             return True
 
-    def isBtagCSVv2(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
-            return jetb > 0.8484
-        elif year == '2017' or year == '2018':
-            return jetb > 0.8838
-        else:
-            return True
-        
 
     def muonSelector( self, pt, eta, iso, dxy, dz, Id, lepton_selection='HybridIso'):
         if lepton_selection == 'HybridIso':
