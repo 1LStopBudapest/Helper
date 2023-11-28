@@ -74,7 +74,7 @@ class TreeVarSel():
 
     #cuts
     def ISRcut(self, thr=100):
-        return len(self.selectjetIdx(thr)) > 0
+        return len(self.selectjetIdx(thr)) >= 1
 
     def METcut(self, thr=200):
         cut = False
@@ -98,9 +98,9 @@ class TreeVarSel():
     '''
     def dphicut(self, thr=20):
         cut = True
-        if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
+        if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 60 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
-        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+        elif len(self.selectjetIdx(thr)) >= 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 60:
             Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
         else:
             Adphi = -999
@@ -109,6 +109,15 @@ class TreeVarSel():
                 cut = False
         return cut
 
+    def dphijetmet(self, thr=20): #For checking 
+        if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 60 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
+            DPhi = tuple(('dphi1', min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))))
+        elif len(self.selectjetIdx(thr)) >= 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 60:
+            DPhi = tuple(('dphi2', DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)))
+        else:
+            DPhi = tuple(('dphi3', -999))
+        return DPhi
+    
     def lepcut(self):
         return len(self.getLepVar(self.selectMuIdx())) >= 1
     
@@ -167,8 +176,9 @@ class TreeVarSel():
 
     def	cntEle(self):
     	return len(self.selectEleIdx())
+
     
-    def selectjetIdx(self, thrsld):
+    def selectjetIdxOldSort(self, thrsld): #old sorting, not entirely correct!
         lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
         idx = []
         d = {}
@@ -186,9 +196,32 @@ class TreeVarSel():
                     d[self.tr.Jet_pt[j]] = j
         od = coll.OrderedDict(sorted(d.items(), reverse=True))
         for jetpt in od:
-            idx.append(od[jetpt])
+            idx.append(od[jetpt])   
+        return idx
+    
+    
+    def selectjetIdx(self, thrsld):
+        lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+        idx = []
+        d = {}
+        for j in range(len(self.tr.Jet_pt)):
+            clean = False
+            if self.tr.Jet_pt[j] > thrsld and abs(self.tr.Jet_eta[j]) < 2.4 and self.tr.Jet_jetId[j] > 0:
+                clean = True
+                for l in range(len(lepvar)):
+                    dR = DeltaR(lepvar[l]['eta'], lepvar[l]['phi'], self.tr.Jet_eta[j], self.tr.Jet_phi[j])
+                    ptRatio = float(self.tr.Jet_pt[j])/float(lepvar[l]['pt'])
+                    if dR < 0.4 and ptRatio < 2:
+                        clean = False
+                        break
+                if clean:
+                    d[j] = self.tr.Jet_pt[j]
+        od = coll.OrderedDict(sorted(d.items(), key=lambda x:x[1], reverse=True))
+        for i in od:
+            idx.append(i)
         return idx
 
+    
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
         idx = []
         for i in self.selectjetIdx(ptthrsld):

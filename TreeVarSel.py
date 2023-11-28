@@ -100,7 +100,7 @@ class TreeVarSel():
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
-        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+        elif len(self.selectjetIdx(thr)) >= 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
             Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
         else:
             Adphi = -999
@@ -183,10 +183,10 @@ class TreeVarSel():
                         clean = False
                         break
                 if clean:
-                    d[self.tr.Jet_pt[j]] = j
-        od = coll.OrderedDict(sorted(d.items(), reverse=True))
-        for jetpt in od:
-            idx.append(od[jetpt])
+                    d[j] = self.tr.Jet_pt[j]
+        od = coll.OrderedDict(sorted(d.items(), key=lambda x:x[1], reverse=True))
+        for i in od:
+            idx.append(i)
         return idx
 
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):

@@ -5,7 +5,7 @@ import os, sys
 
 CT_bin = [300, 400, -1]
 MT_bin = [0, 60, 95, 130, -1]
-LepPt_bin = [3.5, 5, 12, 20, 30, 50]
+LepPt_bin = [3, 5, 12, 20, 30, 50]
 ElePt_bin = [5, 12, 20, 30, 50]
 
 EachMT_div = len(LepPt_bin)-1
