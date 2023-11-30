@@ -35,7 +35,7 @@ class TreeVarSel():
         if not self.SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.SR1Veto() else False
 
     def SR2(self):
         if not self.SearchRegion():
@@ -71,6 +71,14 @@ class TreeVarSel():
         else:
             return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
                 
+    def SR1Veto(self):
+        if len(self.selectjetIdx(325))>0:
+            if self.cntSoftB()==0:
+                return True
+            else:
+                return False
+        else:
+            return True
 
     #cuts
     def ISRcut(self, thr=100):
@@ -100,7 +108,7 @@ class TreeVarSel():
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
-        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+        elif len(self.selectjetIdx(thr)) >= 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
             Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
         else:
             Adphi = -999
