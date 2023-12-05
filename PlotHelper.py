@@ -1,7 +1,8 @@
 import ROOT
-import os, sys
+import os, sys, io
 import numpy as np
 import math
+import subprocess
 
 from Style import *
 
@@ -9,7 +10,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"1DPlots/trueivf",sname)
+    outputdirpath = os.path.join(dir,"1DPlots/final",sname)
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
@@ -17,18 +18,11 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     leg.AddEntry(h, sname ,"l")
 
     style1D(h, islogy, Ytitle, Xtitle)
-
-    ROOT.gStyle.SetOptStat("mMR")
-    ROOT.gStyle.SetStatX(0.9)
-    ROOT.gStyle.SetStatY(0.85)
-    ROOT.gStyle.SetStatW(0.4)
-    ROOT.gStyle.SetStatH(0.1)
+    
     c = ROOT.TCanvas('c', '', canvasX, canvasY)
     c.cd()
     h.Draw(drawOption)
-    ROOT.gPad.Update()
-    #ROOT.TPaveStats st = h.FindObject("stats");
-    leg.Draw("SAMES")
+    leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
@@ -52,8 +46,8 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     hRatioFrame = getHistratioframe(hRatio)
 
     leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
-    leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
-    leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
+    leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
+    leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
     
     c = ROOT.TCanvas('c', '', 600, 800)
     p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
@@ -64,6 +58,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     h2.Draw(drawOption+"ESAME")
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
+    if 'dxy' in htitle:ROOT.gPad.SetLogx()
     c.cd()
     p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
     p2.SetTopMargin(0)
@@ -71,6 +66,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     p2.Draw()
     p2.cd()
     hRatio.SetMarkerSize(0.6)
+    hRatio.GetYaxis().SetRangeUser(0.6,1.4)
     hRatio.Draw("PE")
     hRatioFrame.Draw("HISTsame")
     c.SaveAs(outputdirpath+"/"+htitle+".png")
@@ -87,22 +83,31 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hs=[]
     for i, f in enumerate(files,0):
         hs.append(f.Get(var+'_'+samplelist[i]))
-
+        
+    hs_MC = hs[:-1]#assuming last one is from data
+    if 'Area' in scaleOption or 'Unit' in scaleOption:
+        MCtot = 0.0
+        for h in hs_MC:
+            MCtot = MCtot + h.Integral()
+        scale = hs[-1].Integral()/MCtot
+        for h in hs_MC:
+            h.Scale(scale)
+                
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
-    hMC = hs[0].Clone("TotalMC")
+    hMC = hs_MC[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.6, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
-    for i, h in enumerate(hs, 0):
-        if i!=len(hs)-1:
-            hStack_MC.Add(h)
-            h.SetFillColor(getColor(samplelist[i]))
-            h.SetLineColor(getColor(samplelist[i]))
-            leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
-            if i!=0:
-                hMC.Add(h)
+    for i, h in enumerate(hs_MC, 0):
+        hStack_MC.Add(h)
+        h.SetFillColor(getColor(samplelist[i]))
+        h.SetLineColor(getColor(samplelist[i]))
+        leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+        if i!=0:
+            hMC.Add(h)
                 
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
     styleData(hs[-1], islogy)
+
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
     #minRange = 0.0001 if islogy else 0.0
@@ -137,7 +142,56 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     c.Close()
 
 
-# ROC plotting
+
+# Functions to print out a pdf-quality png file:
+def SaveAsQualityPng(canvas,filename,import_scale=1.5):
+    if not isinstance(canvas, ROOT.TCanvas):
+        print "Error in <PlotHelper.SaveAsQualityPng>: invalid input canvas"
+        return
+
+    oldignore = ROOT.gErrorIgnoreLevel
+    ROOT.gErrorIgnoreLevel = ROOT.kWarning
+    canvas.SaveAs("./temp_pdffile.pdf")
+    ROOT.gErrorIgnoreLevel = oldignore
+    printNicePng("./temp_pdffile.pdf",filename,import_scale)
+    os.remove("./temp_pdffile.pdf")
+
+def printNicePng(filename,outfile = "",import_scale=1.5,silent=True):
+    if ".pdf" in filename or ".png" in filename:
+        filename = filename[:-4]
+
+    if not os.path.exists(filename+".pdf"):
+        print "Error: in <PlotHelper.printNicePng>: input "+filename+".pdf not found or not accessible!"
+        return
+
+    if not outfile:
+        outfile = filename
+    elif ".png" in outfile:
+        outfile = outfile[:-4]
+
+    if not import_scale:
+        import_scale = 1.0
+
+    with open(os.devnull, 'wb') as devnull:
+        bashCall = '/big_data/kadlec/tools/cdpf/cpdf -scale-page "'+str(import_scale)+' '+str(import_scale)+'" '+filename+'.pdf -o temp_upscaled.pdf'
+        if(silent):
+            subprocess.check_call(bashCall, shell=True,stdout=devnull, stderr=subprocess.STDOUT)
+        else:
+            subprocess.check_call(bashCall, shell=True)
+
+        bashCall =  "gimp -i -b '(let* ((image (car (gimp-file-load RUN-NONINTERACTIVE \"temp_upscaled.pdf\" \"temp_upscaled.pdf\"))) (drawable (car (gimp-image-get-active-layer image))))  (set! drawable (car (gimp-image-get-active-layer image)))      (gimp-file-save RUN-NONINTERACTIVE image drawable \""+outfile+".png\" \""+outfile+".png\") (gimp-image-delete image))' -b '(gimp-quit 0)'"
+        if(silent):
+            subprocess.check_call(bashCall, shell=True,stdout=devnull, stderr=subprocess.STDOUT)
+        else:
+            subprocess.check_call(bashCall, shell=True)
+            
+        os.remove('temp_upscaled.pdf')
+        print "Info in <PlotHelper.printNicePng>: png file "+outfile+".png has been created"
+
+
+
+# ROC curve plot 
+# This function is capable of plotting a combination of points and lines on a ROC curve.
 def plotROC(signal_pass, signal_total, bk_pass, bk_total, markdown, legTitle, path, name, samplename, BKsamplename, xmin = "auto", ymin = "auto", xmax = "auto", ymax = "auto", title = "auto", ptcut = -1, xtitle = "Signal efficiency", ytitle ="BK rejection (1-eff)", cmssimwip = True, legendpos = "br", legendscale = 1.0, fileformat = "png"):
     plotROCLines(signal_pass, signal_total, bk_pass, bk_total, [], markdown, legTitle, path, name, samplename, BKsamplename, xmin, ymin, xmax, ymax, title, ptcut, xtitle, ytitle, cmssimwip, legendpos, legendscale, fileformat)
 
@@ -326,6 +380,16 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         legxu = 0.5
 
 
+    if(legendpos == "separate"):
+        legxl = 0.1
+        legxu = 0.9
+        legyl = 0.1
+        legyu = 0.9
+
+
+
+
+
 
     leg = ROOT.TLegend(legxl, legyl, legxu, legyu)
     for i in range(len(roc)):
@@ -344,17 +408,27 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
     if(ymax == "auto"):
         ymax = absolute_max_y + valuerange_y * 0.05
 
-    c = ROOT.TCanvas('c', 'Title', 600, 800)
 
-    c.SetGrid()
-    fr = c.DrawFrame(xmin,ymin,xmax,ymax)
+    #c = ROOT.TCanvas('c', 'Title', 600, 800)
+    if(legendpos == "separate"):
+        ROOT.gStyle.SetPaperSize(40,26.6666)
+        canvas = ROOT.TCanvas('c', 'Title', 1200, 800)
+        figurepad = ROOT.TPad("figurepad", "figurepad",0.5,0.0,1.0,1.0)
+        figurepad.SetGrid()
+        figurepad.Draw()
+        figurepad.cd()
+        fr = figurepad.DrawFrame(xmin,ymin,xmax,ymax)
+    else:
+        canvas = ROOT.TCanvas('c', 'Title', 600, 800)
+        canvas.SetGrid()
+        fr = canvas.DrawFrame(xmin,ymin,xmax,ymax)
 
     fr.SetTitle(title)
     fr.SetTitleSize(0.01)
 
     fr.GetYaxis().SetTitle(ytitle)
     fr.GetYaxis().SetTitleSize(0.04)
-    fr.GetYaxis().SetTitleOffset(1.15)
+    fr.GetYaxis().SetTitleOffset(1.25)
     fr.GetYaxis().SetLabelSize(0.03)
     fr.GetXaxis().SetTitle(xtitle)
     fr.GetXaxis().SetTitleSize(0.04)
@@ -378,8 +452,14 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
             roc[i].Draw("P,SAME")
 
 
-    if(legendpos != "no"):
+    if(legendpos == "separate"):
+        canvas.cd()
+        legendpad = ROOT.TPad("legendpad", "legendpad",0.0,0.0,0.5,1.0)
+        legendpad.Draw()
+        legendpad.cd()
+    if(legendpos != "no" and legendpos != "disable" and legendpos != False):
         leg.Draw("SAME")
+    
 
 
     if(name == ""):
@@ -387,8 +467,16 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         if(ptcut != -1):
             name += "_pt"+str(ptcut)
 
-    c.SaveAs(path+"/"+name+"."+fileformat)
-    c.Close()
+    if(not isinstance(fileformat, list)):
+        fileformat = [fileformat]
+
+    for fform in fileformat:
+        if(fform == "png"):
+            SaveAsQualityPng(canvas,path+"/"+name+"."+fform)
+        else:
+            canvas.SaveAs(path+"/"+name+"."+fform)
+
+    canvas.Close()
     return 0
 
 
