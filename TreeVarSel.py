@@ -191,10 +191,10 @@ class TreeVarSel():
                         clean = False
                         break
                 if clean:
-                    d[self.tr.Jet_pt[j]] = j
-        od = coll.OrderedDict(sorted(d.items(), reverse=True))
-        for jetpt in od:
-            idx.append(od[jetpt])
+                    d[j] = self.tr.Jet_pt[j]
+        od = coll.OrderedDict(sorted(d.items(), key=lambda x:x[1], reverse=True))
+        for i in od:
+            idx.append(i)
         return idx
 
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
