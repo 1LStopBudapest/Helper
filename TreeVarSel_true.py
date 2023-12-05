@@ -148,6 +148,14 @@ class TreeVarSel_true():
                 pT = self.tr.GenPart_pt[i]
         return pT
 
+    def getBPt(self):
+        pT = -1.0
+        for i in range(self.tr.nGenPart):
+            if abs(self.tr.GenPart_pdgId[i]) == 5 and self.tr.GenPart_genPartIdxMother[i] >=0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
+                if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])==1000006:
+                    pT = self.tr.GenPart_pt[i]
+        return pT
+
     def getLSPStopPt(self):
         pT_stop = -1.0
         pT_lsp = -1.0
