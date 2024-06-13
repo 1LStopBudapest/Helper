@@ -136,7 +136,7 @@ class TreeVarSel():
 
     def XtraJetVeto(self, thrJet=20, thrExtra=60):
         cut = True
-        if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] > thrExtra:
+        if len(self.selectjetIdx(thrJet)) >= 3 and self.tr.Jet_pt[self.selectjetIdx(thrJet)[2]] >= thrExtra:
             cut = False
         return cut
 
