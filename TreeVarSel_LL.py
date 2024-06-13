@@ -82,24 +82,24 @@ class TreeVarSel():
         if HT > thr:
             cut = True
         return cut
-'''
+    '''
     def dphicut(self, thr=20):#old cut
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             if DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.Jet_phi[self.selectjetIdx(thr)[1]]) > 2.5:
                 cut = False
         return cut
-'''
+    '''
     def dphicut(self, thr=20):
         cut = True
         if len(self.selectjetIdx(thr)) >=2 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100 and self.tr.Jet_pt[self.selectjetIdx(thr)[1]]> 60:
             Adphi = min( DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi), DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[1]], self.tr.MET_phi))
-        elif len(self.selectjetIdx(thr)) == 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
+        elif len(self.selectjetIdx(thr)) >= 1 and self.tr.Jet_pt[self.selectjetIdx(thr)[0]]> 100:
             Adphi = DeltaPhi(self.tr.Jet_phi[self.selectjetIdx(thr)[0]], self.tr.MET_phi)
         else:
             Adphi = -999
             
-        if Adphi > 2.5:
+        if Adphi < 0.5:
             cut = False
         return cut
                                                                     
@@ -145,7 +145,7 @@ class TreeVarSel():
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
-    def calNj(self, thrsld):
+    def calNj(self, thrsld=20):
         return len(self.selectjetIdx(thrsld))
         
     def getISRPt(self):
@@ -178,10 +178,10 @@ class TreeVarSel():
                         clean = False
                         break
                 if clean:
-                    d[self.tr.Jet_pt[j]] = j
-        od = coll.OrderedDict(sorted(d.items(), reverse=True))
-        for jetpt in od:
-            idx.append(od[jetpt])
+                    d[j] = self.tr.Jet_pt[j]
+        od = coll.OrderedDict(sorted(d.items(), key=lambda x:x[1], reverse=True))
+        for i in od:
+            idx.append(i)
         return idx
 
     def selectBjetIdx(self, discOpt='DeepCSV', ptthrsld=20):
@@ -239,7 +239,7 @@ class TreeVarSel():
         return L2[0]
 
     def isBtagDeepCSV(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP':
+        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
             return jetb > 0.6321
         elif year == '2017':
             return jetb > 0.4941
@@ -249,7 +249,7 @@ class TreeVarSel():
             return True
 
     def isBtagCSVv2(self, jetb, year):
-        if year == '2016PreVFP' or year == '2016PostVFP':
+        if year == '2016PreVFP' or year == '2016PostVFP' or year == '2016':
             return jetb > 0.8484
         elif year == '2017' or year == '2018':
             return jetb > 0.8838
