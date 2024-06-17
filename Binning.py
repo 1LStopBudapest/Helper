@@ -484,9 +484,9 @@ def getBinlabel(CT, MT, LepPt, reg='SR'):
     return reg+leppt+mt+ct if reg=='SR' else reg+mt+ct
 
 def getHistBinlabel(idx, nbins):
-    if nbins==72:
+    if nbins==108:
         return SRBinLabelList[idx]
-    elif nbins==16:
+    elif nbins==24:
         return CRBinLabelList[idx]
     else:
         return SRCRBinLabelList[idx]
