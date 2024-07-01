@@ -26,7 +26,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) >= 1 and lepvar[0]['pt']<=50 and self.tr.MET_pt > 300:
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=30 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -48,7 +48,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>50:
+            if len(lepvar) > 1 and lepvar[0]['pt']>30:
                 return True
             else:
                 return False
@@ -64,7 +64,24 @@ class TreeVarSel():
             return False
         else:
             return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
-                
+
+    def Dxy1(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dxy']) <= 0.02 else False
+
+    def Dxy2(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dxy']) > 0.02 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dxy']) <= 1.0 else False
+
+    def Dxy3(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dxy']) > 1.0 else False
 
     #cuts
     def ISRcut(self, thr=100):
@@ -154,8 +171,6 @@ class TreeVarSel():
     def cntBtagjet(self, discOpt='DeepCSV', pt=20):
         return len(self.selectBjetIdx(discOpt, pt))
 
-    def cntSoftB(self):
-        return len(self.selectSoftBIdx())
     
     def cntMuon(self):
         return len(self.selectMuIdx())
@@ -190,14 +205,6 @@ class TreeVarSel():
             if (self.isBtagCSVv2(self.tr.Jet_btagCSVV2[i], self.yr) if discOpt == 'CSVV2' else self.isBtagDeepCSV(self.tr.Jet_btagDeepB[i], self.yr)):
                 idx.append(i)
         return idx
-
-    def selectSoftBIdx(self):
-        indx = []
-        for idx in self.IVFIdx():
-            if self.tr.SV_pt[idx] < 20.0 \
-               and self.jetcleanedB(idx) :
-                indx.append(idx)
-        return indx
 
 
     def	selectEleIdx(self):
@@ -293,27 +300,6 @@ class TreeVarSel():
 
 
 
-    def IVFIdx(self):
-        idx = []
-        for i in range(self.tr.nSV):
-            if bytearray(self.tr.SV_ntracks[i])[0] >= 3 \
-               and self.tr.SV_dxy[i] < 2.5 \
-               and self.tr.SV_dxySig[i] > 3.0 \
-               and self.tr.SV_mass[i] < 6.5 \
-               and self.tr.SV_dlenSig[i] > 4.0 \
-               and self.tr.SV_pAngle[i] > 0.98 :
-                idx.append(i)
-        return idx
-               
-
-    def jetcleanedB(self, idx):
-        ret = True
-        for j in self.selectjetIdx(20):
-            if DeltaR(self.tr.SV_eta[idx], self.tr.SV_phi[idx], self.tr.Jet_eta[j], self.tr.Jet_phi[j]) < 0.4 :
-                ret = False
-                break
-        return ret
-            
     def genEle(self):
         L = []
         for i in range(self.tr.nGenPart):
