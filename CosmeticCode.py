@@ -49,6 +49,8 @@ XlabelDict = {
     'EledxySig' : 'e d_{xy}Sig',
     'EledzSig' : 'e d_{z}Sig',
     'Leppt'   : 'p_{T}(l) [GeV]',
+    'LeppT'   : 'p_{T}(l) [GeV]',
+    'LepPt'   : 'p_{T}(l) [GeV]',
     'Mupt'    : 'p_{T}(#mu)',
     'MupT'    : 'p_{T}(#mu)',
     'Elept'   : 'p_{T}(e)',

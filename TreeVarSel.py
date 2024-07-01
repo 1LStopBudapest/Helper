@@ -165,7 +165,7 @@ class TreeVarSel():
             HT = HT + self.tr.Jet_pt[i]
         return HT
 
-    def calNj(self, thrsld):
+    def calNj(self, thrsld=20):
         return len(self.selectjetIdx(thrsld))
         
     def getISRPt(self):
