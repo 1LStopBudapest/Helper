@@ -10,7 +10,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"1DPlots/final",sname)
+    outputdirpath = os.path.join(dir,"Test",sname)
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
@@ -26,6 +26,33 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     if islogy:ROOT.gPad.SetLogy()
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
+
+def Plot1DExt(var, hext, fname, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
+    doplot = True
+    if os.path.exists(os.path.join(dir,fname)):
+        f=ROOT.TFile.Open(os.path.join(dir,fname))
+    else:
+        doplot = False
+        print 'Root file ',os.path.join(dir,fname),' does not exist'
+    if doplot:
+        h=f.Get(var+'_'+hext)
+        htitle = h.GetTitle()
+        outputdirpath = os.path.join(dir,"Test",hext)
+        if not os.path.exists(outputdirpath):
+            os.makedirs(outputdirpath)
+
+        leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
+        leg.AddEntry(h, hext ,"l")
+
+        style1D(h, islogy, Ytitle, Xtitle)
+    
+        c = ROOT.TCanvas('c', '', canvasX, canvasY)
+        c.cd()
+        h.Draw(drawOption)
+        leg.Draw("SAME")
+        if islogy:ROOT.gPad.SetLogy()
+        c.SaveAs(outputdirpath+"/"+htitle+".png")
+        c.Close()
     
 def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scaleOption='unitscaling', canvasX=600, canvasY=800):
     hname = h1.GetName()
