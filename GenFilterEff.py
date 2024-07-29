@@ -1,10 +1,11 @@
 ''' 
 gen filter efficiecny for mStop and mNeu for prompt signal samples.
 '''
-import pickle
 import ROOT
 import os, sys 
-from math import sqrt
+import pandas as pd
+#import pickle
+
 
 sys.path.append('../')
 from Sample.Dir import Xfiles
@@ -12,9 +13,22 @@ from Sample.Dir import Xfiles
 class GenFilterEff:
 	def __init__(self, year):
                 self.filepath = Xfiles
-		self.name = "filterEffs_T2tt_dM_10to80_genHT_160_genMET_80_mWMin0p1"
-		pklFile= os.path.join(self.filepath,"filterEffs_T2tt_dM_10to80_genHT_160_genMET_80_mWMin0p1.pkl")
-		self.eff=pickle.load(file(pklFile))
+                self.name = "csv_appended_filterEff.csv"
+                self.csvFile    = os.path.join(self.filepath,self.name)
+                
+                #self.name = "filterEffs_T2tt_dM_10to80_genHT_160_genMET_80_mWMin0p1"
+		#pklFile= os.path.join(self.filepath,"filterEffs_T2tt_dM_10to80_genHT_160_genMET_80_mWMin0p1.pkl")
+		#self.eff=pickle.load(file(pklFile))
+
+        def getEff(self, mStop, mNeu):
+                df = pd.read_csv(self.csvFile, usecols= ["m","dm","filterEff"])
+                if mStop%5 != 0:
+                        mStop = mStop-1
+                dM = mStop - mNeu
+                filterEff = df.loc[(df.m==mStop ) & (df.dm==dM ),'filterEff'].values[0]
+                return filterEff
+
+        '''        
 	def getEffFromPkl(self, mStop, mNeu):
 		print mStop,mNeu
 		genEff=self.eff[mStop][mNeu]
@@ -31,4 +45,4 @@ class GenFilterEff:
 		bin_x, bin_y = hist2D.GetXaxis().FindBin(mStop-shift_x), hist2D.GetYaxis().FindBin(mNeu-shift_y)
 		genEff = hist2D.GetBinContent(bin_x, bin_y)
 		return genEff
-
+        '''
