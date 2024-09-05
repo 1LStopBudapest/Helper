@@ -122,17 +122,17 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
                 
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs_MC[0].Clone("TotalMC")
-    leg = ROOT.TLegend(0.6, 0.6, 0.9, 0.9)
+    leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs_MC, 0):
         hStack_MC.Add(h)
         h.SetFillColor(getColor(samplelist[i]))
         h.SetLineColor(getColor(samplelist[i]))
-        leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+        leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')',"f")
         if i!=0:
             hMC.Add(h)
                 
-    leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
+    leg.AddEntry(hs[-1], getLegendTitle('Data')+' ('+str(round(hs[-1].Integral(), 2))+')',"pe")
     styleData(hs[-1], islogy)
 
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
