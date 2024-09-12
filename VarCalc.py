@@ -5,6 +5,7 @@ import textwrap
 
 from CosmeticCode import vidNestedWPBitMapNamingList
 
+'''
 def get_PU_ratio ( nvtx_event ):
     nvtx = [0.5 , 1.5 , 2.5 , 3.5 , 4.5 , 5.5 , 6.5 , 7.5 , 8.5 , 9.5 , 10.5 , 11.5 , 12.5 , 13.5 , 14.5 , 15.5 , 16.5 , 17.5 , 18.5 , 19.5 , 20.5 , 21.5 , 22.5 , 23.5 , 24.5 , 25.5 , 26.5 , 27.5 , 28.5 , 29.5 , 30.5 , 31.5 , 32.5 , 33.5 , 34.5 , 35.5 , 36.5 , 37.5 , 38.5 , 39.5 , 40.5 , 41.5 , 42.5 , 43.5 , 44.5 , 45.5 , 46.5 , 49.5 ] 
     ratio_predividedunpre = [0.8683303266959563 , 1.37593636344608 , 1.7265580587850642 , 1.2809638015317606 , 1.4646757910559223 , 1.340448304219238 , 1.3665912658842108 , 1.3737253035404442 , 1.3297755633587736 , 1.2407420732540997 , 1.2421544913303268 , 1.1893485072081549 , 1.1623227392469146 , 1.1285816588710684 , 1.0837227206756426 , 1.0478683765230274 , 1.021529253582778 , 0.9830883575736463 , 0.9528349786875829 , 0.9005465534305057 , 0.882292738967126 , 0.8296311689191277 , 0.8218733449628237 , 0.7654836215067387 , 0.7596419539795178 , 0.7016574019455664 , 0.6978137346489405 , 0.685721138952357 , 0.6109357651345975 , 0.6101389825834709 , 0.6121093201052942 , 0.5657516119725 , 0.5808240788026761 , 0.6063532048910315 , 0.5481486358982481 , 0.4833242247976987 , 0.4532021997585584 , 0.5549177314841502 , 0.6849693111072471 , 0.4552480807451228 , 0.5423820872343952 , 0.3383726048768297 , 0.5269878221277862 , 0.5165268045273839 , 0.310978121123683 , 0.45788610770308297 , 0.6012243675057871 ,  0.5667278874029961]
@@ -17,6 +18,16 @@ def get_PU_ratio ( nvtx_event ):
             break
         else: idx = -1
     return ratio_predividedunpre[idx]
+'''
+def get_PU_weight_janik( ngoodvtx ):
+   f1 = ROOT.TFile.Open("/home/mmoussa/susy/susy_code_fake_rate/AuxFiles/reweight_histo_janik.root")
+   hist_PU_reweight = f1.Get("NVtx_reweight")
+   return hist_PU_reweight.GetBinContent(hist_PU_reweight.FindBin(ngoodvtx))
+
+def get_PU_weight( ntruint ):
+   f1 = ROOT.TFile.Open("/home/mmoussa/susy/susy_code_fake_rate/AuxFiles/normalized_data_MC_PU.root")
+   hist_PU_reweight = f1.Get("ratio_PU_data_MC")
+   return hist_PU_reweight.GetBinContent(hist_PU_reweight.FindBin(ntruint))
 
 def DeltaPhi(phi1, phi2):
     dphi = phi2-phi1
