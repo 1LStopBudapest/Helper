@@ -119,7 +119,12 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         scale = hs[-1].Integral()/MCtot
         for h in hs_MC:
             h.Scale(scale)
-                
+
+    #to plot upto some bins, usually only SR bins
+    for h in hs_MC:
+        h.GetXaxis().SetRangeUser(0,54)
+    hs[-1].GetXaxis().SetRangeUser(0,54)
+    
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs_MC[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
