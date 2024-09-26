@@ -35,10 +35,12 @@ class MCWeight():
     def getL1PrefireWeight(self):
         return self.tr.reweightL1Prefire if hasattr(self.tr, 'reweightL1Prefire') else 1.0
 
-
+    
+    def getHEMWeight(self):
+        return self.tr.reweightHEM if hasattr(self.tr, 'reweightHEM') else 1.0
     
     def getTotalWeight(self):
-        return self.getPUWeight() * self.getLeptonSF() * self.getBTagSF() * self.getWpTWeight() * self.getL1PrefireWeight()
+        return self.getPUWeight() * self.getLeptonSF() * self.getBTagSF() * self.getWpTWeight() * self.getL1PrefireWeight() * self.getHEMWeight()
         #return self.getLeptonSF() * self.getBTagSF() * self.getISRWeight() * self.getWpTWeight() * self.getL1PrefireWeight()
 
 
