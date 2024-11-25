@@ -71,7 +71,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     styleh2(h1, h2, islogy)
     hRatio = getHistratio(h1, h2, comparetype, htitle)
     hRatioFrame = getHistratioframe(hRatio)
-
+    
     leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
     leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
     leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
@@ -99,6 +99,61 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
 
+
+def CompareHistExt(files, samplelist, var, comparetype, dir, drawOption="hist", islogy=False, scaleOption='unitscaling', canvasX=600, canvasY=800):
+    outputdirpath = os.path.join(dir,"ComparisonPlots",comparetype)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"RatioPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+
+    ht=[]
+    for i, f in enumerate(files,0):
+        ht.append(f.Get(var+'_'+samplelist[i]))
+            
+    if 'unit' in scaleOption:
+        for h in ht:
+            if h.Integral(): h.Scale(1/h.Integral())
+
+    hRatio=[]
+    leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)        
+    leg.AddEntry(ht[0], samplelist[0],"l")
+    style1D(ht[0], islogy, "a.u.")
+    for i, h2 in enumerate(ht[1:], 1):
+        h2.SetLineColor(getColor(samplelist[i]))
+        h2.SetLineWidth(2)
+        leg.AddEntry(h2, samplelist[i],"l")
+        hRatio.append(getHistratio(ht[0], h2, comparetype, var))
+    hRatioFrame = getHistratioframe(hRatio[0])
+    hRatioFrame.GetYaxis().SetTitle(hRatio[0].GetYaxis().GetTitle())
+    hRatioFrame.GetXaxis().SetTitle(hRatio[0].GetXaxis().GetTitle())
+    
+    c = ROOT.TCanvas('c', '', 600, 800)
+    p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
+    p1.SetBottomMargin(0) # Upper and lower plot are joined
+    p1.Draw()             # Draw the upper pad: p1
+    p1.cd()
+    ht[0].Draw(drawOption+"E")
+    for h2 in ht[1:]:
+        h2.Draw(drawOption+"ESAME")
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+    c.cd()
+    p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
+    p2.SetTopMargin(0)
+    p2.SetBottomMargin(0.2)
+    p2.Draw()
+    p2.cd()
+    hRatioFrame.GetYaxis().SetRangeUser(0.6,1.4)
+    hRatioFrame.Draw("HIST")
+    for i, hR in enumerate(hRatio, 1):
+        hR.SetLineColor(getColor(samplelist[i]))
+        hR.SetMarkerSize(0.6)
+        hR.Draw("PEsame")
+    
+    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.Close()
             
 def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
     outputdirpath = os.path.join(dir,"StackPlots",cut)
@@ -119,12 +174,12 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         scale = hs[-1].Integral()/MCtot
         for h in hs_MC:
             h.Scale(scale)
-
+    '''
     #to plot upto some bins, usually only SR bins
     for h in hs_MC:
         h.GetXaxis().SetRangeUser(0,54)
     hs[-1].GetXaxis().SetRangeUser(0,54)
-    
+    '''
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs_MC[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
