@@ -60,7 +60,7 @@ def findCR1BinIndexVal1(MT, LepChrg):
                             
     return pickIdx
 
-def findCR2BinIndexVal1( MT):
+def findCR2BinIndexVal1(MT):
     idx = -1
     pickIdx = -1
     for j in range(len(MT_bin)-1):
@@ -72,7 +72,7 @@ def findCR2BinIndexVal1( MT):
                    
     return pickIdx
 
-
+'''
 def findSR1BinIndexVal2(CT, MT, LepChrg):
     idx = -1
     pickIdx = -1
@@ -126,6 +126,7 @@ def findCR1BinIndexVal2(CT, MT, LepChrg):
     
     return pickIdx
                                                                                             
+
 def findCR2BinIndexVal2(CT, MT):
     idx = -1
     pickIdx = -1
@@ -142,6 +143,94 @@ def findCR2BinIndexVal2(CT, MT):
         break
     
     return pickIdx
+'''
+
+
+def findSR1BinIndexVal2(CT, MT, LepPt, LepChrg):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            lep = ElePt_bin if j >= len(MT_bin)-3 else LepPt_bin #for last two MT bin, leppT start from 5 GeV
+            for k in range(len(lep)-1):
+                cut3 = LepPt>lep[k] and LepPt<=lep[k+1]
+                idx += 1
+                if (cut1 and cut2 and cut3 and cutchrg):
+                    pickIdx = idx
+                    break
+            else:
+                continue
+            break
+        else:
+            continue
+        break
+    
+    return pickIdx
+                                                                                                    
+
+def findSR3BinIndexVal2(CT, MT, LepPt):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            lep = ElePt_bin if j >= len(MT_bin)-3 else LepPt_bin #for last two MT bins, leppT start from 5 GeV
+            for k in range(len(lep)-1):
+                cut3 = LepPt>lep[k] and LepPt<=lep[k+1]
+                idx += 1
+                if (cut1 and cut2 and cut3):
+                    pickIdx = idx
+                    break
+            else:
+                continue
+            break
+        else:
+            continue
+        break
+    
+    return pickIdx
+                                                                                            
+
+def findCR1BinIndexVal2(CT, MT, LepChrg):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            if (cut1 and cut2 and LepChrg):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+    
+    return pickIdx
+                                                                                                    
+def findCR3BinIndexVal2(CT, MT):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            if (cut1 and cut2):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+    
+    return pickIdx
+                                                                                            
+
 
 MTBinLabelDict = {
     1 : 'a',
@@ -230,6 +319,7 @@ CRBinLabelListVal1 = [
     'CR3d',
     ]
 
+'''
 SRBinLabelListVal2 = [
     'SR1aX',
     'SR1aY',
@@ -274,6 +364,101 @@ CRBinLabelListVal2 = [
     'CR2cY',
     'CR2dX',
     'CR2dY',
+    'CR3aX',
+    'CR3aY',
+    'CR3bX',
+    'CR3bY',
+    'CR3cX',
+    'CR3cY',
+    'CR3dX',
+    'CR3dY'
+    ]
+'''
+
+SRBinLabelListVal2 = [
+    'SR1VLaX',
+    'SR1LaX',
+    'SR1MaX',
+    'SR1HaX',
+    'SR1VHaX',
+    'SR1VLaY',
+    'SR1LaY',
+    'SR1MaY',
+    'SR1HaY',
+    'SR1VHaY',
+    'SR1VLbX',
+    'SR1LbX',
+    'SR1MbX',
+    'SR1HbX',
+    'SR1VHbX',
+    'SR1VLbY',
+    'SR1LbY',
+    'SR1MbY',
+    'SR1HbY',
+    'SR1VHbY',
+    'SR1LcX',
+    'SR1McX',
+    'SR1HcX',
+    'SR1VHcX',
+    'SR1LcY',
+    'SR1McY',
+    'SR1HcY',
+    'SR1VHcY',
+    'SR1LdX',
+    'SR1MdX',
+    'SR1HdX',
+    'SR1VHdX',
+    'SR1LdY',
+    'SR1MdY',
+    'SR1HdY',
+    'SR1VHdY',
+    'SR3VLaX',
+    'SR3LaX',
+    'SR3MaX',
+    'SR3HaX',
+    'SR3VHaX',
+    'SR3VLaY',
+    'SR3LaY',
+    'SR3MaY',
+    'SR3HaY',
+    'SR3VHaY',
+    'SR3VLbX',
+    'SR3LbX',
+    'SR3MbX',
+    'SR3HbX',
+    'SR3VHbX',
+    'SR3VLbY',
+    'SR3LbY',
+    'SR3MbY',
+    'SR3HbY',
+    'SR3VHbY',
+    'SR3LcX',
+    'SR3McX',
+    'SR3HcX',
+    'SR3VHcX',
+    'SR3LcY',
+    'SR3McY',
+    'SR3HcY',
+    'SR3VHcY',
+    'SR3LdX',
+    'SR3MdX',
+    'SR3HdX',
+    'SR3VHdX',
+    'SR3LdY',
+    'SR3MdY',
+    'SR3HdY',
+    'SR3VHdY'
+    ]
+
+CRBinLabelListVal2 = [
+    'CR1aX',
+    'CR1aY',
+    'CR1bX',
+    'CR1bY',
+    'CR1cX',
+    'CR1cY',
+    'CR1dX',
+    'CR1dY',
     'CR3aX',
     'CR3aY',
     'CR3bX',
