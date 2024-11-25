@@ -43,6 +43,23 @@ def DeltaRMatched(eta, phi, L, thr):
         if dri < dr: dr = dri
     return True if dr < thr else False
 
+def DeltaRMatchedNoOvrlp(eta, phi, L, thr):
+    if len(L):
+        dr = 99
+        mi = None
+        for l in L:
+            dri = DeltaR(l['eta'], l['phi'], eta, phi)
+            if dri < dr:
+                dr = dri
+                mi = l
+        if dr < thr:
+            if mi in L: L.remove(mi)
+            return True
+        else:
+            return False
+    else:
+        return False
+    
 def DeltaRPtMatched(pt, eta, phi, L, thr, ptthr):
     dr = 99
     pT = 999

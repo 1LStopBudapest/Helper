@@ -10,7 +10,7 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"1DPlots/final",sname)
+    outputdirpath = os.path.join(dir,"Test",sname)
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
@@ -26,6 +26,33 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     if islogy:ROOT.gPad.SetLogy()
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
+
+def Plot1DExt(var, hext, fname, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
+    doplot = True
+    if os.path.exists(os.path.join(dir,fname)):
+        f=ROOT.TFile.Open(os.path.join(dir,fname))
+    else:
+        doplot = False
+        print 'Root file ',os.path.join(dir,fname),' does not exist'
+    if doplot:
+        h=f.Get(var+'_'+hext)
+        htitle = h.GetTitle()
+        outputdirpath = os.path.join(dir,"Test",hext)
+        if not os.path.exists(outputdirpath):
+            os.makedirs(outputdirpath)
+
+        leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
+        leg.AddEntry(h, hext ,"l")
+
+        style1D(h, islogy, Ytitle, Xtitle)
+    
+        c = ROOT.TCanvas('c', '', canvasX, canvasY)
+        c.cd()
+        h.Draw(drawOption)
+        leg.Draw("SAME")
+        if islogy:ROOT.gPad.SetLogy()
+        c.SaveAs(outputdirpath+"/"+htitle+".png")
+        c.Close()
     
 def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scaleOption='unitscaling', canvasX=600, canvasY=800):
     hname = h1.GetName()
@@ -44,7 +71,7 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     styleh2(h1, h2, islogy)
     hRatio = getHistratio(h1, h2, comparetype, htitle)
     hRatioFrame = getHistratioframe(hRatio)
-
+    
     leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)
     leg.AddEntry(h1, getRatioLegendTitle(h1, h2, comparetype)[1] ,"l")
     leg.AddEntry(h2, getRatioLegendTitle(h1, h2, comparetype)[0] ,"l")
@@ -72,6 +99,61 @@ def CompareHist(h1, h2, comparetype, dir, drawOption="hist", islogy=False, scale
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
 
+
+def CompareHistExt(files, samplelist, var, comparetype, dir, drawOption="hist", islogy=False, scaleOption='unitscaling', canvasX=600, canvasY=800):
+    outputdirpath = os.path.join(dir,"ComparisonPlots",comparetype)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"RatioPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+
+    ht=[]
+    for i, f in enumerate(files,0):
+        ht.append(f.Get(var+'_'+samplelist[i]))
+            
+    if 'unit' in scaleOption:
+        for h in ht:
+            if h.Integral(): h.Scale(1/h.Integral())
+
+    hRatio=[]
+    leg = ROOT.TLegend(0.7, 0.75, 0.9, 0.9)        
+    leg.AddEntry(ht[0], samplelist[0],"l")
+    style1D(ht[0], islogy, "a.u.")
+    for i, h2 in enumerate(ht[1:], 1):
+        h2.SetLineColor(getColor(samplelist[i]))
+        h2.SetLineWidth(2)
+        leg.AddEntry(h2, samplelist[i],"l")
+        hRatio.append(getHistratio(ht[0], h2, comparetype, var))
+    hRatioFrame = getHistratioframe(hRatio[0])
+    hRatioFrame.GetYaxis().SetTitle(hRatio[0].GetYaxis().GetTitle())
+    hRatioFrame.GetXaxis().SetTitle(hRatio[0].GetXaxis().GetTitle())
+    
+    c = ROOT.TCanvas('c', '', 600, 800)
+    p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
+    p1.SetBottomMargin(0) # Upper and lower plot are joined
+    p1.Draw()             # Draw the upper pad: p1
+    p1.cd()
+    ht[0].Draw(drawOption+"E")
+    for h2 in ht[1:]:
+        h2.Draw(drawOption+"ESAME")
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+    c.cd()
+    p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
+    p2.SetTopMargin(0)
+    p2.SetBottomMargin(0.2)
+    p2.Draw()
+    p2.cd()
+    hRatioFrame.GetYaxis().SetRangeUser(0.6,1.4)
+    hRatioFrame.Draw("HIST")
+    for i, hR in enumerate(hRatio, 1):
+        hR.SetLineColor(getColor(samplelist[i]))
+        hR.SetMarkerSize(0.6)
+        hR.Draw("PEsame")
+    
+    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.Close()
             
 def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
     outputdirpath = os.path.join(dir,"StackPlots",cut)
@@ -92,20 +174,25 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         scale = hs[-1].Integral()/MCtot
         for h in hs_MC:
             h.Scale(scale)
-                
+    '''
+    #to plot upto some bins, usually only SR bins
+    for h in hs_MC:
+        h.GetXaxis().SetRangeUser(0,54)
+    hs[-1].GetXaxis().SetRangeUser(0,54)
+    '''
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs_MC[0].Clone("TotalMC")
-    leg = ROOT.TLegend(0.6, 0.6, 0.9, 0.9)
+    leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
     for i, h in enumerate(hs_MC, 0):
         hStack_MC.Add(h)
         h.SetFillColor(getColor(samplelist[i]))
         h.SetLineColor(getColor(samplelist[i]))
-        leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+        leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')',"f")
         if i!=0:
             hMC.Add(h)
                 
-    leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe")
+    leg.AddEntry(hs[-1], getLegendTitle('Data')+' ('+str(round(hs[-1].Integral(), 2))+')',"pe")
     styleData(hs[-1], islogy)
 
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
@@ -141,8 +228,78 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     c.SaveAs(outputdirpath+"/"+var+".png")
     c.Close()
 
+#stackhist with signal overlay
+def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
+    outputdirpath = os.path.join(dir,"StackPlots",cut)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"StackPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+    hs=[]
+    for i, f in enumerate(files,0):
+        hs.append(f.Get(var+'_'+samplelist[i]))
 
+    hs_MC = hs[:-1]#assuming last one is from data
+    hBK=[]
+    hsig=[]
+    leg = ROOT.TLegend(0.5, 0.6, 0.9, 0.9)
+    leg.SetNColumns(3)
+    hMC = hs_MC[0].Clone("TotalMC")
+    hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
+    for i, h in enumerate(hs_MC, 0):
+        if 'T2tt' in samplelist[i] or 'Sig' in samplelist[i]:
+            hsig.append(h)
+            h.SetLineColor(len(hs)-i)
+            h.SetLineWidth(2)
+            leg.AddEntry(h, getLegendTitle(samplelist[i]), "l")
+        else:
+            hBK.append(h)
+            hStack_MC.Add(h)
+            h.SetFillColor(getColor(samplelist[i]))
+            h.SetLineColor(getColor(samplelist[i]))
+            leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+            if i!=0:
+                hMC.Add(h)
+                
+    leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe") #last entry in hs is data
+    styleData(hs[-1], islogy)
 
+    mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
+    maxRange = mVal * 100 if islogy else mVal * 1.5
+    minRange = 0.1 if islogy else 0.0
+    hs[-1].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+    
+    hRatio = getHistratio(hs[-1], hMC, "DataMC", var)
+    hRatioFrame = getHistratioframe(hRatio)
+    
+    ROOT.gStyle.SetErrorX(0);
+    ROOT.gStyle.SetOptStat(0)
+    c = ROOT.TCanvas('c', '', 600, 800)
+    p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
+    p1.SetBottomMargin(0)
+    p1.Draw()
+    p1.cd()
+    hs[-1].Draw("PE")
+    hStack_MC.Draw("histsame")
+    hs[-1].DrawCopy("PEsame")
+    for i in range(len(hsig)):
+        hsig[i].Draw('histsame')
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+    c.cd()
+    p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
+    p2.SetTopMargin(0)
+    p2.SetBottomMargin(0.2)
+    p2.Draw()
+    p2.cd()
+    hRatio.SetMarkerSize(0.6)
+    hRatio.Draw("PE")
+    hRatioFrame.Draw("HISTsame")
+    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.Close()
+                                                                                                                    
+    
 # Functions to print out a pdf-quality png file:
 def SaveAsQualityPng(canvas,filename,import_scale=1.5):
     if not isinstance(canvas, ROOT.TCanvas):
@@ -211,6 +368,45 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         print 'Error in plotROCLines: markdown must be a list of colors, or a joint list of markdown options, refer to manual'
         return -1
     
+
+    colors_processed = markdown
+    complex_markdown = isinstance(markdown[0], list)
+
+    markers_specified = False
+    linestyle_specified = False
+    if(complex_markdown):
+        if(len(markdown[0]) > 0):
+            colors_processed = markdown[0]
+        else:
+            colors_processed = [ROOT.kBlack] * len(required_length)
+        
+        if(len(markdown) > 1 and len(markdown[1]) > 0):
+            markers_processed = markdown[1]
+            markers_specified = True
+        
+        if(len(markdown) > 2 and len(markdown[2]) > 0):
+            linestyle_processed = markdown[2]
+            linestyle_specified = True
+
+
+    if(len(colors_processed) < required_length):
+        print 'Warning in plotROCLines: not enough colors specified, cycling. Make sure this is what you intended!'
+        while(len(colors_processed) < required_length):
+            for i in range(len(markdown[0] if markers_specified else markdown)):
+                colors_processed.append(markdown[0][i] if markers_specified else markdown[i])
+
+    if(markers_specified and len(markers_processed) < required_length):
+        print 'Warning in plotROCLines: not enough marker styles specified, cycling. Make sure this is what you intended!'
+        while(len(markers_processed) < required_length):
+            for i in range(len(markdown[1])):
+                markers_processed.append(markdown[1][i])
+
+    if(linestyle_specified and len(linestyle_processed) < required_length):
+        print 'Warning in plotROCLines: not enough linestyles specified, cycling. Make sure this is what you intended!'
+        while(len(linestyle_processed) < required_length):
+            for i in range(len(markdown[2])):
+                linestyle_processed.append(markdown[2][i])
+
 
     colors_processed = markdown
     complex_markdown = isinstance(markdown[0], list)

@@ -41,9 +41,9 @@ class ANEle():
         Llist = []
         for id, tp in eId:
             if tp =='LowPtElectron':
-                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'idx': id, 'type':tp})
+                Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
             else:
-                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'idx': id, 'type':tp})
+                Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
     def CombEleIdx(self):
@@ -67,13 +67,13 @@ class ANEle():
     def getLowPtEleVar(self, eId):
         Llist = []
         for id, tp in eId:
-            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'idx': id, 'type':tp})
+            Llist.append({'pt':self.tr.LowPtElectron_pt[id], 'eta':self.tr.LowPtElectron_eta[id], 'deltaEtaSC':self.tr.LowPtElectron_deltaEtaSC[id], 'phi':self.tr.LowPtElectron_phi[id], 'dxy':self.tr.LowPtElectron_dxy[id], 'dxyErr':self.tr.LowPtElectron_dxyErr[id], 'dz': self.tr.LowPtElectron_dz[id], 'charg':self.tr.LowPtElectron_charge[id], 'type':tp})
         return Llist
 
     def getStdEleVar(self, eId):
         Llist = []
         for id, tp in eId:
-            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'idx': id, 'type':tp})
+            Llist.append({'pt':self.tr.Electron_pt[id], 'eta':self.tr.Electron_eta[id], 'deltaEtaSC':self.tr.Electron_deltaEtaSC[id], 'phi':self.tr.Electron_phi[id], 'dxy':self.tr.Electron_dxy[id], 'dxyErr':self.tr.Electron_dxyErr[id], 'dz': self.tr.Electron_dz[id], 'charg':self.tr.Electron_charge[id], 'type':tp})
         return Llist
 
     def LowselectEleIdx(self, lepsel='HybridIso'):
@@ -86,7 +86,7 @@ class ANEle():
     def StdselectEleIdx(self, lepsel='HybridIso'):
             idx = []
             for i in range(len(self.tr.Electron_pt)):
-                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_miniPFRelIso_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
+                if self.StdeleSelector(pt=self.tr.Electron_pt[i], eta=self.tr.Electron_eta[i], deltaEtaSC=self.tr.Electron_deltaEtaSC[i], iso=self.tr.Electron_pfRelIso03_all[i], dxy=self.tr.Electron_dxy[i], dz=self.tr.Electron_dz[i], Id=self.tr.Electron_vidNestedWPBitmap[i],lepton_selection=lepsel):
                     idx.append(tuple((i, 'Electron')))
             return idx
 
@@ -170,15 +170,15 @@ class ANEle():
         isolationWeight = 1.0
         if lepton_selection == 'HybridIso':
             def func():
-                if pt <= 12 and pt >5:
+                if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
-                        and (iso* pt) < 2.4 * isolationWeight \
+                        and (iso* pt) < 5.0 * isolationWeight \
                         and abs(dxy)       < 0.02 \
                         and abs(dz)        < 0.1 \
                         and eleVID(Id, 1, removedCuts=['pfRelIso03_all']) #cutbased id: 0:fail, 1:veto, 2:loose, 3:medium, 4:tight
-                elif pt > 12:
+                elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
@@ -189,7 +189,7 @@ class ANEle():
                                                                                                                         
         elif lepton_selection == 'looseHybridIso':
             def func():
-                if pt <= 12 and pt >5:
+                if pt <= 25 and pt >5:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \
@@ -197,7 +197,7 @@ class ANEle():
                         and abs(dxy)       < 0.1 \
                         and abs(dz)        < 0.5 \
                         and eleVID(Id,1,removedCuts=['pfRelIso03_all'])
-                elif pt > 12:
+                elif pt > 25:
                     return \
                         abs(eta)       < 2.5 \
                         and (abs(eta+deltaEtaSC)<1.4442 or abs(eta+deltaEtaSC)>1.566) \

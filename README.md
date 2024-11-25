@@ -1,8 +1,32 @@
 # Helper
 
 Various helper functions.
+
+TreeVarSel is used to select object and selection for the AN, it uses ANELe class for the elctron selection
+
+For AN binning implementation one can use Binning.py
+
+
+<b>Manual for printing png images:</b>
+
+The SaveAsQualityPng(canvas, filename) function can be used to save a TCanvas object as a png image with included anti-aliasing for near vectorgraphics-quality. Parameters of the function:
+- canvas: the TCanvas object to save
+- filename: the output filename (string)
+- import_scale (default=1.5): An internal upscaling parameter used by the tools that create the image. The higher it is, the clearer written text is on the image, and also the image becomes larger. Not recommended to set below ~1.2, then text can become blurry.
+
+
+
+The printNicePng(filename,outfile = "",import_scale=1.5,silent=True) function can be used to export a png image from an existing pdf file. Parameters:
+- filename: The input filename of the existing pdf. (can be with or without the ".pdf" extension)
+- outfile: The output filename of the new png. Can be with or without the ".png" extension. If left empty, the outfile name will be identical to the input filename.
+- import_scale (default=1.5): An internal upscaling parameter used by the tools that create the image. The higher it is, the clearer written text is on the image, and also the image becomes larger. Not recommended to set below ~1.2, then text can become blurry.
+- silent (default=True): A boolean, specifying whether to suppress the stdout and stderr of external tools used in the conversion.
+Example of very simple usage, supposing we already have an "images/example.pdf" file:
+PlotHelper.printNicePng("images/example.pdf")
+This will create an "images/example.png" in near-matching fidelity.
   
-  
+
+These png functions will only work when running on higgs.
   
   
 <b>Manual for ROC plotting:</b>

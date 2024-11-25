@@ -21,7 +21,35 @@ class TreeVarSel():
         ps = self.METcut() and self.HTcut() and self.ISRcut() and self.lepcut() and self.dphicut() and self.XtralepVeto() and self.XtraJetVeto() and self.tauVeto()
         return ps
 
-    def SearchRegion(self):
+    def Val1SearchRegion(self):
+        if not self.PreSelection():
+            return False
+        else:
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) >= 1 and lepvar[0]['pt']<=50:
+                return True
+            else:
+                return False
+
+    def Val1SR1(self):
+        if not self.Val1SearchRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>=200 and self.calCT(1)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp() else False
+
+    def Val1SR2(self):
+        if not self.Val1SearchRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(225))>0 and self.calCT(2)>=200 and self.calCT(2)<300 else False
+
+    def Val1SR3(self):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
+        if not self.Val1SearchRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(225))>0 and self.calCT(2)>=200 and self.calCT(2)<300 and self.cntSoftB()>=1 else False
+
+    def Val2SearchRegion(self):
         if not self.PreSelection():
             return False
         else:
@@ -30,27 +58,28 @@ class TreeVarSel():
                 return True
             else:
                 return False
-
-    def SR1(self):
-        if not self.SearchRegion():
+        
+    def Val2SR1(self):
+        if not self.Val2SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp() else False
-
-    def SR2(self):
-        if not self.SearchRegion():
+            return True if self.cntBtagjet(pt=60)>=1 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2() else False
+    '''
+    def Val2SR2(self):
+        if not self.Val2SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
-
-    def SR3(self):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
-        if not self.SearchRegion():
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)>=1 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 else False
+    '''
+    def Val2SR3(self):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
+        if not self.Val2SearchRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
+            return True if self.cntBtagjet(pt=60)>=1 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
+
 
     def R1R3NoOvrlp(self):
-        if len(self.selectjetIdx(325))>0:
+        if len(self.selectjetIdx(225))>0:
             if self.cntSoftB()==0:
                 return True
             else:
@@ -58,34 +87,71 @@ class TreeVarSel():
         else:
             return True
 
+    def R1R3NoOvrlpVal2(self):
+        if len(self.selectjetIdx(325))>0:
+            if self.cntSoftB()==0:
+                return True
+            else:
+                return False
+        else:
+            return True
         
-    def ControlRegion(self):
+    def Val1ControlRegion(self):
         if not self.PreSelection():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>50:
+            if len(lepvar) >= 1 and lepvar[0]['pt']>50:
                 return True
             else:
                 return False
 
-    def CR1(self):
-        if not self.ControlRegion():
+    def Val2ControlRegion(self):
+        if not self.PreSelection():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp() else False
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) >= 1 and lepvar[0]['pt']>50 and self.tr.MET_pt > 300:
+                return True
+            else:
+                return False
 
-    def CR2(self):
-        if not self.ControlRegion():
+    def Val2CR1(self):
+        if not self.Val2ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+            return True if self.cntBtagjet(pt=60)>=1 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2() else False
+    '''
+    def Val2CR2(self):
+        if not self.Val2ControlRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)>=1 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+    '''
+    def Val2CR3(self):
+        if not self.Val2ControlRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=60)>=1 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
 
-    def CR3(self):
-        if not self.ControlRegion():
+
+    def Val1CR1(self):
+        if not self.Val1ControlRegion():
             return False
         else:
-            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  and self.cntSoftB()>=1 else False
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calCT(1)>=200 and self.calCT(1)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp() else False
+
+    def Val1CR2(self):
+        if not self.Val1ControlRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(225))>0 and self.calCT(2)>=200 and self.calCT(2)<300  else False
+
+    def Val1CR3(self):
+        if not self.Val1ControlRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(225))>0 and self.calCT(2)>=200  and self.calCT(2)<300 and self.cntSoftB()>=1 else False
 
     #cuts
     def ISRcut(self, thr=100):
@@ -233,7 +299,7 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -242,7 +308,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -374,31 +440,3 @@ class TreeVarSel():
 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)
-
-# good taus in IVF
-    def getGoodTaus(self):
-        taus = sortedlist(self.getTauVar(self.selectTauIdx()))
-        leptons = sortedlist(self.getLepVar(self.selectMuIdx(), self.selectEleIdx()))
-        res  =  []
-        for tau in taus:
-            clean = True
-            for lepton in leptons:
-                if DeltaPhi(lepton['phi'], tau['phi'])**2 + (lepton['eta'] - tau['eta'])**2 < 0.4:
-                    clean = False
-                    break
-            if clean:
-                res.append(tau)
-        return res
-
-    def getTauVar(self, tauId):
-        Llist = []
-        for id in tauId:
-            Llist.append({'pt':self.tr.Tau_pt[id], 'eta':self.tr.Tau_eta[id], 'phi':self.tr.Tau_phi[id], 'dxy':self.tr.Tau_dxy[id], 'dz': self.tr.Tau_dz[id], 'charg':self.tr.Tau_charge[id]})
-        return Llist
-
-    def selectTauIdx(self):
-        idx = []
-        for i in range(self.tr.nTau):
-            if (self.tr.Tau_pt[i] >= 20 and abs(self.tr.Tau_eta[i]) < 2.3): # and ord(self.tr.Tau_idMVAnewDM2017v2) >=2 ???
-                idx.append(i)
-        return idx
