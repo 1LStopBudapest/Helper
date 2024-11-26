@@ -264,6 +264,7 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
                 
     leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe") #last entry in hs is data
     styleData(hs[-1], islogy)
+
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
     minRange = 0.1 if islogy else 0.0
@@ -367,6 +368,45 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
         print 'Error in plotROCLines: markdown must be a list of colors, or a joint list of markdown options, refer to manual'
         return -1
     
+
+    colors_processed = markdown
+    complex_markdown = isinstance(markdown[0], list)
+
+    markers_specified = False
+    linestyle_specified = False
+    if(complex_markdown):
+        if(len(markdown[0]) > 0):
+            colors_processed = markdown[0]
+        else:
+            colors_processed = [ROOT.kBlack] * len(required_length)
+        
+        if(len(markdown) > 1 and len(markdown[1]) > 0):
+            markers_processed = markdown[1]
+            markers_specified = True
+        
+        if(len(markdown) > 2 and len(markdown[2]) > 0):
+            linestyle_processed = markdown[2]
+            linestyle_specified = True
+
+
+    if(len(colors_processed) < required_length):
+        print 'Warning in plotROCLines: not enough colors specified, cycling. Make sure this is what you intended!'
+        while(len(colors_processed) < required_length):
+            for i in range(len(markdown[0] if markers_specified else markdown)):
+                colors_processed.append(markdown[0][i] if markers_specified else markdown[i])
+
+    if(markers_specified and len(markers_processed) < required_length):
+        print 'Warning in plotROCLines: not enough marker styles specified, cycling. Make sure this is what you intended!'
+        while(len(markers_processed) < required_length):
+            for i in range(len(markdown[1])):
+                markers_processed.append(markdown[1][i])
+
+    if(linestyle_specified and len(linestyle_processed) < required_length):
+        print 'Warning in plotROCLines: not enough linestyles specified, cycling. Make sure this is what you intended!'
+        while(len(linestyle_processed) < required_length):
+            for i in range(len(markdown[2])):
+                linestyle_processed.append(markdown[2][i])
+
 
     colors_processed = markdown
     complex_markdown = isinstance(markdown[0], list)
