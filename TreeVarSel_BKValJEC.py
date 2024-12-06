@@ -35,19 +35,19 @@ class TreeVarSel():
         if not self.Val1SearchRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)==0 and self.cntBtagjet(60, jettp)==0 and self.calCT(1, jettp)>=200 and self.calCT(1, jettp)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp(jettp) else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and self.calCT(1, jettp)>=200 and self.calCT(1, jettp)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp(jettp) else False
 
     def Val1SR2(self, jettp = 'Nom'):
         if not self.Val1SearchRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)>=1 and self.cntBtagjet(60, jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300 else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)>=1 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300 else False
 
     def Val1SR3(self, jettp = 'Nom'):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
         if not self.Val1SearchRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)==0 and self.cntBtagjet(60, jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300 and self.cntSoftB(tp=jettp)>=1 else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300 and self.cntSoftB(tp=jettp)>=1 else False
 
     def Val2SearchRegion(self, jettp = 'Nom'):
         if not self.PreSelection(jettp):
@@ -63,7 +63,7 @@ class TreeVarSel():
         if not self.Val2SearchRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(60, jettp)>=1 and self.calHT(tp=jettp)>400 and self.calCT(1, jettp)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2(jettp) else False
+            return True if self.cntBtagjet(pt=60, tp=jettp)>=1 and self.calHT(tp=jettp)>400 and self.calCT(1, jettp)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2(jettp) else False
     '''
     def Val2SR2(self):
         if not self.Val2SearchRegion():
@@ -75,7 +75,7 @@ class TreeVarSel():
         if not self.Val2SearchRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(60, jettp)>=1 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300 and self.cntSoftB(tp=jettp)>=1 else False
+            return True if self.cntBtagjet(pt=60, tp=jettp)>=1 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300 and self.cntSoftB(tp=jettp)>=1 else False
 
 
     def R1R3NoOvrlp(self, jettp = 'Nom'):
@@ -120,7 +120,7 @@ class TreeVarSel():
         if not self.Val2ControlRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(60, jettp)>=1 and self.calHT(tp=jettp)>400 and self.calCT(1, jettp)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2(jettp) else False
+            return True if self.cntBtagjet(pt=60, tp=jettp)>=1 and self.calHT(tp=jettp)>400 and self.calCT(1, jettp)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlpVal2(jettp) else False
     '''
     def Val2CR2(self):
         if not self.Val2ControlRegion():
@@ -132,26 +132,26 @@ class TreeVarSel():
         if not self.Val2ControlRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(60, jettp)>=1 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300 and self.cntSoftB(tp=jettp)>=1 else False
+            return True if self.cntBtagjet(pt=60, tp=jettp)>=1 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300 and self.cntSoftB(tp=jettp)>=1 else False
 
 
     def Val1CR1(self, jettp = 'Nom'):
         if not self.Val1ControlRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)==0 and self.cntBtagjet(60, jettp)==0 and self.calCT(1, jettp)>=200 and self.calCT(1, jettp)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp(jettp) else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and self.calCT(1, jettp)>=200 and self.calCT(1, jettp)<300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp(jettp) else False
 
     def Val1CR2(self, jettp = 'Nom'):
         if not self.Val1ControlRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)>=1 and self.cntBtagjet(60, jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300  else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)>=1 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200 and self.calCT(2, jettp)<300  else False
 
     def Val1CR3(self, jettp = 'Nom'):
         if not self.Val1ControlRegion(jettp):
             return False
         else:
-            return True if self.cntBtagjet(20, jettp)==0 and self.cntBtagjet(60, jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200  and self.calCT(2, jettp)<300 and self.cntSoftB(tp=jettp)>=1 else False
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(225, jettp))>0 and self.calCT(2, jettp)>=200  and self.calCT(2, jettp)<300 and self.cntSoftB(tp=jettp)>=1 else False
 
     #cuts
     def ISRcut(self, thr=100, tp='Nom'):
@@ -235,7 +235,7 @@ class TreeVarSel():
         return MT(lepvar[0]['pt'], lepvar[0]['phi'], self.tr.MET_pt, self.tr.MET_phi) if len(lepvar) else 0
 
     def calCT(self, i, tp='Nom'):
-        return CT1(self.tr.MET_pt, self.calHT()) if i==1 else CT2(self.tr.MET_pt, self.getISRPt())
+        return CT1(self.tr.MET_pt, self.calHT(tp)) if i==1 else CT2(self.tr.MET_pt, self.getISRPt(tp))
         
     def calHT(self, tp='Nom'):
         HT = 0
