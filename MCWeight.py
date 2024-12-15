@@ -11,7 +11,9 @@ class MCWeight():
         self.tr = tr
         self.yr = yr
         self.sample = sample
-        self.EWKnorfile = os.path.join(Xfiles, 'EWKNormFactor.txt')       
+        #self.EWKnorfile = os.path.join(Xfiles, 'EWKNormFactor.txt') 
+        #self.TLMufile = os.path.join(Xfiles, 'h_TLratio_2D_Mu.root') 
+        #self.TLElefile = os.path.join(Xfiles, 'h_TLratio_2D_Ele.root')
         self.isSignal = True if ('Stop' in self.sample or 'T2tt' in self.sample) else False
 
     def getPUWeight(self):
@@ -43,8 +45,32 @@ class MCWeight():
         return self.getPUWeight() * self.getLeptonSF() * self.getBTagSF() * self.getWpTWeight() * self.getL1PrefireWeight() * self.getHEMWeight()
         #return self.getLeptonSF() * self.getBTagSF() * self.getISRWeight() * self.getWpTWeight() * self.getL1PrefireWeight()
 
-
+    '''
     def getEWKNorm(self):
         f = open(self.EWKnorfile, 'r')
         s = f.read()#just one value
         return s
+    '''
+    def getTLvalue(self, lep , leppt , lepeta):
+        pt_Binning = [3.5, 5.0, 8, 10, 15, 20, 30, 50]
+        eta_Binning = [0.,1.442,1.566,3.142] 
+        f = ROOT.TFile.Open("/home/mmoussa/susy/susy_code_fake_rate/AuxFiles/h_TLratio_2D_"+lep+".root")
+        hist_TL_values = f.Get("h_TLratio_2D")
+        value = 0.0
+        for i in range(len(pt_Binning)-1):
+            if abs(lepeta)>=eta_Binning[0] and abs(lepeta)<=eta_Binning[1]:
+                if leppt >= pt_Binning[i] and leppt < pt_Binning[i+1]:
+                    value = hist_TL_values.GetBinContent(i+1 , 1)
+            if abs(lepeta)>=eta_Binning[2] and abs(lepeta)<=eta_Binning[3]:
+                if leppt >= pt_Binning[i] and leppt < pt_Binning[i+1]:
+                    value = hist_TL_values.GetBinContent(i+1 , 3)
+        return value 
+ 
+
+
+
+
+
+
+
+        
