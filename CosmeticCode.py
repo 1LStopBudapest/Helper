@@ -73,7 +73,7 @@ colDict = {
     'DYJetsToLL' : ROOT.kMagenta-6,
     'QCD' : ROOT.kMagenta+3,
     'TTV' : ROOT.kAzure-7,
-    'VV' : ROOT.kOrange,
+    'VV' : ROOT.kCyan+3,
     'Data': ROOT.kBlack,
     'TTbar' : 5,
     'Sig_Displaced_300_290' : 8,

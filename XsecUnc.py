@@ -1,4 +1,9 @@
 import os, sys
+import ROOT
+
+sys.path.append('../')
+from Sample.Dir import Xfiles
+
 
 BKXecUncDict = {
     'TTSingleLep_pow': (2.18/88.51),
@@ -59,3 +64,10 @@ BKXecUncDict = {
 
 def getXsecUnc(sample):
     return BKXecUncDict[sample] if sample in BKXecUncDict.keys() else 0.01
+
+def getSigXsecUnc(ms):
+    fname = os.path.join(Xfiles, 'StopXsecUnc.root')
+    uncfile = ROOT.TFile(fname)
+    hist = uncfile.Get('hUnc')
+    unc = hist.GetBinContent(hist.GetXaxis().FindBin(ms))
+    return unc/100.0
