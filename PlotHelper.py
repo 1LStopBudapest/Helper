@@ -315,6 +315,7 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
     hMC = hs[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
     leg.SetNColumns(3)
+    leg.SetBorderSize(0)
     for i, h in enumerate(hs, 0):
         hStack_MC.Add(h)
         h.SetFillColor(getColor(samplelist[i]))
@@ -326,20 +327,79 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
     
     mVal = hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
-    #minRange = 0.0001 if islogy else 0.0
-    minRange = 0.1 if islogy else 0.0
-    #hStack_MC.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+    minRange = 0.0001 if islogy else 0.0
+    hdumy = ROOT.TH1F('hdumy','', hMC.GetNbinsX(),hMC.GetXaxis().GetBinLowEdge(1),hMC.GetXaxis().GetBinUpEdge(hMC.GetNbinsX()))
+    hdumy.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+    hdumy.GetYaxis().SetTitle("Events")
+    hdumy.GetXaxis().SetTitle(getXTitle(var))
     
     ROOT.gStyle.SetErrorX(0);
     ROOT.gStyle.SetOptStat(0)
     c = ROOT.TCanvas('c', '', 1200, 800)
     c.cd()
-    hStack_MC.Draw("hist")
+    hdumy.Draw()
+    hStack_MC.Draw("histSAME")
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
     c.SaveAs(outputdirpath+"/"+var+".png")
     c.Close()
+
+
+def StackHistsNoDataExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800): #Overlaying signals 
+    outputdirpath = os.path.join(dir,"StackPlots",cut)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"StackPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+    hs=[]
+    for i, f in enumerate(files,0):
+        hs.append(f.Get(var+'_'+samplelist[i]))
+        
+    hStack_MC = ROOT.THStack("hStack_MC","")
+    hMC = hs[0].Clone("TotalMC") #assuming first sample is not the signal point
+    leg = ROOT.TLegend(0.2, 0.7, 0.85, 0.85)
+    leg.SetNColumns(3)
+    leg.SetBorderSize(0)
+    hBK=[]
+    hsig=[]
+    for i, h in enumerate(hs, 0):
+        if 'T2tt' in samplelist[i] or 'Sig' in samplelist[i]:
+            hsig.append(h)
+            h.SetLineColor(len(hs)-i)
+            h.SetLineWidth(2)
+            leg.AddEntry(h, getLegendTitle(samplelist[i]), "l")
+
+        else:
+            hBK.append(h)
+            hStack_MC.Add(h)
+            h.SetFillColor(getColor(samplelist[i]))
+            h.SetLineColor(getColor(samplelist[i]))
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')',"f")
+            if i!=0:
+                hMC.Add(h)
+                
     
+    mVal = hMC.GetBinContent(hMC.GetMaximumBin())
+    maxRange = mVal * 1000000 if islogy else mVal * 1.5
+    minRange = 0.01 if islogy else 0.0
+    hdumy = ROOT.TH1F('hdumy','', hMC.GetNbinsX(),hMC.GetXaxis().GetBinLowEdge(1),hMC.GetXaxis().GetBinUpEdge(hMC.GetNbinsX()))
+    hdumy.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+    hdumy.GetYaxis().SetTitle("Events")
+    hdumy.GetXaxis().SetTitle(getXTitle(var))
+    ROOT.gStyle.SetErrorX(0);
+    ROOT.gStyle.SetOptStat(0)
+    c = ROOT.TCanvas('c', '', 1200, 800)
+    c.cd()
+    hdumy.Draw()
+    hStack_MC.Draw("histSAME")
+    for i in range(len(hsig)):
+        hsig[i].Draw('histsame')
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.Close()
+
 # Functions to print out a pdf-quality png file:
 def SaveAsQualityPng(canvas,filename,import_scale=1.5):
     if not isinstance(canvas, ROOT.TCanvas):
