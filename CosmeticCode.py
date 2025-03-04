@@ -125,12 +125,12 @@ LegendTitleDict = {
     'DoubleMuon_Data': 'Data(Double#mu)',
     'SingleMuon_Data': 'Data(Single#mu)',
     'TTbar' : 't#bar{t}',
-    'Sig_Displaced_300_290_full' : '300_290_LL',
-    'Sig_Displaced_350_335_full' : '350_335_LL',
-    'Sig_Displaced_400_380_full' : '400_380_LL',
-    'Sig_Prompt_500_420_full' : '500_420',
-    'Sig_Prompt_500_450_full' : '500_450',
-    'Sig_Prompt_500_470_full' : '500_470',
+    'Sig_Displaced_300_290_full' : 'T2tt_LL(300,290)',
+    'Sig_Displaced_350_335_full' : 'T2tt_LL(350,335)',
+    'Sig_Displaced_400_380_full' : 'T2tt_LL(400,380)',
+    'Sig_Prompt_500_420_full' : 'T2tt(500,420)',
+    'Sig_Prompt_500_450_full' : 'T2tt(500,450)',
+    'Sig_Prompt_500_470_full' : 'T2tt(500,470)',
     }
 
 vidNestedWPBitMapNamingList = [
