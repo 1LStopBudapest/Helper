@@ -64,7 +64,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>50:
+            if len(lepvar) > 1 and lepvar[0]['pt']>50 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
