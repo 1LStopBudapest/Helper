@@ -17,7 +17,7 @@ def get_parser():
     dest='alist',                           # store in 'list'.
         default=['VV', 'TTV', 'ZJetsToNuNu', 'QCD', 'DYJetsToLL', 'ST', 'TTbar', 'WJetsToLNu'],     # all the BK samples
     )
-    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHist',          help="root file name" )
+    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHistJEC',          help="root file name" )
     argParser.add_argument('--filedir',            action='store',                    type=str,            default='1binPromptDCFiles',          help="Which directory input files are located?" )
 
     return argParser
@@ -44,7 +44,7 @@ for sl in samplelists:
         print 'Root files for', sl, 'sample does not exist. Please run python '+filename+'.py --sample', sl, 'inside the correspoding directory'
 
 if filename=='CountDCHist':
-    hname = ['h_rate', 'h_PU', 'h_PUUp', 'h_PUDown', 'h_WPt', 'h_WPtUp', 'h_WPtDown', 'h_LeptonSF', 'h_LeptonSFUp', 'h_LeptonSFDown', 'h_BTagSF', 'h_BTagSFbUp', 'h_BTagSFbDown', 'h_BTagSFlUp', 'h_BTagSFlDown', 'h_XsecUp'] #these histos should present in the root files
+    hname = ['h_rate', 'h_PU', 'h_PUUp', 'h_PUDown', 'h_WPt', 'h_WPtUp', 'h_WPtDown', 'h_LeptonSF', 'h_LeptonSFUp', 'h_LeptonSFDown', 'h_BTagSF', 'h_BTagSFbUp', 'h_BTagSFbDown', 'h_BTagSFlUp', 'h_BTagSFlDown', 'h_L1Prefire', 'h_L1PrefireUp', 'h_L1PrefireDown', 'h_XsecUp'] #these histos should present in the root files
 else:
     hname = ['h_rate', 'h_JECUp', 'h_JECDown', 'h_JERUp', 'h_JERDown'] #for JEC unc root files
 hpo = []
@@ -73,11 +73,11 @@ if fexists:
 
 pfilew = ROOT.TFile(plotDir+filedir+'/'+filename+'_'+Procs[0]+'.root', 'RECREATE')
 for h in hw:
-    h.SetName(h.GetTitle().replace('_prompt',''))
+    h.SetName(h.GetTitle().replace('_prompt','')+'_'+Procs[0])
     h.Write()
 pfilet = ROOT.TFile(plotDir+filedir+'/'+filename+'_'+Procs[1]+'.root', 'RECREATE')
 for h in ht:
-    h.SetName(h.GetTitle().replace('_prompt',''))
+    h.SetName(h.GetTitle().replace('_prompt','')+'_'+Procs[1])
     h.Write()
 
 
@@ -91,7 +91,7 @@ for hpi in hpcut:
 
 pfileop = ROOT.TFile(plotDir+filedir+'/'+filename+'_'+Procs[2]+'.root', 'RECREATE')
 for h in hprompt:
-    h.SetName(h.GetTitle().replace('_prompt',''))
+    h.SetName(h.GetTitle().replace('_prompt','')+'_'+Procs[2])
     h.Write()
     
 hnprompt=[]
@@ -103,7 +103,7 @@ for hnpi in hnpcut:
         hnprompt[i].Add(hnpi[i])
 npfile = ROOT.TFile(plotDir+filedir+'/'+filename+'_'+Procs[3]+'.root', 'RECREATE')
 for h in hnprompt:
-    h.SetName(h.GetTitle().replace('_nonprompt',''))
+    h.SetName(h.GetTitle().replace('_nonprompt','')+'_'+Procs[3])
     h.Write()
 
 
