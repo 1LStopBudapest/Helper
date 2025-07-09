@@ -70,6 +70,25 @@ def DeltaRPtMatched(pt, eta, phi, L, thr, ptthr):
             pT = l['pt']
     return True if dr < thr and abs(1- pt/pT) < ptthr else False
 
+def DeltaRPtMatchedNoOvrlp(pt, eta, phi, L, thr, ptthr):
+    if len(L):
+        dr = 99
+        pT = 999
+        mi = None
+        for l in L:
+            dri = DeltaR(l['eta'], l['phi'], eta, phi)
+            if dri < dr:
+                dr = dri
+                pT = l['pt']
+                mi = l
+        if dr < thr and abs(1- pT/pt) < ptthr:
+            if mi in L: L.remove(mi)
+            return True
+        else:
+            return False
+    else:
+        return False
+
 def sortedlist(l, k='pt'):
     sl = sorted(l, key = lambda d: d[k], reverse=True)
     return sl
