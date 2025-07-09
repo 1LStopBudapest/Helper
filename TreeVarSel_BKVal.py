@@ -299,7 +299,7 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -308,7 +308,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -440,3 +440,8 @@ class TreeVarSel():
 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)
+
+    def passMETTrig(self, trig):
+        if trig=='HLT_PFMET120_PFMHT120_IDTight' and hasattr(self.tr, 'HLT_PFMET120_PFMHT120_IDTight'): return self.tr.HLT_PFMET120_PFMHT120_IDTight
+        if trig=='HLT_MET_Inclusive': return (self.tr.HLT_PFMET90_PFMHT90_IDTight if hasattr(self.tr, 'HLT_PFMET90_PFMHT90_IDTight') else False) or (self.tr.HLT_PFMET100_PFMHT100_IDTight if hasattr(self.tr, 'HLT_PFMET100_PFMHT100_IDTight') else False) or (self.tr.HLT_PFMET110_PFMHT110_IDTight if hasattr(self.tr, 'HLT_PFMET110_PFMHT110_IDTight') else False) or (self.tr.HLT_PFMET120_PFMHT120_IDTight if hasattr(self.tr, 'HLT_PFMET120_PFMHT120_IDTight') else False)
+        else: return False
