@@ -5,6 +5,7 @@ import math
 import subprocess
 
 from Style import *
+from CosmeticCode import *
 
 def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
     hname = h.GetName()
@@ -14,13 +15,21 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
-    leg = ROOT.TLegend(0.5, 0.85, 0.9, 0.9)
+    leg = ROOT.TLegend(0.1, 0.85, 0.48, 0.9)
     leg.AddEntry(h, sname ,"l")
 
     style1D(h, islogy, Ytitle, Xtitle)
     
     c = ROOT.TCanvas('c', '', canvasX, canvasY)
     c.cd()
+
+    #Moises
+    h.SetLineColor(2)
+    # Compute the max bin content
+    max_bin_content = h.GetMaximum()
+    # Set Y-axis maximum range to 1.2 times the max bin content
+    h.SetMaximum(1.25 * max_bin_content)
+    ####
     h.Draw(drawOption)
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
@@ -273,9 +282,9 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
     hRatio = getHistratio(hs[-1], hMC, "DataMC", var)
     hRatioFrame = getHistratioframe(hRatio)
     
-    ROOT.gStyle.SetErrorX(0);
+    ROOT.gStyle.SetErrorX(0)
     ROOT.gStyle.SetOptStat(0)
-    c = ROOT.TCanvas('c', '', 600, 800)
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
     p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
     p1.SetBottomMargin(0)
     p1.Draw()
@@ -299,6 +308,134 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
     c.SaveAs(outputdirpath+"/"+var+".png")
     c.Close()
                                                                                                                     
+
+#stackhist with signal overlay and no data
+def StackHistsExtNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
+    outputdirpath = os.path.join(dir,"StackPlots",cut)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"StackPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+    hs=[]
+    for i, f in enumerate(files,0):
+        hs.append(f.Get(var+'_'+samplelist[i]))
+
+    hs_MC = hs
+    hBK=[]
+    hsig=[]
+    leg = ROOT.TLegend(0.5, 0.7, 0.9, 0.9)
+    leg.SetNColumns(3)
+    hMC = hs_MC[0].Clone("TotalMC")
+    hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
+    for i, h in enumerate(hs_MC, 0):
+        if 'T2tt' in samplelist[i] or 'Sig' in samplelist[i]:
+            ########
+            #hsig.append(h)
+            hsig.append(h.Rebin(2))
+            #########
+            h.SetLineColor(len(hs)-i)
+            h.SetLineWidth(2)
+            leg.AddEntry(h, getLegendTitle(samplelist[i]), "l")
+        else:
+            hBK.append(h)
+            #hStack_MC.Add(h)
+            h.SetFillColor(getColor(samplelist[i]))
+            h.SetLineColor(getColor(samplelist[i]))
+            leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+            if i!=0:
+                hMC.Add(h)
+                
+    #leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe") #last entry in hs is data
+    styleData(hs[-1], islogy)
+
+    ############Sort histograms in stack
+    # Step 1: Retrieve the number of entries for each histogram
+    histogram_entries = [(hist_, hist_.GetEntries()) for hist_ in hBK]
+    # Step 2: Sort the histograms based on the number of entries (ascending order)
+    histogram_entries.sort(key=lambda x: x[1])
+    for hist_, _ in histogram_entries:
+        #### Rebin histos
+        rebinned_hist = hist_.Rebin(2)
+        rebinned_hist.SetName(hist_.GetName() + "_rebinned")
+        #hStack_MC.Add(hist_)
+        hStack_MC.Add(rebinned_hist)
+    ###########################
+
+    # mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
+    # maxRange = mVal * 100 if islogy else mVal * 1.5
+    # minRange = 0.1 if islogy else 0.0
+    # hStack_MC.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+
+    # Find the maximum values of each histogram
+    max1 = hStack_MC.GetMaximum()
+    max2 = hsig[-1].GetMaximum()
+    # Determine the overall maximum and scale it
+    overall_max = max(max1, max2)
+    minRange = 0.1 if islogy else 0.0
+    hsig[0].SetMaximum(overall_max*10)  # Apply y-axis limit
+    hsig[0].SetMinimum(minRange)
+
+    
+    # hRatio = getHistratio(hs[-1], hMC, "DataMC", var)
+    # hRatioFrame = getHistratioframe(hRatio)
+    
+    ROOT.gStyle.SetErrorX(0)
+    ROOT.gStyle.SetOptStat(0)
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
+    # p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
+    # p1.SetBottomMargin(0)
+    # p1.Draw()
+    # p1.cd()
+    #hs[-1].Draw("PE")
+
+    # hStack_MC.GetYaxis().SetTitle("Events")
+    # hStack_MC.GetYaxis().SetTitleSize(0.035)
+    # hStack_MC.GetYaxis().SetTitleOffset(1.2)
+    # hStack_MC.GetYaxis().SetLabelSize(0.03)
+    # hStack_MC.GetXaxis().SetTitle(Xtitle)
+    # hStack_MC.GetXaxis().SetTitleSize(0.04)
+    # hStack_MC.GetXaxis().SetTitleOffset(0.8)
+    # hStack_MC.GetXaxis().SetLabelSize(0.04)
+
+    hsig[0].Draw('hist')
+    #hStack_MC.Draw("hist")
+    #hs[-1].DrawCopy("PEsame")
+
+    # for i in range(len(hsig)):
+    #     hsig[i].Draw('histsame')
+
+
+    hStack_MC.Draw("histsame")
+
+    hsig[0].GetYaxis().SetTitle("Events")
+    hsig[0].GetYaxis().SetTitleSize(0.035)
+    hsig[0].GetYaxis().SetTitleOffset(1.2)
+    hsig[0].GetYaxis().SetLabelSize(0.03)
+    hsig[0].GetXaxis().SetTitle(var)
+    hsig[0].GetXaxis().SetTitleSize(0.04)
+    hsig[0].GetXaxis().SetTitleOffset(0.8)
+    hsig[0].GetXaxis().SetLabelSize(0.04)
+
+    for i in range(len(hsig)):
+        hsig[i].Draw('histsame')
+
+
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+
+
+    # c.cd()
+    # p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
+    # p2.SetTopMargin(0)
+    # p2.SetBottomMargin(0.2)
+    # p2.Draw()
+    # p2.cd()
+    # hRatio.SetMarkerSize(0.6)
+    # hRatio.Draw("PE")
+    # hRatioFrame.Draw("HISTsame")
+    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.Close()
 
 def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
     outputdirpath = os.path.join(dir,"StackPlots",cut)
@@ -330,9 +467,9 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
     minRange = 0.1 if islogy else 0.0
     #hStack_MC.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     
-    ROOT.gStyle.SetErrorX(0);
+    ROOT.gStyle.SetErrorX(0)
     ROOT.gStyle.SetOptStat(0)
-    c = ROOT.TCanvas('c', '', 1200, 800)
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
     c.cd()
     hStack_MC.Draw("hist")
     leg.Draw("SAME")

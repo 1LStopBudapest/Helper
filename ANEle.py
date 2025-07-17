@@ -118,7 +118,7 @@ class ANEle():
                 isolationWeight = math.tan(10.0 / pt)**2 / math.tan(0.3)**2
             else:
                 isolationWeight = 0.02616993
-         '''     
+        '''     
         if lepton_selection == 'HybridIso':
             def func():
                 if pt <= 12 and pt >3: #new transition point 12 GeV
