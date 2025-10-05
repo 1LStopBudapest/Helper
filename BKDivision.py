@@ -17,8 +17,8 @@ def get_parser():
     dest='alist',                           # store in 'list'.
         default=['VV', 'TTV', 'ZJetsToNuNu', 'QCD', 'DYJetsToLL', 'ST', 'TTbar', 'WJetsToLNu'],     # all the BK samples
     )
-    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHistJEC',          help="root file name" )
-    argParser.add_argument('--filedir',            action='store',                    type=str,            default='1binPromptDCFiles',          help="Which directory input files are located?" )
+    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHistJEC_SR+CR',          help="root file name" )
+    argParser.add_argument('--filedir',            action='store',                    type=str,            default='PromptDCFiles/2017',          help="Which directory input files are located?" )
 
     return argParser
 
@@ -43,10 +43,11 @@ for sl in samplelists:
         fexists = False        
         print 'Root files for', sl, 'sample does not exist. Please run python '+filename+'.py --sample', sl, 'inside the correspoding directory'
 
-if filename=='CountDCHist':
-    hname = ['h_rate', 'h_PU', 'h_PUUp', 'h_PUDown', 'h_WPt', 'h_WPtUp', 'h_WPtDown', 'h_LeptonSF', 'h_LeptonSFUp', 'h_LeptonSFDown', 'h_BTagSF', 'h_BTagSFbUp', 'h_BTagSFbDown', 'h_BTagSFlUp', 'h_BTagSFlDown', 'h_L1Prefire', 'h_L1PrefireUp', 'h_L1PrefireDown', 'h_XsecUp'] #these histos should present in the root files
-else:
+if 'JEC' in filename:
     hname = ['h_rate', 'h_JECUp', 'h_JECDown', 'h_JERUp', 'h_JERDown'] #for JEC unc root files
+else:
+    hname = ['h_rate', 'h_PU', 'h_PUUp', 'h_PUDown', 'h_WPt', 'h_WPtUp', 'h_WPtDown', 'h_LeptonSF', 'h_LeptonSFUp', 'h_LeptonSFDown', 'h_BTagSF', 'h_BTagSFbUp', 'h_BTagSFbDown', 'h_BTagSFlUp', 'h_BTagSFlDown', 'h_L1Prefire', 'h_L1PrefireUp', 'h_L1PrefireDown', 'h_XsecUp'] #these histos should present in the root files
+    
 hpo = []
 hnp = []
 hw = []

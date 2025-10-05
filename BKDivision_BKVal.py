@@ -30,9 +30,11 @@ filedir = options.filedir
 reg = options.valreg
 ftype = options.ftype
 
+year = '2016PostVFP'
+
 fname1 = 'PromptBKVal1' if reg=='Val1' else 'PromptBKVal2'
 fname2 = fname1+'JEC' if ftype=='JEC' else fname1
-filename = fname2+'_SR+CR'
+filename = fname2+'_SR+CR_'+year
 
 XtraPrompt = ['VV', 'TTV', 'DYJetsToLL', 'ST']
 TotFake = ['ZJetsToNuNu', 'QCD']
