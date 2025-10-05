@@ -11,6 +11,37 @@ ElePt_bin = [5, 12, 20, 30, 50]
 EachMT_div = len(LepPt_bin)-1
 EachCT_div = (len(LepPt_bin)-1) * (len(MT_bin)-1) - 1 #for last MT bin, leppT start from 5 GeV
 
+nreg = 3
+nCTbin = len(CT_bin)-1
+nMTbin = len(MT_bin)-1
+ShapeDCbins = nreg * nCTbin * nMTbin
+ShapebinlPtbinMapSC = {
+    0 : 6,
+    1 : 6,
+    2 : 5,
+    3 : 5,
+    4 : 6,
+    5 : 6,
+    6 : 5,
+    7 : 5,
+    8 : 6,
+    9 : 6,
+    10 : 5,
+    11 : 5,
+    12 : 6,
+    13 : 6,
+    14 : 5,
+    15 : 5,
+    16 : 6,
+    17 : 6,
+    18 : 5,
+    19 : 5,
+    20 : 6,
+    21 : 6,
+    22 : 5,
+    23 : 5,
+}
+ShapebinlPtbinMapS = {k: v - 1 for k, v in ShapebinlPtbinMapSC.items()}
 
 def findSR1BinIndex(CT, MT, LepPt, LepChrg):
     idx = -1
@@ -59,6 +90,43 @@ def findSR2BinIndex(CT, MT, LepPt):
     
     return pickIdx
 
+def findCR1BinIndex(CT, MT, LepChrg):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            print 'j: ',j,' i: ',i,' cut1: ',cut1,' cutchrg: ',cutchrg,' cut2: ',cut2,' idx: ',idx
+            if (cut1 and cut2 and cutchrg):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+            
+    return pickIdx
+
+def findCR2BinIndex(CT, MT):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            print 'j: ',j,' i: ',i,' cut1: ',cut1,' cut2: ',cut2,' idx: ',idx
+            if (cut1 and cut2):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+            
+    return pickIdx
+
 def findCTBin(CT):
     idx = -1
     pickIdx = -1
@@ -81,12 +149,24 @@ def findMTBin(MT):
             break
     return pickIdx
 
-def findLepPtBin(LepPt, MT):
+def findLepPtBin(LepPt, MT): #inclusive for  lep pT> 50 GeV
     idx = -1
     pickIdx = -1
     lep = ElePt_bin if MT>95 else LepPt_bin #for lasttwo  MT bins, leppT start from 5 GeV
     for i in range(len(lep)-1):
         cut = LepPt>lep[i] if i == len(lep)-2 else LepPt>lep[i] and LepPt<=lep[i+1]
+        idx += 1
+        if (cut):
+            pickIdx = idx+1
+            break
+    return pickIdx
+
+def findLepPtBinSC(LepPt, MT): #include CR bin for lep pT> 50 GeV
+    idx = -1
+    pickIdx = -1
+    lep = ElePt_bin if MT>95 else LepPt_bin #for lasttwo  MT bins, leppT start from 5 GeV
+    for i in range(len(lep)):
+        cut = LepPt>lep[i] if i == len(lep)-1 else LepPt>lep[i] and LepPt<=lep[i+1]
         idx += 1
         if (cut):
             pickIdx = idx+1
@@ -99,40 +179,6 @@ def findBin(CT, MT, LepPt):
         b = (EachCT_div * (findCTBin(CT)-1)) + (EachMT_div * (findMTBin(MT)-1)) + findLepPtBin(LepPt, MT)
     return b
 
-def findCR1BinIndex(CT, MT, LepChrg):
-    idx = -1
-    pickIdx = -1
-    for j in range(len(MT_bin)-1):
-        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
-        for i in range(len(CT_bin)-1):
-            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-            idx += 1
-            if (cut1 and cut2 and LepChrg):
-                pickIdx = idx
-                break
-        else:
-            continue
-        break
-            
-    return pickIdx
-
-def findCR2BinIndex(CT, MT):
-    idx = -1
-    pickIdx = -1
-    for j in range(len(MT_bin)-1):
-        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-        for i in range(len(CT_bin)-1):
-            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-            idx += 1
-            if (cut1 and cut2):
-                pickIdx = idx
-                break
-        else:
-            continue
-        break
-            
-    return pickIdx
 
 CTBinLabelDict = {
     1 : 'X',
@@ -490,3 +536,4 @@ def getHistBinlabel(idx, nbins):
         return CRBinLabelList[idx]
     else:
         return SRCRBinLabelList[idx]
+

@@ -87,6 +87,37 @@ class TreeVarSel():
         else:
             return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  and self.cntSoftB()>=1 else False
 
+    #region for shape datacard
+    def SCRegion(self):
+        if not self.PreSelection():
+            return False
+        else:
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) >= 1 and self.tr.MET_pt > 300:
+                return True
+            else:
+                return False
+
+    def SCR1(self):
+        if not self.SCRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and self.calHT()>400 and self.calCT(1)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp() else False
+
+    def SCR2(self):
+        if not self.SCRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)>=1 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300  else False
+
+    def SCR3(self):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
+        if not self.SCRegion():
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20)==0 and self.cntBtagjet(pt=60)==0 and len(self.selectjetIdx(325))>0 and self.calCT(2)>300 and self.cntSoftB()>=1 else False
+
+
+        
     #cuts
     def ISRcut(self, thr=100):
         return len(self.selectjetIdx(thr)) > 0
