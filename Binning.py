@@ -11,37 +11,7 @@ ElePt_bin = [5, 12, 20, 30, 50]
 EachMT_div = len(LepPt_bin)-1
 EachCT_div = (len(LepPt_bin)-1) * (len(MT_bin)-1) - 1 #for last MT bin, leppT start from 5 GeV
 
-nreg = 3
-nCTbin = len(CT_bin)-1
-nMTbin = len(MT_bin)-1
-ShapeDCbins = nreg * nCTbin * nMTbin
-ShapebinlPtbinMapSC = {
-    0 : 6,
-    1 : 6,
-    2 : 5,
-    3 : 5,
-    4 : 6,
-    5 : 6,
-    6 : 5,
-    7 : 5,
-    8 : 6,
-    9 : 6,
-    10 : 5,
-    11 : 5,
-    12 : 6,
-    13 : 6,
-    14 : 5,
-    15 : 5,
-    16 : 6,
-    17 : 6,
-    18 : 5,
-    19 : 5,
-    20 : 6,
-    21 : 6,
-    22 : 5,
-    23 : 5,
-}
-ShapebinlPtbinMapS = {k: v - 1 for k, v in ShapebinlPtbinMapSC.items()}
+
 
 def findSR1BinIndex(CT, MT, LepPt, LepChrg):
     idx = -1
@@ -99,7 +69,6 @@ def findCR1BinIndex(CT, MT, LepChrg):
         for i in range(len(CT_bin)-1):
             cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             idx += 1
-            print 'j: ',j,' i: ',i,' cut1: ',cut1,' cutchrg: ',cutchrg,' cut2: ',cut2,' idx: ',idx
             if (cut1 and cut2 and cutchrg):
                 pickIdx = idx
                 break
@@ -117,7 +86,6 @@ def findCR2BinIndex(CT, MT):
         for i in range(len(CT_bin)-1):
             cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
             idx += 1
-            print 'j: ',j,' i: ',i,' cut1: ',cut1,' cut2: ',cut2,' idx: ',idx
             if (cut1 and cut2):
                 pickIdx = idx
                 break
@@ -161,6 +129,46 @@ def findLepPtBin(LepPt, MT): #inclusive for  lep pT> 50 GeV
             break
     return pickIdx
 
+def findBin(CT, MT, LepPt):
+    b = -1
+    if findCTBin(CT)>0 and findMTBin(MT)>0 and findLepPtBin(LepPt, MT)>0:
+        b = (EachCT_div * (findCTBin(CT)-1)) + (EachMT_div * (findMTBin(MT)-1)) + findLepPtBin(LepPt, MT)
+    return b
+
+#For shape DC............................
+nreg = 3
+nCTbin = len(CT_bin)-1
+nMTbin = len(MT_bin)-1
+ShapeDCbins = nreg * nCTbin * nMTbin
+ShapebinlPtbinMapSC = {
+    0 : 6,
+    1 : 6,
+    2 : 6,
+    3 : 6,
+    4 : 5,
+    5 : 5,
+    6 : 5,
+    7 : 5,
+    8 : 6,
+    9 : 6,
+    10 : 6,
+    11 : 6,
+    12 : 5,
+    13 : 5,
+    14 : 5,
+    15 : 5,
+    16 : 6,
+    17 : 6,
+    18 : 6,
+    19 : 6,
+    20 : 5,
+    21 : 5,
+    22 : 5,
+    23 : 5,
+}
+
+ShapebinlPtbinMapS = {k: v - 1 for k, v in ShapebinlPtbinMapSC.items()}
+
 def findLepPtBinSC(LepPt, MT): #include CR bin for lep pT> 50 GeV
     idx = -1
     pickIdx = -1
@@ -173,12 +181,7 @@ def findLepPtBinSC(LepPt, MT): #include CR bin for lep pT> 50 GeV
             break
     return pickIdx
 
-def findBin(CT, MT, LepPt):
-    b = -1
-    if findCTBin(CT)>0 and findMTBin(MT)>0 and findLepPtBin(LepPt, MT)>0:
-        b = (EachCT_div * (findCTBin(CT)-1)) + (EachMT_div * (findMTBin(MT)-1)) + findLepPtBin(LepPt, MT)
-    return b
-
+#...............................................
 
 CTBinLabelDict = {
     1 : 'X',
