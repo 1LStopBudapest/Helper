@@ -64,7 +64,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>50:
+            if len(lepvar) >= 1 and lepvar[0]['pt']>50 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -87,6 +87,38 @@ class TreeVarSel():
         else:
             return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300  and self.cntSoftB(tp=jettp)>=1 else False
 
+
+    #region for shape datacard
+    def SCRegion(self, jettp='Nom'):
+        if not self.PreSelection(jettp):
+            print 'presel fail for ', jettp
+            return False
+        else:
+            lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
+            if len(lepvar) >= 1 and self.tr.MET_pt > 300:
+                return True
+            else:
+                return False
+
+    def SCR1(self, jettp = 'Nom'):
+        if not self.SCRegion(jettp):
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and self.calHT(tp=jettp)>400 and self.calCT(1, jettp)>300 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['eta']) < 1.5 and self.R1R3NoOvrlp(jettp) else False
+
+    def SCR2(self, jettp = 'Nom'):
+        if not self.SCRegion(jettp):
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20, tp=jettp)>=1 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300  else False
+
+    def SCR3(self, jettp = 'Nom'):#softb (SV) region, extension of SR2 in term of CT and other cuts but requires softbjets == 0 and softb (SV) >= 1
+        if not self.SCRegion(jettp):
+            return False
+        else:
+            return True if self.cntBtagjet(pt=20, tp=jettp)==0 and self.cntBtagjet(pt=60, tp=jettp)==0 and len(self.selectjetIdx(325, jettp))>0 and self.calCT(2, jettp)>300 and self.cntSoftB(tp=jettp)>=1 else False
+
+            
     #cuts
     def ISRcut(self, thr=100, tp='Nom'):
         return len(self.selectjetIdx(thr, tp)) > 0

@@ -331,7 +331,10 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
     hdumy = ROOT.TH1F('hdumy','', hMC.GetNbinsX(),hMC.GetXaxis().GetBinLowEdge(1),hMC.GetXaxis().GetBinUpEdge(hMC.GetNbinsX()))
     hdumy.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     hdumy.GetYaxis().SetTitle("Events")
-    hdumy.GetXaxis().SetTitle(getXTitle(var))
+    if 'RegHist' in cut:
+        for b in range(hMC.GetNbinsX()):
+            hdumy.GetXaxis().SetBinLabel(b+1, hMC.GetXaxis().GetBinLabel(b+1))
+    else: hdumy.GetXaxis().SetTitle(getXTitle(var))
     
     ROOT.gStyle.SetErrorX(0);
     ROOT.gStyle.SetOptStat(0)
@@ -386,7 +389,11 @@ def StackHistsNoDataExt(files, samplelist, var, dir, cut, islogy=True, scaleOpti
     hdumy = ROOT.TH1F('hdumy','', hMC.GetNbinsX(),hMC.GetXaxis().GetBinLowEdge(1),hMC.GetXaxis().GetBinUpEdge(hMC.GetNbinsX()))
     hdumy.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
     hdumy.GetYaxis().SetTitle("Events")
-    hdumy.GetXaxis().SetTitle(getXTitle(var))
+    if 'RegHist' in cut:
+        for b in range(hMC.GetNbinsX()):
+            hdumy.GetXaxis().SetBinLabel(b+1, hMC.GetXaxis().GetBinLabel(b+1))
+    else: hdumy.GetXaxis().SetTitle(getXTitle(var))
+
     ROOT.gStyle.SetErrorX(0);
     ROOT.gStyle.SetOptStat(0)
     c = ROOT.TCanvas('c', '', 1200, 800)
