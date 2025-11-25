@@ -244,7 +244,8 @@ class TreeVarSel():
                 for l in range(len(lepvar)):
                     dR = DeltaR(lepvar[l]['eta'], lepvar[l]['phi'], self.tr.Jet_eta[j], self.tr.Jet_phi[j])
                     ptRatio = float(Jet_pt[j])/float(lepvar[l]['pt'])
-                    if dR < 0.4 and ptRatio < 2:
+                    #if dR < 0.4 and ptRatio < 2:
+                    if dR < 0.4:
                         clean = False
                         break
                 if clean:
@@ -265,7 +266,8 @@ class TreeVarSel():
         indx = []
         for idx in self.IVFIdx():
             if self.tr.SV_pt[idx] < 20.0 \
-               and self.jetcleanedB(idx,tp) :
+               and self.jetcleanedB(idx,tp) \
+               and self.lepcleanedB(idx):
                 indx.append(idx)
         return indx
 
@@ -384,7 +386,11 @@ class TreeVarSel():
                 break
         return ret
             
-
+    def lepcleanedB(self, idx):
+        L0 = self.getSortedLepVar()[0]#only considering the leading lepton
+        dR = DeltaR(self.tr.SV_eta[idx], self.tr.SV_phi[idx], L0['eta'], L0['phi'])
+        return dR>0.3 #this threshild is ad hok basis but related to the isolation cone for lepton
+                                 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)
 

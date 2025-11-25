@@ -225,7 +225,8 @@ class TreeVarSel():
                 for l in range(len(lepvar)):
                     dR = DeltaR(lepvar[l]['eta'], lepvar[l]['phi'], self.tr.Jet_eta[j], self.tr.Jet_phi[j])
                     ptRatio = float(self.tr.Jet_pt[j])/float(lepvar[l]['pt'])
-                    if dR < 0.4 and ptRatio < 2:
+                    #if dR < 0.4 and ptRatio < 2:
+                    if dR < 0.4: #ptratio condition removed after the finding from fakerate study
                         clean = False
                         break
                 if clean:
@@ -246,7 +247,8 @@ class TreeVarSel():
         indx = []
         for idx in self.IVFIdx():
             if self.tr.SV_pt[idx] < 20.0 \
-               and self.jetcleanedB(idx) :
+               and self.jetcleanedB(idx) \
+               and self.lepcleanedB(idx): #this condition added later
                 indx.append(idx)
         return indx
 
