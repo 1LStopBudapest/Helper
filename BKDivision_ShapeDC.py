@@ -17,7 +17,7 @@ def get_parser():
     dest='alist',                           # store in 'list'.
         default=['VV', 'TTV', 'ZJetsToNuNu', 'QCD', 'DYJetsToLL', 'ST', 'TTbar', 'WJetsToLNu'],     # all the BK samples
     )
-    argParser.add_argument('--filename',            action='store',                    type=str,            default='ShapeDCHist_SR+CR',          help="root file name" )
+    argParser.add_argument('--filename',            action='store',                    type=str,            default='ShapeDCHistJEC_SR+CR',          help="root file name" )
     argParser.add_argument('--filedir',            action='store',                    type=str,            default='PromptDCFiles',          help="Which directory input files are located?" )
 
     return argParser
@@ -47,21 +47,11 @@ histname = []
 for i in range(24):
     histname.append('Bin'+str(i))
 
-'''
 if 'JEC' in filename:
-    hname = ['h_rate', 'h_JECUp', 'h_JECDown', 'h_JERUp', 'h_JERDown'] #for JEC unc root files
+    sysname = ['Nom', 'JECUp', 'JECDown', 'JERUp', 'JERDown'] #for JEC unc root files
 else:
-    hname = ['h_rate', 'h_PU', 'h_PUUp', 'h_PUDown', 'h_WPt', 'h_WPtUp', 'h_WPtDown', 'h_LeptonSF', 'h_LeptonSFUp', 'h_LeptonSFDown', 'h_BTagSF', 'h_BTagSFbUp', 'h_BTagSFbDown', 'h_BTagSFlUp', 'h_BTagSFlDown', 'h_L1Prefire', 'h_L1PrefireUp', 'h_L1PrefireDown', 'h_XsecUp'] #these histos should present in the root files
-'''
-sysname  = ['PU', 'PUUp', 'PUDown', 'wPt', 'wPtUp', 'wPtDown', 'LeptonSF', 'LeptonSFUp', 'LeptonSFDown', 'BTag_SF', 'BTag_SF_b_Up', 'BTag_SF_b_Down', 'BTag_SF_l_Up', 'BTag_SF_l_Down', 'L1Prefire', 'L1PrefireUp', 'L1PrefireDown', 'XSec', 'XSecUp', 'XSecDown'] #these histos should present in the root files
+    sysname  = ['PU', 'PUUp', 'PUDown', 'wPt', 'wPtUp', 'wPtDown', 'LeptonSF', 'LeptonSFUp', 'LeptonSFDown', 'BTag_SF', 'BTag_SF_b_Up', 'BTag_SF_b_Down', 'BTag_SF_l_Up', 'BTag_SF_l_Down', 'L1Prefire', 'L1PrefireUp', 'L1PrefireDown', 'XSec', 'XSecUp', 'XSecDown'] #these histos should present in the root files
 
-'''
-hname = []
-for hn in histname:
-    for e in sysname:
-        hname.append(hn+'_'+e)
-hname = histname + hname
-'''
 
 hpo = []
 hnp = []
@@ -73,16 +63,18 @@ if fexists:
         hpoi = []
         hnpi = []
         for hn in histname:
-            if samplelists[i] in XtraPrompt: 
-                hpoi.append(f.Get(hn+'_prompt_'+samplelists[i]))
-            if samplelists[i]=='WJetsToLNu':
-                hw.append(f.Get(hn+'_prompt_'+samplelists[i]))
-            if samplelists[i]=='TTbar':
-                ht.append(f.Get(hn+'_prompt_'+samplelists[i]))
-            if samplelists[i] in TotFake:
-                hnpi.append(f.Get(hn+'_'+samplelists[i]))
-            else:
-                hnpi.append(f.Get(hn+'_nonprompt_'+samplelists[i]))
+            if not 'JEC' in filename:
+                if samplelists[i] in XtraPrompt: 
+                    hpoi.append(f.Get(hn+'_prompt_'+samplelists[i]))
+                if samplelists[i]=='WJetsToLNu':
+                    hw.append(f.Get(hn+'_prompt_'+samplelists[i]))
+                if samplelists[i]=='TTbar':
+                    ht.append(f.Get(hn+'_prompt_'+samplelists[i]))
+                if samplelists[i] in TotFake:
+                    hnpi.append(f.Get(hn+'_'+samplelists[i]))
+                else:
+                    hnpi.append(f.Get(hn+'_nonprompt_'+samplelists[i]))
+
             for sn in sysname:
                 if samplelists[i] in XtraPrompt: 
                     hpoi.append(f.Get(hn+'_prompt_'+sn+'_'+samplelists[i]))

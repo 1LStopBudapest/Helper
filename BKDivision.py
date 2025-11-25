@@ -17,8 +17,8 @@ def get_parser():
     dest='alist',                           # store in 'list'.
         default=['VV', 'TTV', 'ZJetsToNuNu', 'QCD', 'DYJetsToLL', 'ST', 'TTbar', 'WJetsToLNu'],     # all the BK samples
     )
-    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHistJEC_SR+CR',          help="root file name" )
-    argParser.add_argument('--filedir',            action='store',                    type=str,            default='PromptDCFiles/2017',          help="Which directory input files are located?" )
+    argParser.add_argument('--filename',            action='store',                    type=str,            default='CountDCHist_SR+CR',          help="root file name" )
+    argParser.add_argument('--filedir',            action='store',                    type=str,            default='PromptDCFiles',          help="Which directory input files are located?" )
 
     return argParser
 

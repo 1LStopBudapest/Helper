@@ -17,9 +17,9 @@ def get_parser():
     dest='alist',                           # store in 'list'.
         default=['VV', 'TTV', 'ZJetsToNuNu', 'QCD', 'DYJetsToLL', 'ST', 'TTbar', 'WJetsToLNu'],     # all the BK samples
     )
-    argParser.add_argument('--valreg',            action='store',                    type=str,            default='Val2',          help="which validation region" )
+    argParser.add_argument('--valreg',            action='store',                    type=str,            default='Val1',          help="which validation region" )
     argParser.add_argument('--filedir',            action='store',                    type=str,            default='PromptValFiles',          help="Which directory input files are located?" )
-    argParser.add_argument('--ftype',            action='store',                    type=str,            default='Norm',          help="if the file has JEC syst put JEC else put Norm" )
+    argParser.add_argument('--ftype',            action='store',                    type=str,            default='JEC',          help="if the file has JEC syst put JEC else put Norm" )
     
     return argParser
 
@@ -30,7 +30,7 @@ filedir = options.filedir
 reg = options.valreg
 ftype = options.ftype
 
-year = '2016PostVFP'
+year = '2016PreVFP'
 
 fname1 = 'PromptBKVal1' if reg=='Val1' else 'PromptBKVal2'
 fname2 = fname1+'JEC' if ftype=='JEC' else fname1
