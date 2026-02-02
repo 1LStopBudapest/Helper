@@ -100,7 +100,7 @@ class ANEle():
                 if dr < mindr:
                     mindr = dr
                     milx = ilx
-            if mindr < 0.1: # now DR threshold is 0.1
+            if mindr < 0.03:    # -- DR threshold used to be 0.1, updated to 0.03 since 2026
                 PIdx.append(tuple((isx, milx)))                
         return dict(PIdx)
     
