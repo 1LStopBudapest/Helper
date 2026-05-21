@@ -48,7 +48,7 @@ class TreeVarSel():
             return False
         else:
             lepvar = sortedlist(self.getLepVar(self.selectMuIdx()))
-            if len(lepvar) > 1 and lepvar[0]['pt']>30:
+            if len(lepvar) > 1 and lepvar[0]['pt']>30 and self.tr.MET_pt > 300:
                 return True
             else:
                 return False
@@ -83,6 +83,25 @@ class TreeVarSel():
         else:
             return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dxy']) > 1.0 else False
 
+
+    def Dz1(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) <= 0.1 else False
+
+    def Dz2(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 0.1 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) <= 20.0 else False
+
+    def Dz3(self):
+        if not self.PreSelection():
+            return False
+        else:
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 20.0 else False
+        
     #cuts
     def ISRcut(self, thr=100):
         return len(self.selectjetIdx(thr)) > 0
@@ -220,7 +239,7 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -229,7 +248,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -319,3 +338,9 @@ class TreeVarSel():
 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)
+
+    def passMETTrig(self, trig):
+        if trig=='HLT_PFMET120_PFMHT120_IDTight' and hasattr(self.tr, 'HLT_PFMET120_PFMHT120_IDTight'): return self.tr.HLT_PFMET120_PFMHT120_IDTight
+        if trig=='HLT_MET_Inclusive': return (self.tr.HLT_PFMET90_PFMHT90_IDTight if hasattr(self.tr, 'HLT_PFMET90_PFMHT90_IDTight') else False) or (self.tr.HLT_PFMET100_PFMHT100_IDTight if hasattr(self.tr, 'HLT_PFMET100_PFMHT100_IDTight') else False) or (self.tr.HLT_PFMET110_PFMHT110_IDTight if hasattr(self.tr, 'HLT_PFMET110_PFMHT110_IDTight') else False) or (self.tr.HLT_PFMET120_PFMHT120_IDTight if hasattr(self.tr, 'HLT_PFMET120_PFMHT120_IDTight') else False)
+        else: return False
+            
