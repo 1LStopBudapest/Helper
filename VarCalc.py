@@ -201,3 +201,14 @@ def Fill2D(h, a, b, w=1):
     copyy = b
     if copyy >= highy: copyy = lowy
     h.Fill(copyx, copyy, w)
+
+
+def Fill1DInc(h, a, w=1):
+    nbin = h.GetNbinsX()
+    Ovlow = h.GetBinLowEdge(nbin)
+    Ovhigh = h.GetBinLowEdge(nbin + 1)
+    Unlow = h.GetBinLowEdge(1)
+    copy = a
+    if copy >= Ovhigh: copy = Ovlow
+    if copy < Unlow: copy = Unlow
+    h.Fill(copy, w)

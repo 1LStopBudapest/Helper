@@ -20,6 +20,9 @@ class TreeVarSel():
     def PreSelection(self):
         ps = self.METcut() and self.HTcut() and self.ISRcut() and self.lepcut() and self.dphicut() and self.XtralepVeto() and self.XtraJetVeto() and self.tauVeto()
         return ps
+    #def PreSelection(self):
+        #ps = self.METcut() and self.HTcut() and self.ISRcut() and self.lepcut() and self.dphicut() and self.XtralepVeto() and self.XtraJetVeto() and self.tauVeto() and self.cntBtagjet(pt=60)==0
+        #return ps
 
     def SearchRegion(self):
         if not self.PreSelection():

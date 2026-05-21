@@ -243,7 +243,7 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
     hs_MC = hs[:-1]#assuming last one is from data
     hBK=[]
     hsig=[]
-    leg = ROOT.TLegend(0.5, 0.6, 0.9, 0.9)
+    leg = ROOT.TLegend(0.3, 0.5, 0.9, 0.9)
     leg.SetNColumns(3)
     hMC = hs_MC[0].Clone("TotalMC")
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
@@ -252,17 +252,17 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
             hsig.append(h)
             h.SetLineColor(len(hs)-i)
             h.SetLineWidth(2)
-            leg.AddEntry(h, getLegendTitle(samplelist[i]), "l")
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')', "l")
         else:
             hBK.append(h)
             hStack_MC.Add(h)
             h.SetFillColor(getColor(samplelist[i]))
             h.SetLineColor(getColor(samplelist[i]))
-            leg.AddEntry(h, getLegendTitle(samplelist[i]) ,"f")
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')' ,"f")
             if i!=0:
                 hMC.Add(h)
                 
-    leg.AddEntry(hs[-1], getLegendTitle('Data') ,"pe") #last entry in hs is data
+    leg.AddEntry(hs[-1], getLegendTitle('Data')+' ('+str(round(hs[-1].Integral(), 2))+')' ,"pe") #last entry in hs is data
     styleData(hs[-1], islogy)
 
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
@@ -311,9 +311,15 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
     for i, f in enumerate(files,0):
         hs.append(f.Get(var+'_'+samplelist[i]))
         
+    '''
+    #to plot upto some bins, SR: 108, CR: 24
+    for h in hs:
+        h.GetXaxis().SetRangeUser(108,132)   
+    '''
+    
     hStack_MC = ROOT.THStack("hStack_MC","")
     hMC = hs[0].Clone("TotalMC")
-    leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
+    leg = ROOT.TLegend(0.1, 0.6, 0.6, 0.9)
     leg.SetNColumns(3)
     leg.SetBorderSize(0)
     for i, h in enumerate(hs, 0):
@@ -323,7 +329,6 @@ def StackHistsNoData(files, samplelist, var, dir, cut, islogy=True, scaleOption=
         leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')',"f")
         if i!=0:
             hMC.Add(h)
-                
     
     mVal = hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
