@@ -37,6 +37,10 @@ class HistInfo( ):
             hist = self.histclass(self.hname+'_'+self.sample, self.hname, nbinsX, self.binArrX, nbinsY, self.binArrY)
         hist.Sumw2()
         return hist
+    
+    def make_hist_stack(self):
+        hist = self.histclass(self.hname+'_'+self.sample, self.hname)
+        return hist
 
     def make_hist(self):
         return self.make_hist1D() if self.histclass == ROOT.TH1F else self.make_hist2D()

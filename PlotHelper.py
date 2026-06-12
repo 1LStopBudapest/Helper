@@ -8,10 +8,21 @@ from Style import *
 from CosmeticCode import *
 
 def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
+    #AVOID OPENING THE PLOT WINDOW#############
+    ROOT.gROOT.SetBatch(True)
+    ##############################################
+
     hname = h.GetName()
     htitle = h.GetTitle()
     sname = hname.replace(htitle+"_", "")
-    outputdirpath = os.path.join(dir,"Test",sname)
+    #outputdirpath = os.path.join(dir,"Test",sname)
+    outputdirpath = os.path.join(dir,sname)
+    print(".........................")
+    print("hname = "+str(hname))
+    print("htitle = "+str(htitle))
+    print("sname = "+str(sname))
+    print("outputdirpath = "+str(outputdirpath))
+    print(".........................")
     if not os.path.exists(outputdirpath):
         os.makedirs(outputdirpath)
 
@@ -33,6 +44,54 @@ def Plot1D(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xt
     h.Draw(drawOption)
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
+    c.SaveAs(outputdirpath+"/"+htitle+".png")
+    c.Close()
+
+def Plot1DStackSimple(h, dir, drawOption="hist", islogy=False, canvasX=600, canvasY=800, Xtitle = "auto-format", Ytitle = "auto-format"):
+
+    #AVOID OPENING THE PLOT WINDOW#############
+    ROOT.gROOT.SetBatch(True)
+    ##############################################
+    
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
+    c.cd()
+
+    ####
+    h.Draw(drawOption)
+    
+    if islogy:ROOT.gPad.SetLogy()
+
+    hname = h.GetName()
+    htitle = h.GetTitle()
+    sname = hname.replace(htitle+"_", "")
+    #outputdirpath = os.path.join(dir,"Test",sname)
+    outputdirpath = os.path.join(dir,sname)
+    print(".........................")
+    print("hname = "+str(hname))
+    print("htitle = "+str(htitle))
+    print("sname = "+str(sname))
+    print("outputdirpath = "+str(outputdirpath))
+    print(".........................")
+    leg = ROOT.TLegend(0.1, 0.85, 0.48, 0.9)
+    leg.AddEntry(h, sname ,"l")
+    leg.Draw("SAME")
+    
+    h.GetYaxis().SetTitle("Events")
+    h.GetYaxis().SetTitleSize(0.035)
+    h.GetYaxis().SetTitleOffset(1.2)
+    h.GetYaxis().SetLabelSize(0.03)
+    h.GetXaxis().SetTitle("stopCtau")
+    h.GetXaxis().SetTitleSize(0.04)
+    h.GetXaxis().SetTitleOffset(0.8)
+    h.GetXaxis().SetLabelSize(0.04)
+
+    max_bin_content = h.GetMaximum()
+    # Set Y-axis maximum range to 1.2 times the max bin content
+    h.SetMaximum(1.25 * max_bin_content)
+
+    if not os.path.exists(outputdirpath):
+        os.makedirs(outputdirpath)
+
     c.SaveAs(outputdirpath+"/"+htitle+".png")
     c.Close()
 
@@ -852,4 +911,107 @@ def plotROCLines(signal_pass, signal_total, bk_pass, bk_total, line_info, markdo
     canvas.Close()
     return 0
 
+
+
+def Plot2D(h, dir, drawOption="colz", islogz=False, canvasX=600, canvasY=800, 
+           Xtitle="auto-format", Ytitle="auto-format", Ztitle="auto-format"):
+    #AVOID OPENING THE PLOT WINDOW#############
+    ROOT.gROOT.SetBatch(True)
+    ##############################################
+
+    hname = h.GetName()
+    htitle = h.GetTitle()
+    sname = hname.replace(htitle+"_", "")
+    outputdirpath = os.path.join(dir, sname)
+    print(".........................")
+    print("hname = "+str(hname))
+    print("htitle = "+str(htitle))
+    print("sname = "+str(sname))
+    print("outputdirpath = "+str(outputdirpath))
+    print(".........................")
+    if not os.path.exists(outputdirpath):
+        os.makedirs(outputdirpath)
+
+    leg = ROOT.TLegend(0.1, 0.85, 0.48, 0.9)
+    leg.AddEntry(h, sname, "l")
+
+    # Common 2D styling options
+    # Axis titles
+    if Xtitle == "auto-format":
+        h.GetXaxis().SetTitle(h.GetXaxis().GetTitle())
+    else:
+        h.GetXaxis().SetTitle(Xtitle)
+    
+    if Ytitle == "auto-format":
+        h.GetYaxis().SetTitle(h.GetYaxis().GetTitle())
+    else:
+        h.GetYaxis().SetTitle(Ytitle)
+    
+    if Ztitle != "auto-format":
+        h.GetZaxis().SetTitle(Ztitle)
+    
+    # Label sizes
+    h.GetXaxis().SetLabelSize(0.045)
+    h.GetYaxis().SetLabelSize(0.045)
+    h.GetZaxis().SetLabelSize(0.045)
+    
+    # Title sizes
+    h.GetXaxis().SetTitleSize(0.05)
+    h.GetYaxis().SetTitleSize(0.05)
+    h.GetZaxis().SetTitleSize(0.05)
+    
+    # Title offsets
+    h.GetXaxis().SetTitleOffset(0.8)
+    h.GetYaxis().SetTitleOffset(0.8)
+    h.GetZaxis().SetTitleOffset(0.8)
+    
+    # Set color palette (1 = default rainbow, 55 = kBird, 53 = kViridis, etc.)
+    ROOT.gStyle.SetPalette(1)
+    
+    # Increase number of divisions on axes
+    h.GetXaxis().SetNdivisions(505)
+    h.GetYaxis().SetNdivisions(505)
+    h.GetZaxis().SetNdivisions(505)
+    
+    # Set tick marks to be outside
+    h.GetXaxis().SetTickLength(0.03)
+    h.GetYaxis().SetTickLength(0.03)
+    h.GetZaxis().SetTickLength(0.03)
+
+    # ADJUST PLOT MARGINS to create space for stat box and prevent cropping
+    # Margins are in NDC coordinates (0 to 1)
+    # Order: left, right, top, bottom
+    ROOT.gStyle.SetPadLeftMargin(0.12)   # Space for Y-axis title and labels
+    ROOT.gStyle.SetPadRightMargin(0.40)  # Extra space for Z-axis color bar and title
+    ROOT.gStyle.SetPadTopMargin(0.08)    # Space for title and stat box
+    ROOT.gStyle.SetPadBottomMargin(0.12) # Space for X-axis title and labels
+    
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
+    c.cd()
+
+    # Moises
+    h.SetLineColor(2)
+    # For 2D histograms, adjust the maximum z-axis content
+    #max_bin_content = h.GetMaximum()
+    #h.SetMaximum(1.25 * max_bin_content)
+
+    # Move stat box outside the plotting area
+    # First, set option to draw stats (if you want it)
+    #ROOT.gStyle.SetOptStat(111111)  # or use ROOT.kTRUE to show all stats
+    # Then reposition the stat box (x1, y1, x2, y2 in NDC coordinates)
+    # NDC ranges from 0 to 1 (0=left/bottom, 1=right/top)
+    ROOT.gStyle.SetStatX(0.95)  # Right edge position
+    ROOT.gStyle.SetStatY(0.8)  # Top edge position
+    #ROOT.gStyle.SetStatW(0.15)  # Width
+    #ROOT.gStyle.SetStatH(0.15)  # Height
+    
+    h.Draw(drawOption)
+    leg.Draw("SAME")
+    
+    if islogz:
+        c.SetLogz()
+    
+    # For 2D histograms, save with ROOT file as well? Just image here
+    c.SaveAs(outputdirpath+"/"+htitle+".png")
+    c.Close()
 

@@ -315,6 +315,12 @@ class TreeVarSel():
 				if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])!=22:
 					L.append({'pt':self.tr.GenPart_pt[i], 'eta':self.tr.GenPart_eta[i], 'phi':self.tr.GenPart_phi[i]})
 		return L
+	
+	def gen4Body(self):
+		is_4body = True
+		if self.tr.stopDecay < 3.5 and self.tr.stopAntiDecay < 3.5:
+			is_4body = False
+		return is_4body
 
 
 	def passFilters(self):
