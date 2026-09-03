@@ -59,6 +59,42 @@ def findSR2BinIndex(CT, MT, LepPt):
     
     return pickIdx
 
+def findCR1BinIndex(CT, MT, LepChrg):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            if (cut1 and cut2 and LepChrg):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+            
+    return pickIdx
+
+def findCR2BinIndex(CT, MT):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(MT_bin)-1):
+        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
+        for i in range(len(CT_bin)-1):
+            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
+            idx += 1
+            if (cut1 and cut2):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+            
+    return pickIdx
+
+
 def findCTBin(CT):
     idx = -1
     pickIdx = -1
@@ -99,40 +135,6 @@ def findBin(CT, MT, LepPt):
         b = (EachCT_div * (findCTBin(CT)-1)) + (EachMT_div * (findMTBin(MT)-1)) + findLepPtBin(LepPt, MT)
     return b
 
-def findCR1BinIndex(CT, MT, LepChrg):
-    idx = -1
-    pickIdx = -1
-    for j in range(len(MT_bin)-1):
-        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-        cutchrg = LepChrg==-1 if j < len(MT_bin)-3 else True # -1 charge only for first two MT bins
-        for i in range(len(CT_bin)-1):
-            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-            idx += 1
-            if (cut1 and cut2 and LepChrg):
-                pickIdx = idx
-                break
-        else:
-            continue
-        break
-            
-    return pickIdx
-
-def findCR2BinIndex(CT, MT):
-    idx = -1
-    pickIdx = -1
-    for j in range(len(MT_bin)-1):
-        cut1 = MT>MT_bin[j] if j == len(MT_bin)-2 else MT>MT_bin[j] and MT<=MT_bin[j+1]
-        for i in range(len(CT_bin)-1):
-            cut2 = CT>CT_bin[i] if i == len(CT_bin)-2 else CT>CT_bin[i] and CT<=CT_bin[i+1]
-            idx += 1
-            if (cut1 and cut2):
-                pickIdx = idx
-                break
-        else:
-            continue
-        break
-            
-    return pickIdx
 
 CTBinLabelDict = {
     1 : 'X',
@@ -209,8 +211,8 @@ SRBinLabelList = [
     'SR2HdX',
     'SR2LdY',
     'SR2MdY',
-    'SR2HdY',
-    ]
+    'SR2HdY'
+]
 
 CRBinLabelList = [
     'CR1aX',
@@ -228,16 +230,47 @@ CRBinLabelList = [
     'CR2cX',
     'CR2cY',
     'CR2dX',
-    'CR2dY',
-    'CR3aX',
-    'CR3aY',
-    'CR3bX',
-    'CR3bY',
-    'CR3cX',
-    'CR3cY',
-    'CR3dX',
-    'CR3dY',
+    'CR2dY'
     ]
+
+
+##LL binning test##
+#Dxy, dz binning
+dxy_bin = [0.0, 0.02, 1, -1]
+dz_bin = [0.0, 0.1, 10, -1]
+
+def findDxyDzBinIndex(dxy, dz):
+    idx = -1
+    pickIdx = -1
+    for j in range(len(dz_bin)-1):
+        cut1 = dz>dz_bin[j] if j == len(dz_bin)-2 else dz>dz_bin[j] and dz<=dz_bin[j+1]
+        for i in range(len(dxy_bin)-1):
+            cut2 = dxy>dxy_bin[i] if i == len(dxy_bin)-2 else dxy>dxy_bin[i] and dxy<=dxy_bin[i+1]
+            idx += 1
+            if (cut1 and cut2):
+                pickIdx = idx
+                break
+        else:
+            continue
+        break
+
+    return pickIdx
+
+
+DxyDzBinLabelList = [
+    'dz1dxy1',
+    'dz1dxy2',
+    'dz1dxy3',
+    'dz2dxy1',
+    'dz2dxy2',
+    'dz2dxy3',
+    'dz3dxy1',
+    'dz3dxy2',
+    'dz3dxy3',
+    ]
+
+
+############################
 
 TotLepPt_bin = [3, 5, 12, 20, 30, -1]
 TotElePt_bin = [5, 12, 20, 30, -1]

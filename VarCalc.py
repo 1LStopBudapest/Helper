@@ -2,6 +2,7 @@ import ROOT
 from math import pi, sqrt, cos, sin, sinh, log, cosh
 from ROOT import TLorentzVector
 import textwrap
+import numpy as np
 
 from CosmeticCode import vidNestedWPBitMapNamingList
 
@@ -212,3 +213,21 @@ def Fill1DInc(h, a, w=1):
     if copy >= Ovhigh: copy = Ovlow
     if copy < Unlow: copy = Unlow
     h.Fill(copy, w)
+
+
+def Get_ctau_sample(ms, dm, BR_sample):
+    c = 2.9979e11 # speed of light in mm per second
+    hcut = 6.5821e-25
+    # NOW scale properly to actual mStop
+    decay_width_by_DeltaM_4bd_mstop500 = {10.:3.25e-17, 15.:3.52e-15, 20.:5.86e-14, 25.:4.48e-13, 30.:2.24e-12}
+    delta_m_keys = sorted(decay_width_by_DeltaM_4bd_mstop500.keys())
+    delta_m_vals = [decay_width_by_DeltaM_4bd_mstop500[k] for k in delta_m_keys]
+    Delta_m = np.abs(dm)
+    idx = (np.abs(delta_m_keys - Delta_m)).argmin()
+    width_500 = delta_m_vals[idx]
+    decay_width_by_mstop_4bd = width_500 * (500.0 / ms)
+    
+    width_tot_true = decay_width_by_mstop_4bd/BR_sample
+
+    true_ctau = (hcut/width_tot_true) * c
+    return true_ctau
