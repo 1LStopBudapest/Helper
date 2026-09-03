@@ -94,13 +94,13 @@ class TreeVarSel():
         if not self.PreSelection():
             return False
         else:
-            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 0.1 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) <= 20.0 else False
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 0.1 and abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) <= 10.0 else False
 
     def Dz3(self):
         if not self.PreSelection():
             return False
         else:
-            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 20.0 else False
+            return True if abs(sortedlist(self.getLepVar(self.selectMuIdx()))[0]['dz']) > 10.0 else False
         
     #cuts
     def ISRcut(self, thr=100):
@@ -208,7 +208,7 @@ class TreeVarSel():
                 for l in range(len(lepvar)):
                     dR = DeltaR(lepvar[l]['eta'], lepvar[l]['phi'], self.tr.Jet_eta[j], self.tr.Jet_phi[j])
                     ptRatio = float(self.tr.Jet_pt[j])/float(lepvar[l]['pt'])
-                    if dR < 0.4 and ptRatio < 2:
+                    if dR < 0.4:# and ptRatio < 2:
                         clean = False
                         break
                 if clean:
@@ -239,7 +239,7 @@ class TreeVarSel():
     def getMuVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
         return Llist
 
     def getEleVar(self):
@@ -248,7 +248,7 @@ class TreeVarSel():
     def getLepVar(self, muId):
         Llist = []
         for id in muId:
-            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'type':'mu'})
+            Llist.append({'pt':self.tr.Muon_pt[id], 'eta':self.tr.Muon_eta[id], 'phi':self.tr.Muon_phi[id], 'dxy':self.tr.Muon_dxy[id], 'dxyErr':self.tr.Muon_dxyErr[id], 'dz': self.tr.Muon_dz[id], 'dzErr': self.tr.Muon_dzErr[id], 'charg':self.tr.Muon_charge[id], 'idx': id, 'type':'mu'})
         Llist.extend(ANEle(self.tr, self.eletype, self.elepref).getANEleVar())
         return Llist
 
@@ -335,6 +335,15 @@ class TreeVarSel():
                     L.append({'pt':self.tr.GenPart_pt[i], 'eta':self.tr.GenPart_eta[i], 'phi':self.tr.GenPart_phi[i]})
         return L
 
+    
+    def getGenbIdx(self, momId):
+        idx = []
+        for i in range(self.tr.nGenPart):
+            if abs(self.tr.GenPart_pdgId[i]) ==5 and self.tr.GenPart_genPartIdxMother[i] >= 0 and self.tr.GenPart_genPartIdxMother[i]<self.tr.nGenPart:
+                if abs(self.tr.GenPart_pdgId[self.tr.GenPart_genPartIdxMother[i]])==momId:
+                    idx.append(((i, self.tr.GenPart_genPartIdxMother[i])))
+        return idx    
+                                      
 
     def passFilters(self):
         return (self.tr.Flag_goodVertices if hasattr(self.tr, 'Flag_goodVertices') else True) and (self.tr.Flag_globalSuperTightHalo2016Filter if hasattr(self.tr, 'Flag_globalSuperTightHalo2016Filter') else True) and (self.tr.Flag_HBHENoiseIsoFilter if hasattr(self.tr, 'Flag_HBHENoiseIsoFilter') else True) and (self.tr.Flag_HBHENoiseFilter if hasattr(self.tr, 'Flag_HBHENoiseFilter') else True) and (self.tr.Flag_EcalDeadCellTriggerPrimitiveFilter if hasattr(self.tr, 'Flag_EcalDeadCellTriggerPrimitiveFilter') else True) and (self.tr.Flag_eeBadScFilter if hasattr(self.tr, 'Flag_eeBadScFilter') else True) and (self.tr.Flag_BadPFMuonFilter if hasattr(self.tr, 'Flag_BadPFMuonFilter') else True)

@@ -155,7 +155,7 @@ def CompareHistExt(files, samplelist, var, comparetype, dir, drawOption="hist", 
     c.SaveAs(outputdirpath+"/"+var+".png")
     c.Close()
             
-def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800):
+def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=1200, canvasY=1000):
     outputdirpath = os.path.join(dir,"StackPlots",cut)
     if not os.path.exists(outputdirpath):
         if os.path.exists(os.path.join(dir,"StackPlots")):
@@ -174,12 +174,12 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
         scale = hs[-1].Integral()/MCtot
         for h in hs_MC:
             h.Scale(scale)
-    '''
+    
     #to plot upto some bins, usually only SR bins
     for h in hs_MC:
-        h.GetXaxis().SetRangeUser(0,54)
-    hs[-1].GetXaxis().SetRangeUser(0,54)
-    '''
+        h.GetXaxis().SetRangeUser(0,108)
+    hs[-1].GetXaxis().SetRangeUser(0,108)
+    
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
     hMC = hs_MC[0].Clone("TotalMC")
     leg = ROOT.TLegend(0.4, 0.6, 0.9, 0.9)
@@ -196,7 +196,7 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     styleData(hs[-1], islogy)
 
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
-    maxRange = mVal * 100 if islogy else mVal * 1.5
+    maxRange = mVal * 1000 if islogy else mVal * 1.5
     #minRange = 0.0001 if islogy else 0.0
     minRange = 0.1 if islogy else 0.0
     hs[-1].GetYaxis().SetRangeUser(minRange , maxRange*1.5)
@@ -204,9 +204,14 @@ def StackHists(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lumis
     hRatio = getHistratio(hs[-1], hMC, "DataMC", var)
     hRatioFrame = getHistratioframe(hRatio)
 
+    if 'MoneyPlot' in cut:
+        hRatio.GetXaxis().SetTitle("")
+        for b in range(hRatio.GetNbinsX()):
+            hRatio.GetXaxis().SetBinLabel(b+1, hs[-1].GetXaxis().GetBinLabel(b+1))
+
     ROOT.gStyle.SetErrorX(0);
     ROOT.gStyle.SetOptStat(0)
-    c = ROOT.TCanvas('c', '', 600, 800)
+    c = ROOT.TCanvas('c', '', canvasX, canvasY)
     p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
     p1.SetBottomMargin(0)
     p1.Draw()            
@@ -243,7 +248,8 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
     hs_MC = hs[:-1]#assuming last one is from data
     hBK=[]
     hsig=[]
-    leg = ROOT.TLegend(0.3, 0.5, 0.9, 0.9)
+    leg = ROOT.TLegend(0.2, 0.7, 0.9, 0.9)
+    leg.SetTextSize(0.02)
     leg.SetNColumns(3)
     hMC = hs_MC[0].Clone("TotalMC")
     hStack_MC = ROOT.THStack("hStack_MC","hStack_MC")
@@ -258,13 +264,14 @@ def StackHistsExt(files, samplelist, var, dir, cut, islogy=True, scaleOption='Lu
             hStack_MC.Add(h)
             h.SetFillColor(getColor(samplelist[i]))
             h.SetLineColor(getColor(samplelist[i]))
-            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')' ,"f")
+            #leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')' ,"f")
             if i!=0:
                 hMC.Add(h)
-                
+
+    leg.AddEntry(hMC, 'TotalMC ('+str(round(hMC.Integral(), 2))+')' ,"f") #adding total MC
     leg.AddEntry(hs[-1], getLegendTitle('Data')+' ('+str(round(hs[-1].Integral(), 2))+')' ,"pe") #last entry in hs is data
     styleData(hs[-1], islogy)
-
+    print 'Data/MC: ', round(hs[-1].Integral()/hMC.Integral(), 2) if hMC.Integral()>0 else 0.00
     mVal = hs[-1].GetBinContent(hs[-1].GetMaximumBin()) if hs[-1].GetBinContent(hs[-1].GetMaximumBin())>hMC.GetBinContent(hMC.GetMaximumBin()) else hMC.GetBinContent(hMC.GetMaximumBin())
     maxRange = mVal * 100 if islogy else mVal * 1.5
     minRange = 0.1 if islogy else 0.0
@@ -367,7 +374,7 @@ def StackHistsNoDataExt(files, samplelist, var, dir, cut, islogy=True, scaleOpti
     hStack_MC = ROOT.THStack("hStack_MC","")
     hMC = hs[0].Clone("TotalMC") #assuming first sample is not the signal point
     leg = ROOT.TLegend(0.2, 0.7, 0.85, 0.85)
-    leg.SetNColumns(3)
+    leg.SetNColumns(4)
     leg.SetBorderSize(0)
     hBK=[]
     hsig=[]
@@ -376,7 +383,7 @@ def StackHistsNoDataExt(files, samplelist, var, dir, cut, islogy=True, scaleOpti
             hsig.append(h)
             h.SetLineColor(len(hs)-i)
             h.SetLineWidth(2)
-            leg.AddEntry(h, getLegendTitle(samplelist[i]), "l")
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')', "l")
 
         else:
             hBK.append(h)
@@ -409,8 +416,112 @@ def StackHistsNoDataExt(files, samplelist, var, dir, cut, islogy=True, scaleOpti
         hsig[i].Draw('histsame')
     leg.Draw("SAME")
     if islogy:ROOT.gPad.SetLogy()
-    c.SaveAs(outputdirpath+"/"+var+".png")
+    c.SaveAs(outputdirpath+"/"+var+"_"+cut+".png")
     c.Close()
+
+
+
+def StackHistsNoDataExt_Alt(files, samplelist, var, refhvar, dir, cut, islogy=True, scaleOption='Lumiscaling', canvasX=600, canvasY=800): #Overlaying signals with ratio
+    outputdirpath = os.path.join(dir,"StackPlots",cut)
+    if not os.path.exists(outputdirpath):
+        if os.path.exists(os.path.join(dir,"StackPlots")):
+            os.mkdir(outputdirpath)
+        else:
+            os.makedirs(outputdirpath)
+    hs=[]
+    hsRef=[]
+    for i, f in enumerate(files,0):
+        hs.append(f.Get(var+'_'+samplelist[i]))
+        hsRef.append(f.Get(refhvar+'_'+samplelist[i]))
+        
+    hStack_MC = ROOT.THStack("hStack_MC","")
+    hMC = hs[0].Clone("TotalMC") #assuming first sample is not the signal point
+    leg = ROOT.TLegend(0.2, 0.7, 0.85, 0.85)
+    leg.SetNColumns(4)
+    leg.SetBorderSize(0)
+    hBK=[]
+    hsig=[]
+    hBKRef=[]
+    hsigRef=[]
+    for i, h in enumerate(hs, 0):
+        if 'T2tt' in samplelist[i] or 'Sig' in samplelist[i]:
+            hsig.append(h)
+            h.SetLineColor(len(hs)-i)
+            h.SetLineWidth(2)
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')', "l")
+        else:
+            hBK.append(h)
+            hStack_MC.Add(h)
+            h.SetFillColor(getColor(samplelist[i]))
+            h.SetLineColor(getColor(samplelist[i]))
+            leg.AddEntry(h, getLegendTitle(samplelist[i])+' ('+str(round(h.Integral(), 2))+')',"f")
+            if i!=0:
+                hMC.Add(h)
+                
+    for i, h in enumerate(hsRef, 0):
+        if 'T2tt' in samplelist[i] or 'Sig' in samplelist[i]:
+            hsigRef.append(h)
+            h.SetLineColor(len(hs)-i)
+        else:
+            hBKRef.append(h)
+            h.SetLineColor(getColor(samplelist[i]))
+    hRatioSig=[]
+    hRatioBK=[]
+    for i, hRef in enumerate(hsigRef, 0):
+        hRatio = getHistratio(hsig[i], hRef, 'Ratio', var)
+        hRatio.SetLineColor(hsig[i].GetLineColor())
+        if 'RegHist' in cut: hRatio.GetXaxis().SetTitle("")
+        hRatioSig.append(hRatio)
+    for i, hRef in enumerate(hBKRef, 0):
+        hRatio = getHistratio(hBK[i], hRef, 'Ratio', var)
+        hRatio.SetLineColor(hBK[i].GetLineColor())
+        if 'RegHist' in cut: hRatio.GetXaxis().SetTitle("")
+        hRatioBK.append(hRatio)
+
+    hRatioFrame = getHistratioframe(hRatioSig[0])
+    for b in range(1, hRatioFrame.GetNbinsX() + 1):
+        hRatioFrame.SetBinContent(b, 0.5)
+    hRatioFrame.GetYaxis().SetRangeUser(0.0,1.0)
+    
+    mVal = hMC.GetBinContent(hMC.GetMaximumBin())
+    maxRange = mVal * 1000000 if islogy else mVal * 1.5
+    minRange = 0.01 if islogy else 0.0
+    hdumy = ROOT.TH1F('hdumy','', hMC.GetNbinsX(),hMC.GetXaxis().GetBinLowEdge(1),hMC.GetXaxis().GetBinUpEdge(hMC.GetNbinsX()))
+    hdumy.GetYaxis().SetRangeUser(minRange , maxRange*1.5)
+    hdumy.GetYaxis().SetTitle("Events")
+    if 'RegHist' in cut:
+        for b in range(hMC.GetNbinsX()):
+            hdumy.GetXaxis().SetBinLabel(b+1, hMC.GetXaxis().GetBinLabel(b+1))
+            hRatioFrame.GetXaxis().SetBinLabel(b+1, hMC.GetXaxis().GetBinLabel(b+1))
+    else:
+        hdumy.GetXaxis().SetTitle(getXTitle(var))
+        hRatioFrame.GetXaxis().SetTitle(getXTitle(var))
+        
+    ROOT.gStyle.SetErrorX(0);
+    ROOT.gStyle.SetOptStat(0)
+    c = ROOT.TCanvas('c', '', 1200, 800)
+    p1 = ROOT.TPad("p1", "p1", 0, 0.3, 1, 1.0)
+    p1.SetBottomMargin(0)
+    p1.Draw()
+    p1.cd()
+    hdumy.Draw()
+    hStack_MC.Draw("histSAME")
+    for i in range(len(hsig)):
+        hsig[i].Draw('histsame')
+    leg.Draw("SAME")
+    if islogy:ROOT.gPad.SetLogy()
+    c.cd()
+    p2 = ROOT.TPad("p2", "p2", 0, 0.01, 1, 0.3)
+    p2.SetTopMargin(0)
+    p2.SetBottomMargin(0.2)
+    p2.Draw()
+    p2.cd()
+    hRatioFrame.Draw("HIST")
+    for hRatio in hRatioSig:
+        hRatio.Draw("HISTsame")
+    c.SaveAs(outputdirpath+"/"+var+"_"+cut+"_RatioPad.png")
+    c.Close()
+
 
 # Functions to print out a pdf-quality png file:
 def SaveAsQualityPng(canvas,filename,import_scale=1.5):
